@@ -1,7 +1,4 @@
 {
   "conventionalCommits.scopes": [
-    "metabase",
-    "simulation",
-    "adding new structure with adpters"
   ]
 }
