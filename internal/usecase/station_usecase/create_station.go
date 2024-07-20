@@ -11,7 +11,6 @@ import (
 type CreateStationInputDTO struct {
 	Id             string         `json:"id"`
 	Owner          common.Address `json:"owner"`
-	State          string         `json:"state"`
 	PricePerCredit *big.Int       `json:"price_per_credit"`
 	Latitude       float64        `json:"latitude"`
 	Longitude      float64        `json:"longitude"`
@@ -38,7 +37,7 @@ func NewCreateStationUseCase(stationRepository entity.StationRepository) *Create
 }
 
 func (u *CreateStationUseCase) Execute(input *CreateStationInputDTO, metadata rollmelette.Metadata) (*CreateStationOutputDTO, error) {
-	station := entity.NewStation(input.Id, input.Owner, input.PricePerCredit, input.Latitude, input.Longitude, input.State, metadata.BlockTimestamp)
+	station := entity.NewStation(input.Id, input.Owner, input.PricePerCredit, input.Latitude, input.Longitude, metadata.BlockTimestamp)
 	res, err := u.StationRepository.CreateStation(station)
 	if err != nil {
 		return nil, err

@@ -1,8 +1,15 @@
 package entity
 
 import (
-	"github.com/ethereum/go-ethereum/common"
+	"errors"
 	"math/big"
+
+	"github.com/ethereum/go-ethereum/common"
+)
+
+var (
+	ErrInvalidStation  = errors.New("invalid station")
+	ErrStationNotFound = errors.New("station not found")
 )
 
 type StationRepository interface {
@@ -13,11 +20,18 @@ type StationRepository interface {
 	DeleteStation(id string) error
 }
 
+type StationState string
+
+const (
+	StationStateActive   StationState = "active"
+	StationStateInactive StationState = "inactive"
+)
+
 type Station struct {
 	Id             string         `json:"id" gorm:"primaryKey"`
 	Consumption    *big.Int       `json:"consumption" gorm:"type:bigint"`
 	Owner          common.Address `json:"owner" gorm:"not null"`
-	State          string         `json:"state" gorm:"type:text;default:'pending'"`
+	State          StationState   `json:"state" gorm:"type:text;default:'pending'"`
 	Orders         []*Order       `json:"orders" gorm:"foreignKey:StationId;constraint:OnDelete:CASCADE"`
 	PricePerCredit *big.Int       `json:"price_per_credit" gorm:"type:bigint;not null"`
 	Latitude       float64        `json:"latitude" gorm:"not null"`
@@ -26,14 +40,25 @@ type Station struct {
 	UpdatedAt      int64          `json:"updated_at" gorm:"default:0"`
 }
 
-func NewStation(id string, owner common.Address, pricePerCredit *big.Int, latitude float64, longitude float64, state string, createdAt int64) *Station {
-	return &Station{
+func NewStation(id string, owner common.Address, pricePerCredit *big.Int, latitude float64, longitude float64, createdAt int64) (*Station, error) {
+	station := &Station{
 		Id:             id,
 		Owner:          owner,
-		State:          state,
 		PricePerCredit: pricePerCredit,
+		State:          StationStateActive,
 		Latitude:       latitude,
 		Longitude:      longitude,
 		CreatedAt:      createdAt,
 	}
+	if err := station.Validate(); err != nil {
+		return nil, err
+	}
+	return station, nil
+}
+
+func (s *Station) Validate() error {
+	if s.Id == "" || s.Owner == (common.Address{}) || s.PricePerCredit == nil || s.Latitude == 0 || s.Longitude == 0 || s.CreatedAt == 0 {
+		return ErrInvalidStation
+	}
+	return nil
 }

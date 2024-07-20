@@ -1,8 +1,15 @@
 package entity
 
 import (
-	"github.com/ethereum/go-ethereum/common"
+	"errors"
 	"math/big"
+
+	"github.com/ethereum/go-ethereum/common"
+)
+
+var (
+	ErrInvalidOrder  = errors.New("invalid order")
+	ErrOrderNotFound = errors.New("order not found")
 )
 
 type OrderRepository interface {
@@ -24,12 +31,23 @@ type Order struct {
 	UpdatedAt      int64          `json:"updated_at" gorm:"default:0"`
 }
 
-func NewOrder(buyer common.Address, credits *big.Int, stationId string, pricePerCredit *big.Int, createdAt int64) *Order {
-	return &Order{
+func NewOrder(buyer common.Address, credits *big.Int, stationId string, pricePerCredit *big.Int, createdAt int64) (*Order, error) {
+	order := &Order{
 		Buyer:          buyer,
 		Credits:        credits,
 		StationId:      stationId,
 		PricePerCredit: pricePerCredit,
 		CreatedAt:      createdAt,
 	}
+	if err := order.Validate(); err != nil {
+		return nil, err
+	}
+	return order, nil
+}
+
+func (o *Order) Validate() error {
+	if o.Buyer == (common.Address{}) || o.Credits.Cmp(big.NewInt(0)) <= 0 || o.PricePerCredit.Cmp(big.NewInt(0)) <= 0 || o.StationId == "" {
+		return ErrInvalidOrder
+	}
+	return nil
 }

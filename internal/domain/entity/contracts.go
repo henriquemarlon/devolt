@@ -1,7 +1,14 @@
 package entity
 
 import (
+	"errors"
+
 	"github.com/ethereum/go-ethereum/common"
+)
+
+var (
+	ErrInvalidContract  = errors.New("invalid contract")
+	ErrContractNotFound = errors.New("contract not found")
 )
 
 type ContractRepository interface {
@@ -20,10 +27,21 @@ type Contract struct {
 	UpdatedAt int64          `json:"updated_at" gorm:"default:0"`
 }
 
-func NewContract(symbol string, address common.Address, createdAt int64) *Contract {
-	return &Contract{
+func NewContract(symbol string, address common.Address, createdAt int64) (*Contract, error) {
+	contract := &Contract{
 		Symbol:    symbol,
 		Address:   address,
 		CreatedAt: createdAt,
 	}
+	if err := contract.Validate(); err != nil {
+		return nil, err
+	}
+	return contract, nil
+}
+
+func (c *Contract) Validate() error {
+	if c.Symbol == "" || c.Address == (common.Address{}) {
+		return ErrInvalidContract
+	}
+	return nil
 }

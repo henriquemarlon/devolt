@@ -8,7 +8,7 @@ import (
 )
 
 func SetupSQlite() (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open("devolt.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %v", err)
 	}
