@@ -29,7 +29,10 @@ func NewCreateContractUseCase(contractRepository entity.ContractRepository) *Cre
 }
 
 func (s *CreateContractUseCase) Execute(input *CreateContractInputDTO, metadata rollmelette.Metadata) (*CreateContractOutputDTO, error) {
-	contract := entity.NewContract(input.Symbol, input.Address, metadata.BlockTimestamp)
+	contract, err := entity.NewContract(input.Symbol, input.Address, metadata.BlockTimestamp)
+	if err != nil {
+		return nil, err
+	}
 	res, err := s.ContractRepository.CreateContract(contract)
 	if err != nil {
 		return nil, err

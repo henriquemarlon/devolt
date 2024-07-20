@@ -61,7 +61,10 @@ func (c *CreateBidUseCase) Execute(input *CreateBidInputDTO, deposit rollmelette
 		return nil, fmt.Errorf("bid price exceeds active auction price limit")
 	}
 
-	bid := entity.NewBid(activeAuctionRes.Id, input.Bidder, bidDeposit.Amount, input.Price, "pending", metadata.BlockTimestamp)
+	bid, err := entity.NewBid(activeAuctionRes.Id, input.Bidder, bidDeposit.Amount, input.Price, metadata.BlockTimestamp)
+	if err != nil {
+		return nil, err
+	}
 	res, err := c.BidRepository.CreateBid(bid)
 	if err != nil {
 		return nil, err
@@ -73,7 +76,7 @@ func (c *CreateBidUseCase) Execute(input *CreateBidInputDTO, deposit rollmelette
 		Bidder:    res.Bidder,
 		Credits:   res.Credits,
 		Price:     res.Price,
-		State:     res.State,
+		State:     string(res.State),
 		CreatedAt: res.CreatedAt,
 	}, nil
 }

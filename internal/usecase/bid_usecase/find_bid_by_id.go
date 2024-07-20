@@ -29,7 +29,7 @@ func (c *FindBidByIdUseCase) Execute(input *FindBidByIdInputDTO) (*FindBidOutput
 		Bidder:    res.Bidder,
 		Credits:   res.Credits,
 		Price:     res.Price,
-		State:     res.State,
+		State:     string(res.State),
 		CreatedAt: res.CreatedAt,
 		UpdatedAt: res.UpdatedAt,
 	}, nil

@@ -60,7 +60,7 @@ func (u *OffSetStationConsumptionUseCase) Execute(input *OffSetStationConsumptio
 		Consumption:    res.Consumption,
 		Owner:          res.Owner,
 		PricePerCredit: res.PricePerCredit,
-		State:          res.State,
+		State:          string(res.State),
 		Latitude:       res.Latitude,
 		Longitude:      res.Longitude,
 		UpdatedAt:      res.UpdatedAt,

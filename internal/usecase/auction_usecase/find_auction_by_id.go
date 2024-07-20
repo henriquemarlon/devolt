@@ -29,7 +29,7 @@ func (f *FindAuctionByIdUseCase) Execute(input *FindAuctionByIdInputDTO) (*FindA
 			Bidder:    bid.Bidder,
 			Credits:   bid.Credits,
 			Price:     bid.Price,
-			State:     bid.State,
+			State:     string(bid.State),
 			CreatedAt: bid.CreatedAt,
 			UpdatedAt: bid.UpdatedAt,
 		})
@@ -38,7 +38,7 @@ func (f *FindAuctionByIdUseCase) Execute(input *FindAuctionByIdInputDTO) (*FindA
 		Id:         res.Id,
 		Credits:    res.Credits,
 		PriceLimit: res.PriceLimit,
-		State:      res.State,
+		State:      string(res.State),
 		Bids:       bids,
 		ExpiresAt:  res.ExpiresAt,
 		CreatedAt:  res.CreatedAt,

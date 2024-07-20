@@ -62,7 +62,10 @@ func (u *CreateOrderUseCase) Execute(input *CreateOrderInputDTO, deposit rollmel
 		return nil, fmt.Errorf("order payment is less than station price")
 	}
 
-	order := entity.NewOrder(input.Buyer, input.Credits, input.StationId, station.PricePerCredit, metadata.BlockTimestamp)
+	order, err := entity.NewOrder(input.Buyer, input.Credits, input.StationId, station.PricePerCredit, metadata.BlockTimestamp)
+	if err != nil {
+		return nil, err
+	}
 	order, err = u.OrderRepository.CreateOrder(order)
 	if err != nil {
 		return nil, err
