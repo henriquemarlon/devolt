@@ -11,22 +11,34 @@ type MockContractRepository struct {
 
 func (m *MockContractRepository) CreateContract(contract *entity.Contract) (*entity.Contract, error) {
 	args := m.Called(contract)
-	return args.Get(0).(*entity.Contract), args.Error(1)
+	if args.Get(0) != nil {
+		return args.Get(0).(*entity.Contract), args.Error(1)
+	}
+	return nil, args.Error(1)
 }
 
 func (m *MockContractRepository) FindAllContracts() ([]*entity.Contract, error) {
 	args := m.Called()
-	return args.Get(0).([]*entity.Contract), args.Error(1)
+	if args.Get(0) != nil {
+		return args.Get(0).([]*entity.Contract), args.Error(1)
+	}
+	return nil, args.Error(1)
 }
 
 func (m *MockContractRepository) FindContractBySymbol(symbol string) (*entity.Contract, error) {
 	args := m.Called(symbol)
-	return args.Get(0).(*entity.Contract), args.Error(1)
+	if args.Get(0) != nil {
+		return args.Get(0).(*entity.Contract), args.Error(1)
+	}
+	return nil, args.Error(1)
 }
 
 func (m *MockContractRepository) UpdateContract(contract *entity.Contract) (*entity.Contract, error) {
 	args := m.Called(contract)
-	return args.Get(0).(*entity.Contract), args.Error(1)
+	if args.Get(0) != nil {
+		return args.Get(0).(*entity.Contract), args.Error(1)
+	}
+	return nil, args.Error(1)
 }
 
 func (m *MockContractRepository) DeleteContract(symbol string) error {
