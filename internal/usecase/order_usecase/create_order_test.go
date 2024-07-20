@@ -1,14 +1,14 @@
 package order_usecase
 
 import (
-	"math/big"
-	"testing"
 	"github.com/devolthq/devolt/internal/domain/entity"
+	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"math/big"
+	"testing"
 )
 
 func TestCreateOrderUseCase(t *testing.T) {
@@ -18,8 +18,8 @@ func TestCreateOrderUseCase(t *testing.T) {
 	createOrder := NewCreateOrderUseCase(mockOrderRepo, mockStationRepo, mockContractRepo)
 
 	mockStation := &entity.Station{
-		Id:            "station1",
-		Owner:         common.HexToAddress("0xabcdef"),
+		Id:             "station1",
+		Owner:          common.HexToAddress("0xabcdef"),
 		PricePerCredit: big.NewInt(10),
 	}
 

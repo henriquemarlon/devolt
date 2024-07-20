@@ -1,12 +1,12 @@
 package order_usecase
 
 import (
-	"math/big"
-	"testing"
 	"github.com/devolthq/devolt/internal/domain/entity"
+	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
-	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"math/big"
+	"testing"
 )
 
 func TestFindAllOrderUseCase(t *testing.T) {

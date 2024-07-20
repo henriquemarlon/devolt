@@ -1,9 +1,9 @@
 package order_usecase
 
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestDeleteOrderUseCase(t *testing.T) {
