@@ -1,92 +1,88 @@
 package entity
 
-// import (
-// 	"github.com/ethereum/go-ethereum/common"
-// 	"github.com/stretchr/testify/assert"
-// 	"math/big"
-// 	"testing"
-// 	"time"
-// )
+import (
+	"math/big"
+	"testing"
+	"time"
 
-// func TestNewStation(t *testing.T) {
-// 	id := "station1"
-// 	owner := common.HexToAddress("0x123")
-// 	pricePerCredit := big.NewInt(100)
-// 	latitude := 40.7128
-// 	longitude := -74.0060
-// 	createdAt := time.Now().Unix()
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/stretchr/testify/assert"
+)
 
-// 	station := NewStation(id, owner, pricePerCredit, latitude, longitude, createdAt)
+func TestNewStation(t *testing.T) {
+	id := "station-1"
+	owner := common.HexToAddress("0x123")
+	pricePerCredit := big.NewInt(50)
+	latitude := 40.7128
+	longitude := -74.0060
+	createdAt := time.Now().Unix()
 
-// 	assert.NotNil(t, station)
-// 	assert.Equal(t, id, station.Id)
-// 	assert.Equal(t, owner, station.Owner)
-// 	assert.Equal(t, pricePerCredit, station.PricePerCredit)
-// 	assert.Equal(t, latitude, station.Latitude)
-// 	assert.Equal(t, longitude, station.Longitude)
-// 	assert.Equal(t, createdAt, station.CreatedAt)
-// 	assert.Equal(t, "pending", station.State)
-// 	assert.Nil(t, station.Consumption)
-// 	assert.Empty(t, station.Orders)
-// 	assert.Equal(t, int64(0), station.UpdatedAt)
-// }
+	station, err := NewStation(id, owner, pricePerCredit, latitude, longitude, createdAt)
+	assert.Nil(t, err)
+	assert.NotNil(t, station)
+	assert.Equal(t, id, station.Id)
+	assert.Equal(t, owner, station.Owner)
+	assert.Equal(t, pricePerCredit, station.PricePerCredit)
+	assert.Equal(t, latitude, station.Latitude)
+	assert.Equal(t, longitude, station.Longitude)
+	assert.NotZero(t, station.CreatedAt)
+}
 
-// func TestStation_Validate(t *testing.T) {
-// 	station := &Station{
-// 		Id:             "station1",
-// 		Owner:          common.HexToAddress("0x123"),
-// 		PricePerCredit: big.NewInt(100),
-// 		Latitude:       40.7128,
-// 		Longitude:      -74.0060,
-// 		CreatedAt:      time.Now().Unix(),
-// 	}
+func TestStation_Validate(t *testing.T) {
+	owner := common.HexToAddress("0x123")
+	pricePerCredit := big.NewInt(50)
+	createdAt := time.Now().Unix()
 
-// 	assert.True(t, station.Latitude >= -90 && station.Latitude <= 90, "latitude must be between -90 and 90")
-// 	assert.True(t, station.Longitude >= -180 && station.Longitude <= 180, "longitude must be between -180 and 180")
+	// Invalid ID
+	station := &Station{
+		Id:             "",
+		Owner:          owner,
+		PricePerCredit: pricePerCredit,
+		Latitude:       40.7128,
+		Longitude:      -74.0060,
+		CreatedAt:      createdAt,
+	}
+	err := station.Validate()
+	assert.NotNil(t, err)
+	assert.Equal(t, ErrInvalidStation, err)
 
-// 	station.Latitude = -91
-// 	assert.False(t, station.Latitude >= -90 && station.Latitude <= 90, "latitude must be between -90 and 90")
+	// Invalid owner
+	station.Id = "station-1"
+	station.Owner = common.Address{}
+	err = station.Validate()
+	assert.NotNil(t, err)
+	assert.Equal(t, ErrInvalidStation, err)
 
-// 	station.Longitude = -181
-// 	assert.False(t, station.Longitude >= -180 && station.Longitude <= 180, "longitude must be between -180 and 180")
-// }
+	// Invalid price per credit
+	station.Owner = owner
+	station.PricePerCredit = nil
+	err = station.Validate()
+	assert.NotNil(t, err)
+	assert.Equal(t, ErrInvalidStation, err)
 
-// func TestStation_UpdateState(t *testing.T) {
-// 	station := &Station{
-// 		Id:             "station1",
-// 		Owner:          common.HexToAddress("0x123"),
-// 		PricePerCredit: big.NewInt(100),
-// 		Latitude:       40.7128,
-// 		Longitude:      -74.0060,
-// 		CreatedAt:      time.Now().Unix(),
-// 		State:          "pending",
-// 	}
+	// Invalid latitude
+	station.PricePerCredit = pricePerCredit
+	station.Latitude = 0
+	err = station.Validate()
+	assert.NotNil(t, err)
+	assert.Equal(t, ErrInvalidStation, err)
 
-// 	station.State = "active"
-// 	assert.Equal(t, "active", station.State)
+	// Invalid longitude
+	station.Latitude = 40.7128
+	station.Longitude = 0
+	err = station.Validate()
+	assert.NotNil(t, err)
+	assert.Equal(t, ErrInvalidStation, err)
 
-// 	station.State = "inactive"
-// 	assert.Equal(t, "inactive", station.State)
-// }
+	// Invalid createdAt
+	station.Longitude = -74.0060
+	station.CreatedAt = 0
+	err = station.Validate()
+	assert.NotNil(t, err)
+	assert.Equal(t, ErrInvalidStation, err)
 
-// func TestStation_AddOrder(t *testing.T) {
-// 	station := &Station{
-// 		Id:             "station1",
-// 		Owner:          common.HexToAddress("0x123"),
-// 		PricePerCredit: big.NewInt(100),
-// 		Latitude:       40.7128,
-// 		Longitude:      -74.0060,
-// 		CreatedAt:      time.Now().Unix(),
-// 		Orders:         []*Order{},
-// 	}
-
-// 	order := &Order{
-// 		Id:        1,
-// 		StationId: "station1",
-// 	}
-
-// 	station.Orders = append(station.Orders, order)
-// 	assert.Equal(t, 1, len(station.Orders))
-// 	assert.Equal(t, order, station.Orders[0])
-// 	assert.Equal(t, "station1", station.Orders[0].StationId)
-// }
+	// Valid station
+	station.CreatedAt = createdAt
+	err = station.Validate()
+	assert.Nil(t, err)
+}
