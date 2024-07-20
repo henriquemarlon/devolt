@@ -1,13 +1,13 @@
 package auction_usecase
 
 import (
-	"testing"
-	"math/big"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/assert"
-	"github.com/rollmelette/rollmelette"
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/rollmelette/rollmelette"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"math/big"
+	"testing"
 )
 
 func TestCreateAuctionUseCase(t *testing.T) {

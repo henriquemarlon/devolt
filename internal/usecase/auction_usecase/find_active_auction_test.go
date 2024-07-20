@@ -13,7 +13,7 @@ import (
 func TestFindActiveAuctionUseCase(t *testing.T) {
 	mockRepo := new(repository.MockAuctionRepository)
 	findActiveAuction := NewFindActiveAuctionUseCase(mockRepo)
-	
+
 	mockBids := []*entity.Bid{
 		{
 			Id:        1,

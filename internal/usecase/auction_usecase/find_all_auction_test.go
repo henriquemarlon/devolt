@@ -1,2 +1,1 @@
 package auction_usecase
-
