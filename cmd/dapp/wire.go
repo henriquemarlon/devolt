@@ -9,7 +9,7 @@ import (
 	"github.com/devolthq/devolt/internal/infra/cartesi/handler/advance_handler"
 	"github.com/devolthq/devolt/internal/infra/cartesi/handler/inspect_handler"
 	"github.com/devolthq/devolt/internal/infra/cartesi/middleware"
-	"github.com/devolthq/devolt/internal/infra/database/sqlite"
+	"github.com/devolthq/devolt/internal/infra/repository/sqlite"
 	"github.com/google/wire"
 )
 
@@ -106,7 +106,7 @@ func NewInspectHandlers() (*InspectHandlers, error) {
 }
 
 type Middlewares struct {
-	RBACMiddleware *middleware.RBACMiddleware
+	RBAC *middleware.RBACMiddleware
 }
 
 type AdvanceHandlers struct {

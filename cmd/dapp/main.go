@@ -42,29 +42,29 @@ func main() {
 
 	//////////////////////// Advance //////////////////////////
 	dapp.HandleAdvance("createOrder", ah.OrderAdvanceHandlers.CreateOrderHandler)
-	dapp.HandleAdvance("updateOrder", ms.RBACMiddleware.Middleware(ah.OrderAdvanceHandlers.UpdateOrderHandler, "admin"))
-	dapp.HandleAdvance("deleteOrder", ms.RBACMiddleware.Middleware(ah.OrderAdvanceHandlers.DeleteOrderHandler, "admin"))
+	dapp.HandleAdvance("updateOrder", ms.RBAC.Middleware(ah.OrderAdvanceHandlers.UpdateOrderHandler, "admin"))
+	dapp.HandleAdvance("deleteOrder", ms.RBAC.Middleware(ah.OrderAdvanceHandlers.DeleteOrderHandler, "admin"))
 
-	dapp.HandleAdvance("createContract", ms.RBACMiddleware.Middleware(ah.ContractAdvanceHandlers.CreateContractHandler, "admin"))
-	dapp.HandleAdvance("updateContract", ms.RBACMiddleware.Middleware(ah.ContractAdvanceHandlers.UpdateContractHandler, "admin"))
-	dapp.HandleAdvance("deleteContract", ms.RBACMiddleware.Middleware(ah.ContractAdvanceHandlers.DeleteContractHandler, "admin"))
+	dapp.HandleAdvance("createContract", ms.RBAC.Middleware(ah.ContractAdvanceHandlers.CreateContractHandler, "admin"))
+	dapp.HandleAdvance("updateContract", ms.RBAC.Middleware(ah.ContractAdvanceHandlers.UpdateContractHandler, "admin"))
+	dapp.HandleAdvance("deleteContract", ms.RBAC.Middleware(ah.ContractAdvanceHandlers.DeleteContractHandler, "admin"))
 
 	dapp.HandleAdvance("createBid", ah.BidAdvanceHandlers.CreateBidHandler)
 
-	dapp.HandleAdvance("createStation", ms.RBACMiddleware.Middleware(ah.StationAdvanceHandlers.CreateStationHandler, "admin"))
-	dapp.HandleAdvance("updateStation", ms.RBACMiddleware.Middleware(ah.StationAdvanceHandlers.UpdateStationHandler, "admin"))
-	dapp.HandleAdvance("deleteStation", ms.RBACMiddleware.Middleware(ah.StationAdvanceHandlers.DeleteStationHandler, "admin"))
+	dapp.HandleAdvance("createStation", ms.RBAC.Middleware(ah.StationAdvanceHandlers.CreateStationHandler, "admin"))
+	dapp.HandleAdvance("updateStation", ms.RBAC.Middleware(ah.StationAdvanceHandlers.UpdateStationHandler, "admin"))
+	dapp.HandleAdvance("deleteStation", ms.RBAC.Middleware(ah.StationAdvanceHandlers.DeleteStationHandler, "admin"))
 	dapp.HandleAdvance("offSetStationConsumption", ah.StationAdvanceHandlers.OffSetStationConsumptionHandler)
 
-	dapp.HandleAdvance("createAuction", ms.RBACMiddleware.Middleware(ah.AuctionAdvanceHandlers.CreateAuctionHandler, "admin"))
-	dapp.HandleAdvance("updateAuction", ms.RBACMiddleware.Middleware(ah.AuctionAdvanceHandlers.UpdateAuctionHandler, "admin"))
-	dapp.HandleAdvance("finishAuction", ms.RBACMiddleware.Middleware(ah.AuctionAdvanceHandlers.FinishAuctionHandler, "admin"))
+	dapp.HandleAdvance("createAuction", ms.RBAC.Middleware(ah.AuctionAdvanceHandlers.CreateAuctionHandler, "admin"))
+	dapp.HandleAdvance("updateAuction", ms.RBAC.Middleware(ah.AuctionAdvanceHandlers.UpdateAuctionHandler, "admin"))
+	dapp.HandleAdvance("finishAuction", ms.RBAC.Middleware(ah.AuctionAdvanceHandlers.FinishAuctionHandler, "admin"))
 
 	dapp.HandleAdvance("withdraw", ah.UserAdvanceHandlers.WithdrawHandler)
-	dapp.HandleAdvance("createUser", ms.RBACMiddleware.Middleware(ah.UserAdvanceHandlers.CreateUserHandler, "admin"))
-	dapp.HandleAdvance("updateUser", ms.RBACMiddleware.Middleware(ah.UserAdvanceHandlers.UpdateUserHandler, "admin"))
-	dapp.HandleAdvance("withdrawApp", ms.RBACMiddleware.Middleware(ah.UserAdvanceHandlers.WithdrawAppHandler, "admin"))
-	dapp.HandleAdvance("deleteUser", ms.RBACMiddleware.Middleware(ah.UserAdvanceHandlers.DeleteUserByAddressHandler, "admin"))
+	dapp.HandleAdvance("createUser", ms.RBAC.Middleware(ah.UserAdvanceHandlers.CreateUserHandler, "admin"))
+	dapp.HandleAdvance("updateUser", ms.RBAC.Middleware(ah.UserAdvanceHandlers.UpdateUserHandler, "admin"))
+	dapp.HandleAdvance("withdrawApp", ms.RBAC.Middleware(ah.UserAdvanceHandlers.WithdrawAppHandler, "admin"))
+	dapp.HandleAdvance("deleteUser", ms.RBAC.Middleware(ah.UserAdvanceHandlers.DeleteUserByAddressHandler, "admin"))
 
 	//////////////////////// Inspect //////////////////////////
 	dapp.HandleInspect("order", ih.OrderInspectHandlers.FindAllOrdersHandler)
