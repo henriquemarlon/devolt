@@ -38,6 +38,9 @@ func NewCreateStationUseCase(stationRepository entity.StationRepository) *Create
 
 func (u *CreateStationUseCase) Execute(input *CreateStationInputDTO, metadata rollmelette.Metadata) (*CreateStationOutputDTO, error) {
 	station, err := entity.NewStation(input.Id, input.Owner, input.PricePerCredit, input.Latitude, input.Longitude, metadata.BlockTimestamp)
+	if err != nil {
+		return nil, err
+	}
 	res, err := u.StationRepository.CreateStation(station)
 	if err != nil {
 		return nil, err

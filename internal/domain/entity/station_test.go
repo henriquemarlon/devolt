@@ -47,7 +47,7 @@ func TestStation_Validate(t *testing.T) {
 	assert.Equal(t, ErrInvalidStation, err)
 
 	// Invalid owner
-	station.Id = "station-1"
+	station.Id = "station-3"
 	station.Owner = common.Address{}
 	err = station.Validate()
 	assert.NotNil(t, err)
