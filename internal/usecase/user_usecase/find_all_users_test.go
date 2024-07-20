@@ -1,59 +1,54 @@
 package user_usecase
 
 import (
+	"testing"
+	"time"
+
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestFindAllUsersUseCase(t *testing.T) {
-	mockUserRepo := new(repository.MockUserRepository)
-	findAllUsers := NewFindAllUsersUseCase(mockUserRepo)
+	mockRepo := new(repository.MockUserRepository)
+	findAllUsersUseCase := NewFindAllUsersUseCase(mockRepo)
+
+	createdAt := time.Now().Unix()
+	updatedAt := time.Now().Unix()
 
 	mockUsers := []*entity.User{
 		{
 			Id:        1,
 			Role:      "admin",
-			Address:   common.HexToAddress("0x1234567890abcdef"),
-			CreatedAt: 1600,
-			UpdatedAt: 1600,
+			Address:   common.HexToAddress("0x123"),
+			CreatedAt: createdAt,
+			UpdatedAt: updatedAt,
 		},
 		{
 			Id:        2,
 			Role:      "user",
-			Address:   common.HexToAddress("0xabcdef1234567890"),
-			CreatedAt: 1700,
-			UpdatedAt: 1700,
+			Address:   common.HexToAddress("0x456"),
+			CreatedAt: createdAt,
+			UpdatedAt: updatedAt,
 		},
 	}
 
-	mockUserRepo.On("FindAllUsers").Return(mockUsers, nil)
+	mockRepo.On("FindAllUsers").Return(mockUsers, nil)
 
-	output, err := findAllUsers.Execute()
+	output, err := findAllUsersUseCase.Execute()
+
 	assert.Nil(t, err)
 	assert.NotNil(t, output)
-	assert.Len(t, *output, 2)
+	assert.Equal(t, len(mockUsers), len(*output))
 
-	expectedOutput := FindAllUsersOutputDTO{
-		{
-			Id:        1,
-			Role:      "admin",
-			Address:   common.HexToAddress("0x1234567890abcdef"),
-			CreatedAt: 1600,
-			UpdatedAt: 1600,
-		},
-		{
-			Id:        2,
-			Role:      "user",
-			Address:   common.HexToAddress("0xabcdef1234567890"),
-			CreatedAt: 1700,
-			UpdatedAt: 1700,
-		},
+	for i, user := range mockUsers {
+		assert.Equal(t, user.Id, (*output)[i].Id)
+		assert.Equal(t, user.Role, (*output)[i].Role)
+		assert.Equal(t, user.Address, (*output)[i].Address)
+		assert.Equal(t, user.CreatedAt, (*output)[i].CreatedAt)
+		assert.Equal(t, user.UpdatedAt, (*output)[i].UpdatedAt)
 	}
 
-	assert.Equal(t, &expectedOutput, output)
-
-	mockUserRepo.AssertExpectations(t)
+	mockRepo.AssertExpectations(t)
 }

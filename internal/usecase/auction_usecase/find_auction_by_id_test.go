@@ -3,6 +3,7 @@ package auction_usecase
 import (
 	"math/big"
 	"testing"
+	"time"
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
@@ -12,60 +13,66 @@ import (
 
 func TestFindAuctionByIdUseCase(t *testing.T) {
 	mockRepo := new(repository.MockAuctionRepository)
-	findAuctionById := NewFindAuctionByIdUseCase(mockRepo)
+	findAuctionByIdUseCase := NewFindAuctionByIdUseCase(mockRepo)
+
+	credits := big.NewInt(1000)
+	priceLimit := big.NewInt(500)
+	expiresAt := time.Now().Add(24 * time.Hour).Unix()
+	createdAt := time.Now().Unix()
+	updatedAt := time.Now().Unix()
 
 	mockBids := []*entity.Bid{
 		{
 			Id:        1,
 			AuctionId: 1,
-			Bidder:    common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678"),
-			Credits:   big.NewInt(500),
-			Price:     big.NewInt(500),
-			State:     "active",
-			CreatedAt: 20242024,
-			UpdatedAt: 20242025,
+			Bidder:    common.HexToAddress("0x1"),
+			Credits:   big.NewInt(100),
+			Price:     big.NewInt(50),
+			State:     entity.BidStatePending,
+			CreatedAt: createdAt,
+			UpdatedAt: updatedAt,
 		},
 	}
 
 	mockAuction := &entity.Auction{
 		Id:         1,
-		Credits:    big.NewInt(1000),
-		PriceLimit: big.NewInt(1000),
-		State:      "active",
+		Credits:    credits,
+		PriceLimit: priceLimit,
+		State:      entity.AuctionOngoing,
 		Bids:       mockBids,
-		ExpiresAt:  20252024,
-		CreatedAt:  20242024,
-		UpdatedAt:  20242025,
+		ExpiresAt:  expiresAt,
+		CreatedAt:  createdAt,
+		UpdatedAt:  updatedAt,
 	}
 
 	mockRepo.On("FindAuctionById", uint(1)).Return(mockAuction, nil)
 
-	// Execute the use case
 	input := &FindAuctionByIdInputDTO{
 		Id: 1,
 	}
-	output, err := findAuctionById.Execute(input)
+
+	output, err := findAuctionByIdUseCase.Execute(input)
+
 	assert.Nil(t, err)
 	assert.NotNil(t, output)
-
 	assert.Equal(t, mockAuction.Id, output.Id)
 	assert.Equal(t, mockAuction.Credits, output.Credits)
 	assert.Equal(t, mockAuction.PriceLimit, output.PriceLimit)
-	assert.Equal(t, mockAuction.State, output.State)
+	assert.Equal(t, string(mockAuction.State), output.State)
 	assert.Equal(t, mockAuction.ExpiresAt, output.ExpiresAt)
 	assert.Equal(t, mockAuction.CreatedAt, output.CreatedAt)
 	assert.Equal(t, mockAuction.UpdatedAt, output.UpdatedAt)
 
-	assert.Len(t, output.Bids, len(mockBids))
-	for i, bid := range output.Bids {
-		assert.Equal(t, mockBids[i].Id, bid.Id)
-		assert.Equal(t, mockBids[i].AuctionId, bid.AuctionId)
-		assert.Equal(t, mockBids[i].Bidder, bid.Bidder)
-		assert.Equal(t, mockBids[i].Credits, bid.Credits)
-		assert.Equal(t, mockBids[i].Price, bid.Price)
-		assert.Equal(t, mockBids[i].State, bid.State)
-		assert.Equal(t, mockBids[i].CreatedAt, bid.CreatedAt)
-		assert.Equal(t, mockBids[i].UpdatedAt, bid.UpdatedAt)
+	assert.Equal(t, len(mockAuction.Bids), len(output.Bids))
+	for i, bid := range mockAuction.Bids {
+		assert.Equal(t, bid.Id, output.Bids[i].Id)
+		assert.Equal(t, bid.AuctionId, output.Bids[i].AuctionId)
+		assert.Equal(t, bid.Bidder, output.Bids[i].Bidder)
+		assert.Equal(t, bid.Credits, output.Bids[i].Credits)
+		assert.Equal(t, bid.Price, output.Bids[i].Price)
+		assert.Equal(t, string(bid.State), output.Bids[i].State)
+		assert.Equal(t, bid.CreatedAt, output.Bids[i].CreatedAt)
+		assert.Equal(t, bid.UpdatedAt, output.Bids[i].UpdatedAt)
 	}
 
 	mockRepo.AssertExpectations(t)

@@ -31,7 +31,7 @@ type Station struct {
 	Id             string         `json:"id" gorm:"primaryKey"`
 	Consumption    *big.Int       `json:"consumption" gorm:"type:bigint"`
 	Owner          common.Address `json:"owner" gorm:"not null"`
-	State          StationState   `json:"state" gorm:"type:text;default:'pending'"`
+	State          StationState   `json:"state" gorm:"type:text;not null"`
 	Orders         []*Order       `json:"orders" gorm:"foreignKey:StationId;constraint:OnDelete:CASCADE"`
 	PricePerCredit *big.Int       `json:"price_per_credit" gorm:"type:bigint;not null"`
 	Latitude       float64        `json:"latitude" gorm:"not null"`

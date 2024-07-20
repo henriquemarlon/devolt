@@ -1,45 +1,60 @@
 package user_usecase
 
 import (
+	"testing"
+	"time"
+
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestUpdateUserUseCase(t *testing.T) {
-	mockUserRepo := new(repository.MockUserRepository)
-	updateUser := NewUpdateUserUseCase(mockUserRepo)
+	mockRepo := new(repository.MockUserRepository)
+	updateUserUseCase := NewUpdateUserUseCase(mockRepo)
+
+	createdAt := time.Now().Unix()
+	updatedAt := time.Now().Unix()
 
 	mockUser := &entity.User{
 		Id:        1,
-		Role:      "admin",
-		Address:   common.HexToAddress("0x1234567890abcdef"),
-		UpdatedAt: 1600,
+		Role:      "user",
+		Address:   common.HexToAddress("0x123"),
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}
-
-	mockUserRepo.On("UpdateUser", mock.AnythingOfType("*entity.User")).Return(mockUser, nil)
 
 	input := &UpdateUserInputDTO{
-		Id:      1,
+		Id:      mockUser.Id,
 		Role:    "admin",
-		Address: common.HexToAddress("0x1234567890abcdef"),
+		Address: mockUser.Address,
 	}
 
-	metadata := rollmelette.Metadata{BlockTimestamp: 1600}
+	metadata := rollmelette.Metadata{
+		BlockTimestamp: updatedAt,
+	}
 
-	output, err := updateUser.Execute(input, metadata)
+	updatedUser := &entity.User{
+		Id:        mockUser.Id,
+		Role:      input.Role,
+		Address:   input.Address,
+		CreatedAt: mockUser.CreatedAt,
+		UpdatedAt: metadata.BlockTimestamp,
+	}
+
+	mockRepo.On("UpdateUser", mock.AnythingOfType("*entity.User")).Return(updatedUser, nil)
+
+	output, err := updateUserUseCase.Execute(input, metadata)
+
 	assert.Nil(t, err)
 	assert.NotNil(t, output)
-	assert.Equal(t, &UpdateUserOutputDTO{
-		Id:        1,
-		Role:      "admin",
-		Address:   common.HexToAddress("0x1234567890abcdef"),
-		UpdatedAt: 1600,
-	}, output)
+	assert.Equal(t, updatedUser.Id, output.Id)
+	assert.Equal(t, updatedUser.Role, output.Role)
+	assert.Equal(t, updatedUser.Address, output.Address)
+	assert.Equal(t, updatedUser.UpdatedAt, output.UpdatedAt)
 
-	mockUserRepo.AssertExpectations(t)
+	mockRepo.AssertExpectations(t)
 }

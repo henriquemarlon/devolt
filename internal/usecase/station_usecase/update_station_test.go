@@ -13,47 +13,53 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestCreateStationUseCase(t *testing.T) {
+func TestUpdateStationUseCase(t *testing.T) {
 	mockRepo := new(repository.MockStationRepository)
-	createStationUseCase := NewCreateStationUseCase(mockRepo)
+	updateStationUseCase := NewUpdateStationUseCase(mockRepo)
 
 	createdAt := time.Now().Unix()
-
-	input := &CreateStationInputDTO{
-		Id:             "station_1",
-		Owner:          common.HexToAddress("0x123"),
-		PricePerCredit: big.NewInt(100),
-		Latitude:       40.7128,
-		Longitude:      -74.0060,
-	}
+	updatedAt := time.Now().Unix()
 
 	mockStation := &entity.Station{
 		Id:             "station_1",
-		Owner:          input.Owner,
-		PricePerCredit: input.PricePerCredit,
+		Consumption:    big.NewInt(500),
+		Owner:          common.HexToAddress("0x123"),
+		PricePerCredit: big.NewInt(10),
 		State:          entity.StationStateActive,
-		Latitude:       input.Latitude,
-		Longitude:      input.Longitude,
+		Latitude:       40.7128,
+		Longitude:      -74.0060,
 		CreatedAt:      createdAt,
+		UpdatedAt:      updatedAt,
+	}
+
+	input := &UpdateStationInputDTO{
+		Id:             mockStation.Id,
+		Consumption:    mockStation.Consumption,
+		Owner:          mockStation.Owner,
+		PricePerCredit: mockStation.PricePerCredit,
+		State:          string(mockStation.State),
+		Latitude:       mockStation.Latitude,
+		Longitude:      mockStation.Longitude,
 	}
 
 	metadata := rollmelette.Metadata{
-		BlockTimestamp: createdAt,
+		BlockTimestamp: updatedAt,
 	}
 
-	mockRepo.On("CreateStation", mock.AnythingOfType("*entity.Station")).Return(mockStation, nil)
+	mockRepo.On("UpdateStation", mock.AnythingOfType("*entity.Station")).Return(mockStation, nil)
 
-	output, err := createStationUseCase.Execute(input, metadata)
+	output, err := updateStationUseCase.Execute(input, metadata)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, output)
 	assert.Equal(t, mockStation.Id, output.Id)
+	assert.Equal(t, mockStation.Consumption, output.Consumption)
 	assert.Equal(t, mockStation.Owner, output.Owner)
 	assert.Equal(t, mockStation.PricePerCredit, output.PricePerCredit)
 	assert.Equal(t, string(mockStation.State), output.State)
 	assert.Equal(t, mockStation.Latitude, output.Latitude)
 	assert.Equal(t, mockStation.Longitude, output.Longitude)
-	assert.Equal(t, mockStation.CreatedAt, output.CreatedAt)
+	assert.Equal(t, mockStation.UpdatedAt, output.UpdatedAt)
 
 	mockRepo.AssertExpectations(t)
 }

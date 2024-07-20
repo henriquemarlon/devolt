@@ -63,10 +63,23 @@ func TestAuctionStateTransition(t *testing.T) {
 
 func TestAuctionExpiration(t *testing.T) {
 	createdAt := time.Now().Unix()
-	expiresAt := time.Now().Add(-24 * time.Hour).Unix() // Already expired
+	expiresAt := createdAt + 3600 // 1 hour later
 
-	auction, _ := NewAuction(big.NewInt(1000), big.NewInt(500), expiresAt, createdAt)
+	auction := &Auction{
+		Id:         1,
+		Credits:    big.NewInt(1000),
+		PriceLimit: big.NewInt(500),
+		State:      AuctionOngoing,
+		ExpiresAt:  expiresAt,
+		CreatedAt:  createdAt,
+		UpdatedAt:  createdAt,
+	}
+
 	err := auction.Validate()
+	assert.Nil(t, err)
+
+	auction.ExpiresAt = createdAt - 3600 // 1 hour before creation time
+	err = auction.Validate()
 	assert.NotNil(t, err)
 	assert.Equal(t, ErrInvalidAuction, err)
 }

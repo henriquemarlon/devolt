@@ -46,4 +46,3 @@ func TestContract_Validate(t *testing.T) {
 	err = contract.Validate()
 	assert.Nil(t, err)
 }
-

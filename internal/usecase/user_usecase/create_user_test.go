@@ -2,6 +2,7 @@ package user_usecase
 
 import (
 	"testing"
+	"time"
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
@@ -12,34 +13,37 @@ import (
 )
 
 func TestCreateUserUseCase(t *testing.T) {
-	mockUserRepo := new(repository.MockUserRepository)
-	createUser := NewCreateUserUseCase(mockUserRepo)
+	mockRepo := new(repository.MockUserRepository)
+	createUserUseCase := NewCreateUserUseCase(mockRepo)
+
+	createdAt := time.Now().Unix()
+
+	input := &CreateUserInputDTO{
+		Role:    "admin",
+		Address: common.HexToAddress("0x123"),
+	}
 
 	mockUser := &entity.User{
 		Id:        1,
 		Role:      "admin",
-		Address:   common.HexToAddress("0x1234567890abcdef"),
-		CreatedAt: 1600,
+		Address:   common.HexToAddress("0x123"),
+		CreatedAt: createdAt,
 	}
 
-	mockUserRepo.On("CreateUser", mock.AnythingOfType("*entity.User")).Return(mockUser, nil)
-
-	input := &CreateUserInputDTO{
-		Role:    "admin",
-		Address: common.HexToAddress("0x1234567890abcdef"),
+	metadata := rollmelette.Metadata{
+		BlockTimestamp: createdAt,
 	}
 
-	metadata := rollmelette.Metadata{BlockTimestamp: 1600}
+	mockRepo.On("CreateUser", mock.AnythingOfType("*entity.User")).Return(mockUser, nil)
 
-	output, err := createUser.Execute(input, metadata)
+	output, err := createUserUseCase.Execute(input, metadata)
+
 	assert.Nil(t, err)
 	assert.NotNil(t, output)
-	assert.Equal(t, &CreateUserOutputDTO{
-		Id:        1,
-		Role:      "admin",
-		Address:   common.HexToAddress("0x1234567890abcdef"),
-		CreatedAt: 1600,
-	}, output)
+	assert.Equal(t, mockUser.Id, output.Id)
+	assert.Equal(t, mockUser.Role, output.Role)
+	assert.Equal(t, mockUser.Address, output.Address)
+	assert.Equal(t, mockUser.CreatedAt, output.CreatedAt)
 
-	mockUserRepo.AssertExpectations(t)
+	mockRepo.AssertExpectations(t)
 }

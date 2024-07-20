@@ -37,7 +37,7 @@ type Bid struct {
 	Bidder    common.Address `json:"bidder" gorm:"not null"`
 	Credits   *big.Int       `json:"credits" gorm:"type:bigint;not null"`
 	Price     *big.Int       `json:"price" gorm:"type:bigint;not null"`
-	State     BidState       `json:"state" gorm:"not null"`
+	State     BidState       `json:"state" gorm:"type:text;not null"`
 	CreatedAt int64          `json:"created_at" gorm:"not null"`
 	UpdatedAt int64          `json:"updated_at" gorm:"default:0"`
 }

@@ -1,41 +1,45 @@
 package user_usecase
 
 import (
+	"testing"
+	"time"
+
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestFindUserByAddressUseCase(t *testing.T) {
-	mockUserRepo := new(repository.MockUserRepository)
-	findUserByAddress := NewFindUserByAddressUseCase(mockUserRepo)
+	mockRepo := new(repository.MockUserRepository)
+	findUserByAddressUseCase := NewFindUserByAddressUseCase(mockRepo)
+
+	createdAt := time.Now().Unix()
+	updatedAt := time.Now().Unix()
 
 	mockUser := &entity.User{
 		Id:        1,
 		Role:      "admin",
-		Address:   common.HexToAddress("0x1234567890abcdef"),
-		CreatedAt: 1600,
-		UpdatedAt: 1600,
+		Address:   common.HexToAddress("0x123"),
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}
-
-	mockUserRepo.On("FindUserByAddress", common.HexToAddress("0x1234567890abcdef")).Return(mockUser, nil)
 
 	input := &FindUserByAddressInputDTO{
-		Address: common.HexToAddress("0x1234567890abcdef"),
+		Address: common.HexToAddress("0x123"),
 	}
 
-	output, err := findUserByAddress.Execute(input)
+	mockRepo.On("FindUserByAddress", input.Address).Return(mockUser, nil)
+
+	output, err := findUserByAddressUseCase.Execute(input)
+
 	assert.Nil(t, err)
 	assert.NotNil(t, output)
-	assert.Equal(t, &FindUserOutputDTO{
-		Id:        1,
-		Role:      "admin",
-		Address:   common.HexToAddress("0x1234567890abcdef"),
-		CreatedAt: 1600,
-		UpdatedAt: 1600,
-	}, output)
+	assert.Equal(t, mockUser.Id, output.Id)
+	assert.Equal(t, mockUser.Role, output.Role)
+	assert.Equal(t, mockUser.Address, output.Address)
+	assert.Equal(t, mockUser.CreatedAt, output.CreatedAt)
+	assert.Equal(t, mockUser.UpdatedAt, output.UpdatedAt)
 
-	mockUserRepo.AssertExpectations(t)
+	mockRepo.AssertExpectations(t)
 }

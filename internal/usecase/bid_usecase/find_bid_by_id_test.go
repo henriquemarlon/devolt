@@ -7,42 +7,45 @@ import (
 	"github.com/stretchr/testify/assert"
 	"math/big"
 	"testing"
+	"time"
 )
 
 func TestFindBidByIdUseCase(t *testing.T) {
-	mockBidRepo := new(repository.MockBidRepository)
-	findBidById := NewFindBidByIdUseCase(mockBidRepo)
+	mockRepo := new(repository.MockBidRepository)
+	findBidByIdUseCase := NewFindBidByIdUseCase(mockRepo)
+
+	createdAt := time.Now().Unix()
+	updatedAt := time.Now().Unix()
 
 	mockBid := &entity.Bid{
 		Id:        1,
 		AuctionId: 1,
-		Bidder:    common.HexToAddress("0x0"),
-		Credits:   big.NewInt(500),
-		Price:     big.NewInt(1000),
-		State:     "pending",
-		CreatedAt: 1600,
-		UpdatedAt: 1600,
+		Bidder:    common.HexToAddress("0x1"),
+		Credits:   big.NewInt(100),
+		Price:     big.NewInt(50),
+		State:     entity.BidStatePending,
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}
 
-	mockBidRepo.On("FindBidById", uint(1)).Return(mockBid, nil)
+	mockRepo.On("FindBidById", uint(1)).Return(mockBid, nil)
 
 	input := &FindBidByIdInputDTO{
 		Id: 1,
 	}
 
-	output, err := findBidById.Execute(input)
+	output, err := findBidByIdUseCase.Execute(input)
+
 	assert.Nil(t, err)
 	assert.NotNil(t, output)
-	assert.Equal(t, &FindBidOutputDTO{
-		Id:        1,
-		AuctionId: 1,
-		Bidder:    common.HexToAddress("0x0"),
-		Credits:   big.NewInt(500),
-		Price:     big.NewInt(1000),
-		State:     "pending",
-		CreatedAt: 1600,
-		UpdatedAt: 1600,
-	}, output)
+	assert.Equal(t, mockBid.Id, output.Id)
+	assert.Equal(t, mockBid.AuctionId, output.AuctionId)
+	assert.Equal(t, mockBid.Bidder, output.Bidder)
+	assert.Equal(t, mockBid.Credits, output.Credits)
+	assert.Equal(t, mockBid.Price, output.Price)
+	assert.Equal(t, string(mockBid.State), output.State)
+	assert.Equal(t, mockBid.CreatedAt, output.CreatedAt)
+	assert.Equal(t, mockBid.UpdatedAt, output.UpdatedAt)
 
-	mockBidRepo.AssertExpectations(t)
+	mockRepo.AssertExpectations(t)
 }

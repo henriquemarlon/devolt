@@ -32,19 +32,19 @@ type Auction struct {
 	Id         uint         `json:"id" gorm:"primaryKey"`
 	Credits    *big.Int     `json:"credits" gorm:"type:bigint;not null"`
 	PriceLimit *big.Int     `json:"price_limit" gorm:"type:bigint;not null"`
-	State      AuctionState `json:"state" gorm:"type:text;"`
+	State      AuctionState `json:"state" gorm:"type:text;not null"`
 	Bids       []*Bid       `json:"bids" gorm:"foreignKey:AuctionId;constraint:OnDelete:CASCADE"`
 	ExpiresAt  int64        `json:"expires_at" gorm:"not null"`
 	CreatedAt  int64        `json:"created_at" gorm:"not null"`
 	UpdatedAt  int64        `json:"updated_at" gorm:"default:0"`
 }
 
-func NewAuction(credits *big.Int, priceLimit *big.Int, expires_at int64, createdAt int64) (*Auction, error) {
+func NewAuction(credits *big.Int, priceLimit *big.Int, expiresAt int64, createdAt int64) (*Auction, error) {
 	auction := &Auction{
 		Credits:    credits,
 		PriceLimit: priceLimit,
 		State:      AuctionOngoing,
-		ExpiresAt:  expires_at,
+		ExpiresAt:  expiresAt,
 		CreatedAt:  createdAt,
 	}
 	if err := auction.Validate(); err != nil {
@@ -54,7 +54,10 @@ func NewAuction(credits *big.Int, priceLimit *big.Int, expires_at int64, created
 }
 
 func (a *Auction) Validate() error {
-	if a.ExpiresAt < a.CreatedAt || a.PriceLimit.Cmp(big.NewInt(0)) <= 0 {
+	if a.Credits == nil || a.PriceLimit == nil {
+		return ErrInvalidAuction
+	}
+	if a.ExpiresAt <= a.CreatedAt {
 		return ErrInvalidAuction
 	}
 	return nil

@@ -1,45 +1,52 @@
 package contract_usecase
 
 import (
+	"testing"
+	"time"
+
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestUpdateContractUseCase(t *testing.T) {
-	mockContractRepo := new(repository.MockContractRepository)
-	updateContract := NewUpdateContractUseCase(mockContractRepo)
+	mockRepo := new(repository.MockContractRepository)
+	updateContractUseCase := NewUpdateContractUseCase(mockRepo)
+
+	createdAt := time.Now().Unix()
+	updatedAt := time.Now().Unix()
 
 	mockContract := &entity.Contract{
 		Id:        1,
-		Symbol:    "UPDATED",
-		Address:   common.HexToAddress("0x1234567890abcdef"),
-		UpdatedAt: 1600,
+		Symbol:    "VOLT",
+		Address:   common.HexToAddress("0x123"),
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}
-
-	mockContractRepo.On("UpdateContract", mock.AnythingOfType("*entity.Contract")).Return(mockContract, nil)
 
 	input := &UpdateContractInputDTO{
-		Id:      1,
-		Symbol:  "UPDATED",
-		Address: common.HexToAddress("0x1234567890abcdef"),
+		Id:      mockContract.Id,
+		Address: common.HexToAddress("0x123"),
+		Symbol:  "VOLT",
 	}
 
-	metadata := rollmelette.Metadata{BlockTimestamp: 1600}
+	metadata := rollmelette.Metadata{
+		BlockTimestamp: updatedAt,
+	}
 
-	output, err := updateContract.Execute(input, metadata)
+	mockRepo.On("UpdateContract", mock.AnythingOfType("*entity.Contract")).Return(mockContract, nil)
+
+	output, err := updateContractUseCase.Execute(input, metadata)
+
 	assert.Nil(t, err)
 	assert.NotNil(t, output)
-	assert.Equal(t, &UpdateContractOutputDTO{
-		Id:        1,
-		Symbol:    "UPDATED",
-		Address:   common.HexToAddress("0x1234567890abcdef"),
-		UpdatedAt: 1600,
-	}, output)
+	assert.Equal(t, mockContract.Id, output.Id)
+	assert.Equal(t, mockContract.Symbol, output.Symbol)
+	assert.Equal(t, mockContract.Address, output.Address)
+	assert.Equal(t, mockContract.UpdatedAt, output.UpdatedAt)
 
-	mockContractRepo.AssertExpectations(t)
+	mockRepo.AssertExpectations(t)
 }

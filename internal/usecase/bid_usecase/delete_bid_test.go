@@ -7,17 +7,17 @@ import (
 )
 
 func TestDeleteBidUseCase(t *testing.T) {
-	mockBidRepo := new(repository.MockBidRepository)
-	deleteBid := NewDeleteBidUseCase(mockBidRepo)
-
-	mockBidRepo.On("DeleteBid", uint(1)).Return(nil)
+	mockRepo := new(repository.MockBidRepository)
+	deleteBidUseCase := NewDeleteBidUseCase(mockRepo)
 
 	input := &DeleteBidInputDTO{
 		Id: 1,
 	}
 
-	err := deleteBid.Execute(input)
-	assert.Nil(t, err)
+	mockRepo.On("DeleteBid", input.Id).Return(nil)
 
-	mockBidRepo.AssertExpectations(t)
+	err := deleteBidUseCase.Execute(input)
+
+	assert.Nil(t, err)
+	mockRepo.AssertExpectations(t)
 }

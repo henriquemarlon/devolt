@@ -8,17 +8,17 @@ import (
 )
 
 func TestDeleteUserByAddressUseCase(t *testing.T) {
-	mockUserRepo := new(repository.MockUserRepository)
-	deleteUser := NewDeleteUserByAddressUseCase(mockUserRepo)
-
-	mockUserRepo.On("DeleteUserByAddress", common.HexToAddress("0x1234567890abcdef")).Return(nil)
+	mockRepo := new(repository.MockUserRepository)
+	deleteUserByAddressUseCase := NewDeleteUserByAddressUseCase(mockRepo)
 
 	input := &DeleteUserByAddressInputDTO{
-		Address: common.HexToAddress("0x1234567890abcdef"),
+		Address: common.HexToAddress("0x123"),
 	}
 
-	err := deleteUser.Execute(input)
-	assert.Nil(t, err)
+	mockRepo.On("DeleteUserByAddress", input.Address).Return(nil)
 
-	mockUserRepo.AssertExpectations(t)
+	err := deleteUserByAddressUseCase.Execute(input)
+
+	assert.Nil(t, err)
+	mockRepo.AssertExpectations(t)
 }
