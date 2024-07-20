@@ -24,11 +24,10 @@ type Auction struct {
 	UpdatedAt  int64    `json:"updated_at" gorm:"default:0"`
 }
 
-func NewAuction(credits *big.Int, priceLimit *big.Int, state string, expires_at int64, createdAt int64) *Auction {
+func NewAuction(credits *big.Int, priceLimit *big.Int, expires_at int64, createdAt int64) *Auction {
 	return &Auction{
 		Credits:    credits,
 		PriceLimit: priceLimit,
-		State:      state,
 		ExpiresAt:  expires_at,
 		CreatedAt:  createdAt,
 	}

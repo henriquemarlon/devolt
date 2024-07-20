@@ -12,7 +12,7 @@ import (
 	"github.com/devolthq/devolt/internal/infra/cartesi/handler/advance_handler"
 	"github.com/devolthq/devolt/internal/infra/cartesi/handler/inspect_handler"
 	"github.com/devolthq/devolt/internal/infra/cartesi/middleware"
-	"github.com/devolthq/devolt/internal/infra/database/sqlite"
+	"github.com/devolthq/devolt/internal/infra/repository/sqlite"
 	"github.com/google/wire"
 )
 
@@ -26,7 +26,7 @@ func NewMiddlewares() (*Middlewares, error) {
 	userRepositorySqlite := sqlite.NewUserRepositorySqlite(db)
 	rbacMiddleware := middleware.NewRBACMiddleware(userRepositorySqlite)
 	middlewares := &Middlewares{
-		RBACMiddleware: rbacMiddleware,
+		RBAC: rbacMiddleware,
 	}
 	return middlewares, nil
 }
@@ -108,7 +108,7 @@ var setInspectHandlers = wire.NewSet(inspect_handler.NewBidInspectHandlers, insp
 var setMiddleware = wire.NewSet(middleware.NewRBACMiddleware)
 
 type Middlewares struct {
-	RBACMiddleware *middleware.RBACMiddleware
+	RBAC *middleware.RBACMiddleware
 }
 
 type AdvanceHandlers struct {

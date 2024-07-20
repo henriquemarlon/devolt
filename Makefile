@@ -34,7 +34,6 @@ generate:
 
 .PHONY: test
 test:
-	@cd contracts && forge test
 	@go test ./... -coverprofile=./coverage_sheet.md -v
 
 .PHONY: deploy

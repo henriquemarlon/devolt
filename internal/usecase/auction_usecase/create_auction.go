@@ -10,7 +10,6 @@ import (
 type CreateAuctionInputDTO struct {
 	Credits    *big.Int `json:"credits"`
 	PriceLimit *big.Int `json:"price_limit"`
-	State      string   `json:"state"`
 	ExpiresAt  int64    `json:"expires_at"`
 	CreatedAt  int64    `json:"created_at"`
 }
@@ -33,7 +32,7 @@ func NewCreateAuctionUseCase(deviceRepository entity.AuctionRepository) *CreateA
 }
 
 func (c *CreateAuctionUseCase) Execute(input *CreateAuctionInputDTO, metadata rollmelette.Metadata) (*CreateAuctionOutputDTO, error) {
-	auction := entity.NewAuction(input.Credits, input.PriceLimit, "ongoing", input.ExpiresAt, metadata.BlockTimestamp)
+	auction := entity.NewAuction(input.Credits, input.PriceLimit, input.ExpiresAt, metadata.BlockTimestamp)
 	res, err := c.DeviceRepository.CreateAuction(auction)
 	if err != nil {
 		return nil, err
