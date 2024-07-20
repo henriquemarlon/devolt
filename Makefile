@@ -44,7 +44,7 @@ deploy:
 
 .PHONY: coverage
 coverage: test
-	@go tool cover -html=./test/coverage_sheet.md
+	@go tool cover -html=./coverage_sheet.md
 
 .PHONY: docs
 docs:
