@@ -1,44 +1,49 @@
 package contract_usecase
 
 import (
+	"testing"
+	"time"
+
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestCreateContractUseCase(t *testing.T) {
-	mockContractRepo := new(repository.MockContractRepository)
-	createContract := NewCreateContractUseCase(mockContractRepo)
+	mockRepo := new(repository.MockContractRepository)
+	createContractUseCase := NewCreateContractUseCase(mockRepo)
+
+	input := &CreateContractInputDTO{
+		Symbol:  "VOLT",
+		Address: common.HexToAddress("0x123"),
+	}
+
+	createdAt := time.Now().Unix()
 
 	mockContract := &entity.Contract{
 		Id:        1,
-		Symbol:    "TEST",
-		Address:   common.HexToAddress("0x1234567890abcdef"),
-		CreatedAt: 1600,
+		Symbol:    input.Symbol,
+		Address:   input.Address,
+		CreatedAt: createdAt,
 	}
 
-	mockContractRepo.On("CreateContract", mock.AnythingOfType("*entity.Contract")).Return(mockContract, nil)
+	mockRepo.On("CreateContract", mock.AnythingOfType("*entity.Contract")).Return(mockContract, nil)
 
-	input := &CreateContractInputDTO{
-		Symbol:  "TEST",
-		Address: common.HexToAddress("0x1234567890abcdef"),
+	metadata := rollmelette.Metadata{
+		BlockTimestamp: createdAt,
 	}
 
-	metadata := rollmelette.Metadata{BlockTimestamp: 1600}
+	output, err := createContractUseCase.Execute(input, metadata)
 
-	output, err := createContract.Execute(input, metadata)
 	assert.Nil(t, err)
 	assert.NotNil(t, output)
-	assert.Equal(t, &CreateContractOutputDTO{
-		Id:        1,
-		Symbol:    "TEST",
-		Address:   common.HexToAddress("0x1234567890abcdef"),
-		CreatedAt: 1600,
-	}, output)
+	assert.Equal(t, mockContract.Id, output.Id)
+	assert.Equal(t, mockContract.Symbol, output.Symbol)
+	assert.Equal(t, mockContract.Address, output.Address)
+	assert.Equal(t, mockContract.CreatedAt, output.CreatedAt)
 
-	mockContractRepo.AssertExpectations(t)
+	mockRepo.AssertExpectations(t)
 }

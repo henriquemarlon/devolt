@@ -40,7 +40,7 @@ func (c *FindAllStationsUseCase) Execute() ([]*FindStationOutputDTO, error) {
 			Consumption:    station.Consumption,
 			Owner:          station.Owner,
 			PricePerCredit: station.PricePerCredit,
-			State:          station.State,
+			State:          string(station.State),
 			Orders:         orders,
 			Latitude:       station.Latitude,
 			Longitude:      station.Longitude,

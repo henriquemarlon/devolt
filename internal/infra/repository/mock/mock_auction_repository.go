@@ -1,8 +1,6 @@
 package mock
 
 import (
-	"fmt"
-
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/stretchr/testify/mock"
 )
@@ -53,8 +51,5 @@ func (m *MockAuctionRepository) UpdateAuction(input *entity.Auction) (*entity.Au
 
 func (m *MockAuctionRepository) DeleteAuction(id uint) error {
 	args := m.Called(id)
-	if !args.Bool(0) {
-		return fmt.Errorf("auction with ID %d does not exist", id)
-	}
-	return args.Error(1)
+	return args.Error(0)
 }

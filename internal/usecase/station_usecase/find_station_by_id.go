@@ -40,7 +40,7 @@ func (u *FindStationByIdUseCase) Execute(input *FindStationByIdInputDTO) (*FindS
 		Consumption:    res.Consumption,
 		Owner:          res.Owner,
 		PricePerCredit: res.PricePerCredit,
-		State:          res.State,
+		State:          string(res.State),
 		Orders:         orders,
 		Latitude:       res.Latitude,
 		Longitude:      res.Longitude,

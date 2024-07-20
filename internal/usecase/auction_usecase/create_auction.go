@@ -32,7 +32,10 @@ func NewCreateAuctionUseCase(deviceRepository entity.AuctionRepository) *CreateA
 }
 
 func (c *CreateAuctionUseCase) Execute(input *CreateAuctionInputDTO, metadata rollmelette.Metadata) (*CreateAuctionOutputDTO, error) {
-	auction := entity.NewAuction(input.Credits, input.PriceLimit, input.ExpiresAt, metadata.BlockTimestamp)
+	auction, err := entity.NewAuction(input.Credits, input.PriceLimit, input.ExpiresAt, metadata.BlockTimestamp)
+	if err != nil {
+		return nil, err
+	}
 	res, err := c.DeviceRepository.CreateAuction(auction)
 	if err != nil {
 		return nil, err
@@ -41,7 +44,7 @@ func (c *CreateAuctionUseCase) Execute(input *CreateAuctionInputDTO, metadata ro
 		Id:         res.Id,
 		Credits:    res.Credits,
 		PriceLimit: res.PriceLimit,
-		State:      res.State,
+		State:      string(res.State),
 		ExpiresAt:  res.ExpiresAt,
 		CreatedAt:  res.CreatedAt,
 	}, nil

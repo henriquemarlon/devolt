@@ -3,44 +3,48 @@ package order_usecase
 import (
 	"math/big"
 	"testing"
+	"time"
+
 	"github.com/devolthq/devolt/internal/domain/entity"
+	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
-	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
 )
 
 func TestFindOrderByIdUseCase(t *testing.T) {
-	mockOrderRepo := new(repository.MockOrderRepository)
-	findOrderById := NewFindOrderByIdUseCase(mockOrderRepo)
+	mockRepo := new(repository.MockOrderRepository)
+	findOrderByIdUseCase := NewFindOrderByIdUseCase(mockRepo)
+
+	createdAt := time.Now().Unix()
+	updatedAt := time.Now().Unix()
 
 	mockOrder := &entity.Order{
 		Id:             1,
-		Buyer:          common.HexToAddress("0xabcdef"),
+		Buyer:          common.HexToAddress("0x123"),
 		Credits:        big.NewInt(100),
-		StationId:      "station1",
+		StationId:      "station_1",
 		PricePerCredit: big.NewInt(10),
-		CreatedAt:      1600,
-		UpdatedAt:      1600,
+		CreatedAt:      createdAt,
+		UpdatedAt:      updatedAt,
 	}
 
-	mockOrderRepo.On("FindOrderById", uint(1)).Return(mockOrder, nil)
+	mockRepo.On("FindOrderById", uint(1)).Return(mockOrder, nil)
 
 	input := &FindOrderByIdInputDTO{
 		Id: 1,
 	}
 
-	output, err := findOrderById.Execute(input)
+	output, err := findOrderByIdUseCase.Execute(input)
+
 	assert.Nil(t, err)
 	assert.NotNil(t, output)
-	assert.Equal(t, &FindOrderOutputDTO{
-		Id:             1,
-		Buyer:          common.HexToAddress("0xabcdef"),
-		Credits:        big.NewInt(100),
-		StationId:      "station1",
-		PricePerCredit: big.NewInt(10),
-		CreatedAt:      1600,
-		UpdatedAt:      1600,
-	}, output)
+	assert.Equal(t, mockOrder.Id, output.Id)
+	assert.Equal(t, mockOrder.Buyer, output.Buyer)
+	assert.Equal(t, mockOrder.Credits, output.Credits)
+	assert.Equal(t, mockOrder.StationId, output.StationId)
+	assert.Equal(t, mockOrder.PricePerCredit, output.PricePerCredit)
+	assert.Equal(t, mockOrder.CreatedAt, output.CreatedAt)
+	assert.Equal(t, mockOrder.UpdatedAt, output.UpdatedAt)
 
-	mockOrderRepo.AssertExpectations(t)
+	mockRepo.AssertExpectations(t)
 }

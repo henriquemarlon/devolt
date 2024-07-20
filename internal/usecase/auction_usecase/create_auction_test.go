@@ -8,39 +8,50 @@ import (
 	"github.com/stretchr/testify/mock"
 	"math/big"
 	"testing"
+	"time"
 )
 
 func TestCreateAuctionUseCase(t *testing.T) {
 	mockRepo := new(repository.MockAuctionRepository)
-	createAuction := NewCreateAuctionUseCase(mockRepo)
+	createAuctionUseCase := NewCreateAuctionUseCase(mockRepo)
+
+	credits := big.NewInt(1000)
+	priceLimit := big.NewInt(500)
+	expiresAt := time.Now().Add(24 * time.Hour).Unix()
+	createdAt := time.Now().Unix()
 
 	mockAuction := &entity.Auction{
-		Credits:    big.NewInt(1000),
-		PriceLimit: big.NewInt(1000),
-		CreatedAt:  20242024,
-		ExpiresAt:  20252024,
-	}
-
-	input := &CreateAuctionInputDTO{
-		Credits:    big.NewInt(1000),
-		PriceLimit: big.NewInt(1000),
-		CreatedAt:  20242024,
-		ExpiresAt:  20252024,
+		Id:         1,
+		Credits:    credits,
+		PriceLimit: priceLimit,
+		State:      entity.AuctionOngoing,
+		ExpiresAt:  expiresAt,
+		CreatedAt:  createdAt,
 	}
 
 	mockRepo.On("CreateAuction", mock.AnythingOfType("*entity.Auction")).Return(mockAuction, nil)
 
-	output, err := createAuction.Execute(input, rollmelette.Metadata{BlockTimestamp: 1000})
-	if err != nil {
-		t.Errorf("unexpected error: %v", err)
+	input := &CreateAuctionInputDTO{
+		Credits:    credits,
+		PriceLimit: priceLimit,
+		ExpiresAt:  expiresAt,
+		CreatedAt:  createdAt,
 	}
+
+	metadata := rollmelette.Metadata{
+		BlockTimestamp: createdAt,
+	}
+
+	output, err := createAuctionUseCase.Execute(input, metadata)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, output)
-	assert.Equal(t, input.Credits, output.Credits)
-	assert.Equal(t, input.PriceLimit, output.PriceLimit)
-	assert.Equal(t, input.CreatedAt, output.CreatedAt)
-	assert.Equal(t, input.ExpiresAt, output.ExpiresAt)
+	assert.Equal(t, mockAuction.Id, output.Id)
+	assert.Equal(t, mockAuction.Credits, output.Credits)
+	assert.Equal(t, mockAuction.PriceLimit, output.PriceLimit)
+	assert.Equal(t, string(mockAuction.State), output.State)
+	assert.Equal(t, mockAuction.ExpiresAt, output.ExpiresAt)
+	assert.Equal(t, mockAuction.CreatedAt, output.CreatedAt)
 
 	mockRepo.AssertExpectations(t)
 }

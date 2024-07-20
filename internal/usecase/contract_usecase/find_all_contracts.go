@@ -20,15 +20,15 @@ func (s *FindAllContractsUsecase) Execute() (FindAllContractsOutputDTO, error) {
 		return nil, err
 	}
 	var output FindAllContractsOutputDTO
-    for _, contract := range res {
-        dto := &FindContractOutputDTO{
-            Id:        contract.Id,
-            Symbol:    contract.Symbol,
-            Address:   contract.Address,
-            CreatedAt: contract.CreatedAt,
-            UpdatedAt: contract.UpdatedAt,
-        }
-        output = append(output, dto)
-    }
-    return output, nil
+	for _, contract := range res {
+		dto := &FindContractOutputDTO{
+			Id:        contract.Id,
+			Symbol:    contract.Symbol,
+			Address:   contract.Address,
+			CreatedAt: contract.CreatedAt,
+			UpdatedAt: contract.UpdatedAt,
+		}
+		output = append(output, dto)
+	}
+	return output, nil
 }

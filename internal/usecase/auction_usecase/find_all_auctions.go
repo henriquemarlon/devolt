@@ -29,7 +29,7 @@ func (f *FindAllAuctionsUseCase) Execute() (*FindAllAuctionsOutputDTO, error) {
 				Bidder:    bid.Bidder,
 				Credits:   bid.Credits,
 				Price:     bid.Price,
-				State:     bid.State,
+				State:     string(bid.State),
 				CreatedAt: bid.CreatedAt,
 				UpdatedAt: bid.UpdatedAt,
 			}
@@ -38,7 +38,7 @@ func (f *FindAllAuctionsUseCase) Execute() (*FindAllAuctionsOutputDTO, error) {
 			Id:         auction.Id,
 			Credits:    auction.Credits,
 			PriceLimit: auction.PriceLimit,
-			State:      auction.State,
+			State:      string(auction.State),
 			Bids:       bids,
 			ExpiresAt:  auction.ExpiresAt,
 			CreatedAt:  auction.CreatedAt,

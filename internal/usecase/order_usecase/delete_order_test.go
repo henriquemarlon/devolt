@@ -2,22 +2,23 @@ package order_usecase
 
 import (
 	"testing"
-	"github.com/stretchr/testify/assert"
+
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDeleteOrderUseCase(t *testing.T) {
-	mockOrderRepo := new(repository.MockOrderRepository)
-	deleteOrder := NewDeleteOrderUseCase(mockOrderRepo)
-
-	mockOrderRepo.On("DeleteOrder", uint(1)).Return(nil)
+	mockRepo := new(repository.MockOrderRepository)
+	deleteOrderUseCase := NewDeleteOrderUseCase(mockRepo)
 
 	input := &DeleteOrderInputDTO{
 		Id: 1,
 	}
 
-	err := deleteOrder.Execute(input)
-	assert.Nil(t, err)
+	mockRepo.On("DeleteOrder", input.Id).Return(nil)
 
-	mockOrderRepo.AssertExpectations(t)
+	err := deleteOrderUseCase.Execute(input)
+
+	assert.Nil(t, err)
+	mockRepo.AssertExpectations(t)
 }

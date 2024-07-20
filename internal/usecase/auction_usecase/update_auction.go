@@ -37,7 +37,7 @@ func (u *UpdateAuctionUseCase) Execute(input *UpdateAuctionInputDTO, metadata ro
 		Id:         input.Id,
 		Credits:    input.Credits,
 		PriceLimit: input.PriceLimit,
-		State:      input.State,
+		State:      entity.AuctionState(input.State),
 		ExpiresAt:  input.ExpiresAt,
 		UpdatedAt:  metadata.BlockTimestamp,
 	})
@@ -48,7 +48,7 @@ func (u *UpdateAuctionUseCase) Execute(input *UpdateAuctionInputDTO, metadata ro
 		Id:         res.Id,
 		Credits:    res.Credits,
 		PriceLimit: res.PriceLimit,
-		State:      res.State,
+		State:      string(res.State),
 		ExpiresAt:  res.ExpiresAt,
 		UpdatedAt:  res.UpdatedAt,
 	}, nil

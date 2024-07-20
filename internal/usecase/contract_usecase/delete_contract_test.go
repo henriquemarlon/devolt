@@ -7,17 +7,17 @@ import (
 )
 
 func TestDeleteContractUseCase(t *testing.T) {
-	mockContractRepo := new(repository.MockContractRepository)
-	deleteContract := NewDeleteContractUseCase(mockContractRepo)
-
-	mockContractRepo.On("DeleteContract", "TEST").Return(nil)
+	mockRepo := new(repository.MockContractRepository)
+	deleteContractUseCase := NewDeleteContractUseCase(mockRepo)
 
 	input := &DeleteContractInputDTO{
-		Symbol: "TEST",
+		Symbol: "VOLT",
 	}
 
-	err := deleteContract.Execute(input)
-	assert.Nil(t, err)
+	mockRepo.On("DeleteContract", input.Symbol).Return(nil)
 
-	mockContractRepo.AssertExpectations(t)
+	err := deleteContractUseCase.Execute(input)
+
+	assert.Nil(t, err)
+	mockRepo.AssertExpectations(t)
 }

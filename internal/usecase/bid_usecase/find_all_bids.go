@@ -29,7 +29,7 @@ func (f *FindAllBidsUseCase) Execute() (*FindAllBidsOutputDTO, error) {
 			Bidder:    bid.Bidder,
 			Credits:   bid.Credits,
 			Price:     bid.Price,
-			State:     bid.State,
+			State:     string(bid.State),
 			CreatedAt: bid.CreatedAt,
 			UpdatedAt: bid.UpdatedAt,
 		}

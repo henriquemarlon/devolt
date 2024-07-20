@@ -29,8 +29,11 @@ func NewCreateUserUseCase(userRepository entity.UserRepository) *CreateUserUseCa
 }
 
 func (u *CreateUserUseCase) Execute(input *CreateUserInputDTO, metadata rollmelette.Metadata) (*CreateUserOutputDTO, error) {
-	User := entity.NewUser(input.Role, input.Address, metadata.BlockTimestamp)
-	res, err := u.UserRepository.CreateUser(User)
+	user, err := entity.NewUser(input.Role, input.Address, metadata.BlockTimestamp)
+	if err != nil {
+		return nil, err
+	}
+	res, err := u.UserRepository.CreateUser(user)
 	if err != nil {
 		return nil, err
 	}

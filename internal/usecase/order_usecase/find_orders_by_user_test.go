@@ -1,72 +1,64 @@
 package order_usecase
 
 import (
-	"math/big"
-	"testing"
 	"github.com/devolthq/devolt/internal/domain/entity"
+	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
-	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"math/big"
+	"testing"
+	"time"
 )
 
 func TestFindOrdersByUserUseCase(t *testing.T) {
-	mockOrderRepo := new(repository.MockOrderRepository)
-	findOrdersByUser := NewFindOrdersByUserUseCase(mockOrderRepo)
+	mockRepo := new(repository.MockOrderRepository)
+	findOrdersByUserUseCase := NewFindOrdersByUserUseCase(mockRepo)
+
+	createdAt := time.Now().Unix()
+	updatedAt := time.Now().Unix()
 
 	mockOrders := []*entity.Order{
 		{
 			Id:             1,
-			Buyer:          common.HexToAddress("0xabcdef"),
+			Buyer:          common.HexToAddress("0x123"),
 			Credits:        big.NewInt(100),
-			StationId:      "station1",
+			StationId:      "station_1",
 			PricePerCredit: big.NewInt(10),
-			CreatedAt:      1600,
-			UpdatedAt:      1600,
+			CreatedAt:      createdAt,
+			UpdatedAt:      updatedAt,
 		},
 		{
 			Id:             2,
-			Buyer:          common.HexToAddress("0xabcdef"),
+			Buyer:          common.HexToAddress("0x123"),
 			Credits:        big.NewInt(200),
-			StationId:      "station2",
+			StationId:      "station_2",
 			PricePerCredit: big.NewInt(20),
-			CreatedAt:      1700,
-			UpdatedAt:      1700,
+			CreatedAt:      createdAt,
+			UpdatedAt:      updatedAt,
 		},
 	}
 
-	mockOrderRepo.On("FindOrdersByUser", common.HexToAddress("0xabcdef")).Return(mockOrders, nil)
+	mockRepo.On("FindOrdersByUser", common.HexToAddress("0x123")).Return(mockOrders, nil)
 
 	input := &FindOrderByUserInputDTO{
-		User: common.HexToAddress("0xabcdef"),
+		User: common.HexToAddress("0x123"),
 	}
 
-	output, err := findOrdersByUser.Execute(input)
+	output, err := findOrdersByUserUseCase.Execute(input)
+
 	assert.Nil(t, err)
 	assert.NotNil(t, output)
-	assert.Len(t, output, 2)
+	assert.Equal(t, len(mockOrders), len(output))
 
-	expectedOutput := FindOrderByUserOutputDTO{
-		{
-			Id:             1,
-			Buyer:          common.HexToAddress("0xabcdef"),
-			Credits:        big.NewInt(100),
-			StationId:      "station1",
-			PricePerCredit: big.NewInt(10),
-			CreatedAt:      1600,
-			UpdatedAt:      1600,
-		},
-		{
-			Id:             2,
-			Buyer:          common.HexToAddress("0xabcdef"),
-			Credits:        big.NewInt(200),
-			StationId:      "station2",
-			PricePerCredit: big.NewInt(20),
-			CreatedAt:      1700,
-			UpdatedAt:      1700,
-		},
+	for i, order := range mockOrders {
+		assert.Equal(t, order.Id, output[i].Id)
+		assert.Equal(t, order.Buyer, output[i].Buyer)
+		assert.Equal(t, order.Credits, output[i].Credits)
+		assert.Equal(t, order.StationId, output[i].StationId)
+		assert.Equal(t, order.PricePerCredit, output[i].PricePerCredit)
+		assert.Equal(t, order.CreatedAt, output[i].CreatedAt)
+		assert.Equal(t, order.UpdatedAt, output[i].UpdatedAt)
 	}
 
-	assert.Equal(t, expectedOutput, output)
-
-	mockOrderRepo.AssertExpectations(t)
+	mockRepo.AssertExpectations(t)
 }

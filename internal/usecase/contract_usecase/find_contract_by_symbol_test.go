@@ -1,41 +1,45 @@
 package contract_usecase
 
 import (
+	"testing"
+	"time"
+
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestFindContractBySymbolUseCase(t *testing.T) {
-	mockContractRepo := new(repository.MockContractRepository)
-	findContractBySymbol := NewFindContractBySymbolUseCase(mockContractRepo)
+	mockRepo := new(repository.MockContractRepository)
+	findContractBySymbolUseCase := NewFindContractBySymbolUseCase(mockRepo)
+
+	createdAt := time.Now().Unix()
+	updatedAt := time.Now().Unix()
 
 	mockContract := &entity.Contract{
 		Id:        1,
-		Symbol:    "TEST",
-		Address:   common.HexToAddress("0x1234567890abcdef"),
-		CreatedAt: 1600,
-		UpdatedAt: 1600,
+		Symbol:    "VOLT",
+		Address:   common.HexToAddress("0x123"),
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}
 
-	mockContractRepo.On("FindContractBySymbol", "TEST").Return(mockContract, nil)
+	mockRepo.On("FindContractBySymbol", "VOLT").Return(mockContract, nil)
 
 	input := &FindContractBySymbolInputDTO{
-		Symbol: "TEST",
+		Symbol: "VOLT",
 	}
 
-	output, err := findContractBySymbol.Execute(input)
+	output, err := findContractBySymbolUseCase.Execute(input)
+
 	assert.Nil(t, err)
 	assert.NotNil(t, output)
-	assert.Equal(t, &FindContractBySymbolOutputDTO{
-		Id:        1,
-		Symbol:    "TEST",
-		Address:   common.HexToAddress("0x1234567890abcdef"),
-		CreatedAt: 1600,
-		UpdatedAt: 1600,
-	}, output)
+	assert.Equal(t, mockContract.Id, output.Id)
+	assert.Equal(t, mockContract.Symbol, output.Symbol)
+	assert.Equal(t, mockContract.Address, output.Address)
+	assert.Equal(t, mockContract.CreatedAt, output.CreatedAt)
+	assert.Equal(t, mockContract.UpdatedAt, output.UpdatedAt)
 
-	mockContractRepo.AssertExpectations(t)
+	mockRepo.AssertExpectations(t)
 }

@@ -3,6 +3,7 @@ package bid_usecase
 import (
 	"math/big"
 	"testing"
+	"time"
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
@@ -16,63 +17,72 @@ func TestCreateBidUseCase(t *testing.T) {
 	mockBidRepo := new(repository.MockBidRepository)
 	mockContractRepo := new(repository.MockContractRepository)
 	mockAuctionRepo := new(repository.MockAuctionRepository)
-	createBid := NewCreateBidUseCase(mockBidRepo, mockContractRepo, mockAuctionRepo)
+	createBidUseCase := NewCreateBidUseCase(mockBidRepo, mockContractRepo, mockAuctionRepo)
 
-	voltContract := &entity.Contract{
-		Symbol:  "VOLT",
-		Address: common.HexToAddress("0x1234567890abcdef"),
-	}
+	credits := big.NewInt(1000)
+	priceLimit := big.NewInt(500)
+	expiresAt := time.Now().Add(24 * time.Hour).Unix()
+	createdAt := time.Now().Unix()
+	updatedAt := time.Now().Unix()
 
-	mockContractRepo.On("FindContractBySymbol", "VOLT").Return(voltContract, nil)
-
-	activeAuction := &entity.Auction{
+	mockAuction := &entity.Auction{
 		Id:         1,
-		Credits:    big.NewInt(1000),
-		PriceLimit: big.NewInt(2000),
-		State:      "active",
-		ExpiresAt:  1000,
-		CreatedAt:  900,
-		UpdatedAt:  900,
+		Credits:    credits,
+		PriceLimit: priceLimit,
+		State:      entity.AuctionOngoing,
+		ExpiresAt:  expiresAt,
+		CreatedAt:  createdAt,
+		UpdatedAt:  updatedAt,
 	}
 
-	mockAuctionRepo.On("FindActiveAuction").Return(activeAuction, nil)
+	mockContract := &entity.Contract{
+		Id:      1,
+		Symbol:  "VOLT",
+		Address: common.HexToAddress("0x123"),
+	}
 
 	mockBid := &entity.Bid{
 		Id:        1,
-		AuctionId: activeAuction.Id,
-		Bidder:    common.HexToAddress("0x1234567890abcdef"),
-		Credits:   big.NewInt(500),
-		Price:     big.NewInt(1000),
-		State:     "pending",
-		CreatedAt: 1100,
+		AuctionId: mockAuction.Id,
+		Bidder:    common.HexToAddress("0x1"),
+		Credits:   credits,
+		Price:     big.NewInt(400),
+		State:     entity.BidStatePending,
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}
 
+	mockAuctionRepo.On("FindActiveAuction").Return(mockAuction, nil)
+	mockContractRepo.On("FindContractBySymbol", "VOLT").Return(mockContract, nil)
 	mockBidRepo.On("CreateBid", mock.AnythingOfType("*entity.Bid")).Return(mockBid, nil)
 
 	input := &CreateBidInputDTO{
-		Bidder: common.HexToAddress("0x1234567890abcdef"),
-		Price:  big.NewInt(1000),
+		Bidder: common.HexToAddress("0x1"),
+		Price:  big.NewInt(400),
 	}
 
 	deposit := &rollmelette.ERC20Deposit{
-		Token:  voltContract.Address,
-		Amount: big.NewInt(500),
+		Token:  common.HexToAddress("0x123"),
+		Amount: credits,
 	}
 
-	metadata := rollmelette.Metadata{BlockTimestamp: 1100}
+	metadata := rollmelette.Metadata{
+		BlockTimestamp: createdAt,
+	}
 
-	output, err := createBid.Execute(input, deposit, metadata)
+	output, err := createBidUseCase.Execute(input, deposit, metadata)
+
 	assert.Nil(t, err)
 	assert.NotNil(t, output)
-	assert.Equal(t, uint(1), output.Id)
-	assert.Equal(t, uint(1), output.AuctionId)
-	assert.Equal(t, common.HexToAddress("0x1234567890abcdef"), output.Bidder)
-	assert.Equal(t, big.NewInt(500), output.Credits)
-	assert.Equal(t, big.NewInt(1000), output.Price)
-	assert.Equal(t, "pending", output.State)
-	assert.Equal(t, int64(1100), output.CreatedAt)
+	assert.Equal(t, mockBid.Id, output.Id)
+	assert.Equal(t, mockBid.AuctionId, output.AuctionId)
+	assert.Equal(t, mockBid.Bidder, output.Bidder)
+	assert.Equal(t, mockBid.Credits, output.Credits)
+	assert.Equal(t, mockBid.Price, output.Price)
+	assert.Equal(t, string(mockBid.State), output.State)
+	assert.Equal(t, mockBid.CreatedAt, output.CreatedAt)
 
-	mockBidRepo.AssertExpectations(t)
-	mockContractRepo.AssertExpectations(t)
 	mockAuctionRepo.AssertExpectations(t)
+	mockContractRepo.AssertExpectations(t)
+	mockBidRepo.AssertExpectations(t)
 }
