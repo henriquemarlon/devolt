@@ -4,7 +4,7 @@
 //go:build !wireinject
 // +build !wireinject
 
-package dependency_injection
+package main
 
 import (
 	"github.com/devolthq/devolt/configs"

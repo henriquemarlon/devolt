@@ -3,13 +3,12 @@ package advance_handler
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
-
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/contract_usecase"
 	"github.com/devolthq/devolt/internal/usecase/user_usecase"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
+	"strings"
 )
 
 type UserAdvanceHandlers struct {
@@ -30,7 +29,7 @@ func (h *UserAdvanceHandlers) CreateUserHandler(env rollmelette.Env, metadata ro
 		return err
 	}
 	input.Address = strings.ToLower(input.Address)
-	
+
 	createUser := user_usecase.NewCreateUserUseCase(h.UserRepository)
 	res, err := createUser.Execute(&input, metadata)
 	if err != nil {

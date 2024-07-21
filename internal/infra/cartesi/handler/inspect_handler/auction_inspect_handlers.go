@@ -4,12 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
-
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/auction_usecase"
 	"github.com/devolthq/devolt/pkg/router"
 	"github.com/rollmelette/rollmelette"
+	"strconv"
 )
 
 type AuctionInspectHandlers struct {
