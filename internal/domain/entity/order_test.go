@@ -34,7 +34,7 @@ func TestOrder_Validate(t *testing.T) {
 	order := &Order{
 		Buyer:          buyer,
 		Credits:        big.NewInt(-1),
-		StationId:      "station-1",
+		StationId:      "station-2",
 		PricePerCredit: big.NewInt(50),
 		CreatedAt:      createdAt,
 	}
@@ -64,7 +64,7 @@ func TestOrder_Validate(t *testing.T) {
 	assert.Equal(t, ErrInvalidOrder, err)
 
 	// Valid order
-	order.StationId = "station-1"
+	order.StationId = "station-3"
 	err = order.Validate()
 	assert.Nil(t, err)
 }
