@@ -2,7 +2,6 @@ package mock
 
 import (
 	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -34,7 +33,7 @@ func (m *MockOrderRepository) FindOrderById(id uint) (*entity.Order, error) {
 	return nil, args.Error(1)
 }
 
-func (m *MockOrderRepository) FindOrdersByUser(buyer common.Address) ([]*entity.Order, error) {
+func (m *MockOrderRepository) FindOrdersByUser(buyer string) ([]*entity.Order, error) {
 	args := m.Called(buyer)
 	if args.Get(0) != nil {
 		return args.Get(0).([]*entity.Order), args.Error(1)

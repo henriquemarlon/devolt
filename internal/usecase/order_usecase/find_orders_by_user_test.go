@@ -20,7 +20,7 @@ func TestFindOrdersByUserUseCase(t *testing.T) {
 	mockOrders := []*entity.Order{
 		{
 			Id:             1,
-			Buyer:          common.HexToAddress("0x123"),
+			Buyer:          common.HexToAddress("0x123").String(),
 			Credits:        big.NewInt(100),
 			StationId:      "station_1",
 			PricePerCredit: big.NewInt(10),
@@ -29,7 +29,7 @@ func TestFindOrdersByUserUseCase(t *testing.T) {
 		},
 		{
 			Id:             2,
-			Buyer:          common.HexToAddress("0x123"),
+			Buyer:          common.HexToAddress("0x123").String(),
 			Credits:        big.NewInt(200),
 			StationId:      "station_2",
 			PricePerCredit: big.NewInt(20),
@@ -38,10 +38,10 @@ func TestFindOrdersByUserUseCase(t *testing.T) {
 		},
 	}
 
-	mockRepo.On("FindOrdersByUser", common.HexToAddress("0x123")).Return(mockOrders, nil)
+	mockRepo.On("FindOrdersByUser", common.HexToAddress("0x123").String()).Return(mockOrders, nil)
 
 	input := &FindOrderByUserInputDTO{
-		User: common.HexToAddress("0x123"),
+		User: common.HexToAddress("0x123").String(),
 	}
 
 	output, err := findOrdersByUserUseCase.Execute(input)

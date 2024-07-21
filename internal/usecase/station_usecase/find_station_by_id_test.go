@@ -21,7 +21,7 @@ func TestFindStationByIdUseCase(t *testing.T) {
 	mockStation := &entity.Station{
 		Id:             "station_1",
 		Consumption:    big.NewInt(500),
-		Owner:          common.HexToAddress("0x123"),
+		Owner:          common.HexToAddress("0x123").String(),
 		PricePerCredit: big.NewInt(10),
 		State:          entity.StationStateActive,
 		Latitude:       40.7128,
@@ -31,7 +31,7 @@ func TestFindStationByIdUseCase(t *testing.T) {
 		Orders: []*entity.Order{
 			{
 				Id:             1,
-				Buyer:          common.HexToAddress("0x456"),
+				Buyer:          common.HexToAddress("0x456").String(),
 				StationId:      "station_1",
 				Credits:        big.NewInt(100),
 				PricePerCredit: big.NewInt(10),

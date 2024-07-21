@@ -1,32 +1,30 @@
 package station_usecase
 
 import (
-	"math/big"
-
 	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
+	"math/big"
 )
 
 type UpdateStationInputDTO struct {
-	Id             string         `json:"id"`
-	Consumption    *big.Int       `json:"consumption"`
-	Owner          common.Address `json:"owner"`
-	PricePerCredit *big.Int       `json:"price_per_credit"`
-	State          string         `json:"state"`
-	Latitude       float64        `json:"latitude"`
-	Longitude      float64        `json:"longitude"`
+	Id             string   `json:"id"`
+	Consumption    *big.Int `json:"consumption"`
+	Owner          string   `json:"owner"`
+	PricePerCredit *big.Int `json:"price_per_credit"`
+	State          string   `json:"state"`
+	Latitude       float64  `json:"latitude"`
+	Longitude      float64  `json:"longitude"`
 }
 
 type UpdateStationOutputDTO struct {
-	Id             string         `json:"id"`
-	Consumption    *big.Int       `json:"consumption"`
-	Owner          common.Address `json:"owner"`
-	PricePerCredit *big.Int       `json:"price_per_credit"`
-	State          string         `json:"state"`
-	Latitude       float64        `json:"latitude"`
-	Longitude      float64        `json:"longitude"`
-	UpdatedAt      int64          `json:"updated_at"`
+	Id             string   `json:"id"`
+	Consumption    *big.Int `json:"consumption"`
+	Owner          string   `json:"owner"`
+	PricePerCredit *big.Int `json:"price_per_credit"`
+	State          string   `json:"state"`
+	Latitude       float64  `json:"latitude"`
+	Longitude      float64  `json:"longitude"`
+	UpdatedAt      int64    `json:"updated_at"`
 }
 
 type UpdateStationUseCase struct {

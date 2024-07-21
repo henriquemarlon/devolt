@@ -20,7 +20,7 @@ func TestFindBidByIdUseCase(t *testing.T) {
 	mockBid := &entity.Bid{
 		Id:        1,
 		AuctionId: 1,
-		Bidder:    common.HexToAddress("0x1"),
+		Bidder:    common.HexToAddress("0x1").String(),
 		Credits:   big.NewInt(100),
 		Price:     big.NewInt(50),
 		State:     entity.BidStatePending,

@@ -2,6 +2,7 @@ package auction_usecase
 
 import (
 	"github.com/devolthq/devolt/internal/domain/entity"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type FindActiveAuctionUseCase struct {
@@ -24,7 +25,7 @@ func (f *FindActiveAuctionUseCase) Execute() (*FindAuctionOutputDTO, error) {
 		bids = append(bids, &FindAuctionOutputSubDTO{
 			Id:        bid.Id,
 			AuctionId: bid.AuctionId,
-			Bidder:    bid.Bidder,
+			Bidder:    common.HexToAddress(bid.Bidder),
 			Credits:   bid.Credits,
 			Price:     bid.Price,
 			State:     string(bid.State),

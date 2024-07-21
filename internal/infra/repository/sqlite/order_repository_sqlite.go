@@ -2,7 +2,6 @@ package sqlite
 
 import (
 	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/ethereum/go-ethereum/common"
 	"gorm.io/gorm"
 )
 
@@ -42,7 +41,7 @@ func (r *OrderRepositorySqlite) FindOrderById(id uint) (*entity.Order, error) {
 	return &order, nil
 }
 
-func (r *OrderRepositorySqlite) FindOrdersByUser(buyer common.Address) ([]*entity.Order, error) {
+func (r *OrderRepositorySqlite) FindOrdersByUser(buyer string) ([]*entity.Order, error) {
 	var orders []*entity.Order
 	err := r.db.Where("buyer = ?", buyer).Find(&orders).Error
 	if err != nil {

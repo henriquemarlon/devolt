@@ -20,13 +20,13 @@ func TestCreateUserUseCase(t *testing.T) {
 
 	input := &CreateUserInputDTO{
 		Role:    "admin",
-		Address: common.HexToAddress("0x123"),
+		Address: common.HexToAddress("0x123").String(),
 	}
 
 	mockUser := &entity.User{
 		Id:        1,
 		Role:      "admin",
-		Address:   common.HexToAddress("0x123"),
+		Address:   common.HexToAddress("0x123").String(),
 		CreatedAt: createdAt,
 	}
 

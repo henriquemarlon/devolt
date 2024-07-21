@@ -11,7 +11,7 @@ import (
 
 func TestNewStation(t *testing.T) {
 	id := "station-1"
-	owner := common.HexToAddress("0x123")
+	owner := common.HexToAddress("0x123").String()
 	pricePerCredit := big.NewInt(50)
 	latitude := 40.7128
 	longitude := -74.0060
@@ -29,7 +29,7 @@ func TestNewStation(t *testing.T) {
 }
 
 func TestStation_Validate(t *testing.T) {
-	owner := common.HexToAddress("0x123")
+	owner := common.HexToAddress("0x123").String()
 	pricePerCredit := big.NewInt(50)
 	createdAt := time.Now().Unix()
 
@@ -48,7 +48,7 @@ func TestStation_Validate(t *testing.T) {
 
 	// Invalid owner
 	station.Id = "station-3"
-	station.Owner = common.Address{}
+	station.Owner = ""
 	err = station.Validate()
 	assert.NotNil(t, err)
 	assert.Equal(t, ErrInvalidStation, err)

@@ -20,7 +20,7 @@ func TestFindAllOrderUseCase(t *testing.T) {
 	mockOrders := []*entity.Order{
 		{
 			Id:             1,
-			Buyer:          common.HexToAddress("0x123"),
+			Buyer:          common.HexToAddress("0x123").String(),
 			Credits:        big.NewInt(100),
 			StationId:      "station_1",
 			PricePerCredit: big.NewInt(10),
@@ -29,7 +29,7 @@ func TestFindAllOrderUseCase(t *testing.T) {
 		},
 		{
 			Id:             2,
-			Buyer:          common.HexToAddress("0x456"),
+			Buyer:          common.HexToAddress("0x456").String(),
 			Credits:        big.NewInt(200),
 			StationId:      "station_2",
 			PricePerCredit: big.NewInt(20),

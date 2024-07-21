@@ -2,6 +2,7 @@ package auction_usecase
 
 import (
 	"github.com/devolthq/devolt/internal/domain/entity"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type FindAllAuctionsOutputDTO []*FindAuctionOutputDTO
@@ -26,7 +27,7 @@ func (f *FindAllAuctionsUseCase) Execute() (*FindAllAuctionsOutputDTO, error) {
 			bids[j] = &FindAuctionOutputSubDTO{
 				Id:        bid.Id,
 				AuctionId: bid.AuctionId,
-				Bidder:    bid.Bidder,
+				Bidder:    common.HexToAddress(bid.Bidder),
 				Credits:   bid.Credits,
 				Price:     bid.Price,
 				State:     string(bid.State),

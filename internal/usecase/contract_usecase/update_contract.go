@@ -2,21 +2,20 @@ package contract_usecase
 
 import (
 	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 )
 
 type UpdateContractInputDTO struct {
-	Id      uint           `json:"id"`
-	Address common.Address `json:"address"`
-	Symbol  string         `json:"symbol"`
+	Id      uint   `json:"id"`
+	Address string `json:"address"`
+	Symbol  string `json:"symbol"`
 }
 
 type UpdateContractOutputDTO struct {
-	Id        uint           `json:"id"`
-	Symbol    string         `json:"symbol"`
-	Address   common.Address `json:"address"`
-	UpdatedAt int64          `json:"updated_at"`
+	Id        uint   `json:"id"`
+	Symbol    string `json:"symbol"`
+	Address   string `json:"address"`
+	UpdatedAt int64  `json:"updated_at"`
 }
 
 type UpdateContractUseCase struct {

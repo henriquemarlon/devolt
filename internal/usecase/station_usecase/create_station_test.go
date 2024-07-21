@@ -21,7 +21,7 @@ func TestCreateStationUseCase(t *testing.T) {
 
 	input := &CreateStationInputDTO{
 		Id:             "station_1",
-		Owner:          common.HexToAddress("0x123"),
+		Owner:          common.HexToAddress("0x123").String(),
 		PricePerCredit: big.NewInt(100),
 		Latitude:       40.7128,
 		Longitude:      -74.0060,

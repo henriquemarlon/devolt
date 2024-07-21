@@ -33,7 +33,7 @@ func (u *UpdateUserUseCase) Execute(input *UpdateUserInputDTO, metadata rollmele
 	res, err := u.UserRepository.UpdateUser(&entity.User{
 		Id:        input.Id,
 		Role:      input.Role,
-		Address:   input.Address,
+		Address:   input.Address.String(),
 		UpdatedAt: metadata.BlockTimestamp,
 	})
 	if err != nil {
@@ -42,7 +42,7 @@ func (u *UpdateUserUseCase) Execute(input *UpdateUserInputDTO, metadata rollmele
 	return &UpdateUserOutputDTO{
 		Id:        res.Id,
 		Role:      res.Role,
-		Address:   res.Address,
+		Address:   common.HexToAddress(res.Address),
 		UpdatedAt: res.UpdatedAt,
 	}, nil
 }

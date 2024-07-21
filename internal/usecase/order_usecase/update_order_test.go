@@ -22,7 +22,7 @@ func TestUpdateOrderUseCase(t *testing.T) {
 
 	mockOrder := &entity.Order{
 		Id:             1,
-		Buyer:          common.HexToAddress("0x123"),
+		Buyer:          common.HexToAddress("0x123").String(),
 		Credits:        big.NewInt(100),
 		StationId:      "station_1",
 		PricePerCredit: big.NewInt(10),

@@ -18,7 +18,7 @@ func TestCreateContractUseCase(t *testing.T) {
 
 	input := &CreateContractInputDTO{
 		Symbol:  "VOLT",
-		Address: common.HexToAddress("0x123"),
+		Address: common.HexToAddress("0x123").String(),
 	}
 
 	createdAt := time.Now().Unix()

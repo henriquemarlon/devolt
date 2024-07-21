@@ -12,7 +12,7 @@ func TestDeleteUserByAddressUseCase(t *testing.T) {
 	deleteUserByAddressUseCase := NewDeleteUserByAddressUseCase(mockRepo)
 
 	input := &DeleteUserByAddressInputDTO{
-		Address: common.HexToAddress("0x123"),
+		Address: common.HexToAddress("0x123").String(),
 	}
 
 	mockRepo.On("DeleteUserByAddress", input.Address).Return(nil)

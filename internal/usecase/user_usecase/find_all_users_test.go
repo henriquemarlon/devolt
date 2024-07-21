@@ -21,14 +21,14 @@ func TestFindAllUsersUseCase(t *testing.T) {
 		{
 			Id:        1,
 			Role:      "admin",
-			Address:   common.HexToAddress("0x123"),
+			Address:   common.HexToAddress("0x123").String(),
 			CreatedAt: createdAt,
 			UpdatedAt: updatedAt,
 		},
 		{
 			Id:        2,
 			Role:      "user",
-			Address:   common.HexToAddress("0x456"),
+			Address:   common.HexToAddress("0x456").String(),
 			CreatedAt: createdAt,
 			UpdatedAt: updatedAt,
 		},

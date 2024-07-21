@@ -22,14 +22,14 @@ func TestUpdateContractUseCase(t *testing.T) {
 	mockContract := &entity.Contract{
 		Id:        1,
 		Symbol:    "VOLT",
-		Address:   common.HexToAddress("0x123"),
+		Address:   common.HexToAddress("0x123").String(),
 		CreatedAt: createdAt,
 		UpdatedAt: updatedAt,
 	}
 
 	input := &UpdateContractInputDTO{
 		Id:      mockContract.Id,
-		Address: common.HexToAddress("0x123"),
+		Address: common.HexToAddress("0x123").String(),
 		Symbol:  "VOLT",
 	}
 

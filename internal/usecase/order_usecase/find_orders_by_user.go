@@ -2,11 +2,10 @@ package order_usecase
 
 import (
 	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 type FindOrderByUserInputDTO struct {
-	User common.Address
+	User string
 }
 
 type FindOrderByUserOutputDTO []*FindOrderOutputDTO

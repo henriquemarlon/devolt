@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/station_usecase"
@@ -24,10 +25,10 @@ func NewStationInspectHandlers(stationRepository entity.StationRepository) *Stat
 func (h *StationInspectHandlers) FindStationByIdHandler(env rollmelette.EnvInspector, ctx context.Context) error {
 	findStationById := station_usecase.NewFindStationByIdUseCase(h.StationRepository)
 	res, err := findStationById.Execute(&station_usecase.FindStationByIdInputDTO{
-		Id: router.PathValue(ctx, "id"),
+		Id: strings.ToLower(router.PathValue(ctx, "id")),
 	})
 	if err != nil {
-		return fmt.Errorf("failed to find station by id: %w from id: %s", err, router.PathValue(ctx, "id"))
+		return fmt.Errorf("failed to find station by id: %w from id: %s", err, strings.ToLower(router.PathValue(ctx, "id")))
 	}
 	station, err := json.Marshal(res)
 	if err != nil {

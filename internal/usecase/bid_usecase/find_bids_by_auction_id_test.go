@@ -21,7 +21,7 @@ func TestFindBidsByAuctionIdUseCase(t *testing.T) {
 		{
 			Id:        1,
 			AuctionId: 1,
-			Bidder:    common.HexToAddress("0x1"),
+			Bidder:    common.HexToAddress("0x1").String(),
 			Credits:   big.NewInt(100),
 			Price:     big.NewInt(50),
 			State:     entity.BidStatePending,
@@ -31,7 +31,7 @@ func TestFindBidsByAuctionIdUseCase(t *testing.T) {
 		{
 			Id:        2,
 			AuctionId: 1,
-			Bidder:    common.HexToAddress("0x2"),
+			Bidder:    common.HexToAddress("0x2").String(),
 			Credits:   big.NewInt(200),
 			Price:     big.NewInt(150),
 			State:     entity.BidStateAccepted,

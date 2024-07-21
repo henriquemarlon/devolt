@@ -14,6 +14,7 @@ env: ./.env.develop
 .PHONY: dev
 dev:
 	$(START_LOG)
+	# @rm -r devolt.db
 	@nonodo -- go run ./cmd/dapp/
 	$(END_LOG)
 
@@ -34,7 +35,7 @@ generate:
 
 .PHONY: test
 test:
-	@go test ./... -coverprofile=./coverage_sheet.md -v
+	@go test ./... -coverprofile=./coverage.md -v
 
 .PHONY: deploy
 deploy:
@@ -44,7 +45,7 @@ deploy:
 
 .PHONY: coverage
 coverage: test
-	@go tool cover -html=./coverage_sheet.md
+	@go tool cover -html=./coverage.md
 
 .PHONY: docs
 docs:

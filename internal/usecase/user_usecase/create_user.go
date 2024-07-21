@@ -2,20 +2,19 @@ package user_usecase
 
 import (
 	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 )
 
 type CreateUserInputDTO struct {
-	Role    string         `json:"role"`
-	Address common.Address `json:"address"`
+	Role    string `json:"role"`
+	Address string `json:"address"`
 }
 
 type CreateUserOutputDTO struct {
-	Id        uint           `json:"id"`
-	Role      string         `json:"role"`
-	Address   common.Address `json:"address"`
-	CreatedAt int64          `json:"created_at"`
+	Id        uint   `json:"id"`
+	Role      string `json:"role"`
+	Address   string `json:"address"`
+	CreatedAt int64  `json:"created_at"`
 }
 
 type CreateUserUseCase struct {

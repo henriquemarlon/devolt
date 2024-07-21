@@ -38,13 +38,13 @@ func TestCreateBidUseCase(t *testing.T) {
 	mockContract := &entity.Contract{
 		Id:      1,
 		Symbol:  "VOLT",
-		Address: common.HexToAddress("0x123"),
+		Address: common.HexToAddress("0x123").String(),
 	}
 
 	mockBid := &entity.Bid{
 		Id:        1,
 		AuctionId: mockAuction.Id,
-		Bidder:    common.HexToAddress("0x1"),
+		Bidder:    common.HexToAddress("0x1").String(),
 		Credits:   credits,
 		Price:     big.NewInt(400),
 		State:     entity.BidStatePending,
@@ -57,7 +57,7 @@ func TestCreateBidUseCase(t *testing.T) {
 	mockBidRepo.On("CreateBid", mock.AnythingOfType("*entity.Bid")).Return(mockBid, nil)
 
 	input := &CreateBidInputDTO{
-		Bidder: common.HexToAddress("0x1"),
+		Bidder: common.HexToAddress("0x1").String(),
 		Price:  big.NewInt(400),
 	}
 

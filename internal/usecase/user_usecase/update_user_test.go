@@ -22,7 +22,7 @@ func TestUpdateUserUseCase(t *testing.T) {
 	mockUser := &entity.User{
 		Id:        1,
 		Role:      "user",
-		Address:   common.HexToAddress("0x123"),
+		Address:   common.HexToAddress("0x123").String(),
 		CreatedAt: createdAt,
 		UpdatedAt: updatedAt,
 	}
@@ -30,7 +30,7 @@ func TestUpdateUserUseCase(t *testing.T) {
 	input := &UpdateUserInputDTO{
 		Id:      mockUser.Id,
 		Role:    "admin",
-		Address: mockUser.Address,
+		Address: common.HexToAddress(mockUser.Address),
 	}
 
 	metadata := rollmelette.Metadata{
@@ -40,7 +40,7 @@ func TestUpdateUserUseCase(t *testing.T) {
 	updatedUser := &entity.User{
 		Id:        mockUser.Id,
 		Role:      input.Role,
-		Address:   input.Address,
+		Address:   input.Address.String(),
 		CreatedAt: mockUser.CreatedAt,
 		UpdatedAt: metadata.BlockTimestamp,
 	}
@@ -53,7 +53,7 @@ func TestUpdateUserUseCase(t *testing.T) {
 	assert.NotNil(t, output)
 	assert.Equal(t, updatedUser.Id, output.Id)
 	assert.Equal(t, updatedUser.Role, output.Role)
-	assert.Equal(t, updatedUser.Address, output.Address)
+	assert.Equal(t, updatedUser.Address, output.Address.String())
 	assert.Equal(t, updatedUser.UpdatedAt, output.UpdatedAt)
 
 	mockRepo.AssertExpectations(t)

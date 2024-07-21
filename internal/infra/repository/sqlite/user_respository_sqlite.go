@@ -2,9 +2,9 @@ package sqlite
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/ethereum/go-ethereum/common"
 	"gorm.io/gorm"
 )
 
@@ -35,11 +35,11 @@ func (r *UserRepositorySqlite) FindUserByRole(role string) (*entity.User, error)
 	return &user, nil
 }
 
-func (r *UserRepositorySqlite) FindUserByAddress(address common.Address) (*entity.User, error) {
+func (r *UserRepositorySqlite) FindUserByAddress(address string) (*entity.User, error) {
 	var user entity.User
 	err := r.Db.Where("address = ?", address).First(&user).Error
 	if err != nil {
-		return nil, fmt.Errorf("failed to find user by address: %w", err)
+		return nil, fmt.Errorf("failed to find user by address %v: %w", strings.ToLower(address), err)
 	}
 	return &user, nil
 }
@@ -61,7 +61,7 @@ func (r *UserRepositorySqlite) UpdateUser(input *entity.User) (*entity.User, err
 	return input, nil
 }
 
-func (r *UserRepositorySqlite) DeleteUserByAddress(address common.Address) error {
+func (r *UserRepositorySqlite) DeleteUserByAddress(address string) error {
 	err := r.Db.Where("address = ?", address).Delete(&entity.User{}).Error
 	if err != nil {
 		return fmt.Errorf("failed to delete user by address: %w", err)

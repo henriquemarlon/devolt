@@ -3,10 +3,12 @@ package advance_handler
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/contract_usecase"
 	"github.com/devolthq/devolt/internal/usecase/station_usecase"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 )
 
@@ -31,6 +33,7 @@ func (h *StationAdvanceHandlers) CreateStationHandler(env rollmelette.Env, metad
 		return fmt.Errorf("failed to unmarshal input: %w", err)
 	}
 	createStation := station_usecase.NewCreateStationUseCase(h.StationRepository)
+	input.Owner = strings.ToLower(input.Owner)
 	res, err := createStation.Execute(&input, metadata)
 	if err != nil {
 		return err
@@ -45,6 +48,7 @@ func (h *StationAdvanceHandlers) UpdateStationHandler(env rollmelette.Env, metad
 		return fmt.Errorf("failed to unmarshal input: %w", err)
 	}
 	updateStation := station_usecase.NewUpdateStationUseCase(h.StationRepository)
+	input.Owner = strings.ToLower(input.Owner)
 	res, err := updateStation.Execute(&input, metadata)
 	if err != nil {
 		return err
@@ -86,7 +90,7 @@ func (h *StationAdvanceHandlers) OffSetStationConsumptionHandler(env rollmelette
 	if err != nil {
 		return err
 	}
-	if err := env.ERC20Transfer(volt.Address, application, metadata.MsgSender, input.CreditsToBeOffSet); err != nil {
+	if err := env.ERC20Transfer(common.HexToAddress(volt.Address), application, metadata.MsgSender, input.CreditsToBeOffSet); err != nil {
 		return err
 	}
 	env.Notice([]byte(fmt.Sprintf("offSetCredits from station: %v by msg_sender: %v", res, metadata.MsgSender)))
