@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
+
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/contract_usecase"
 	"github.com/devolthq/devolt/pkg/router"
@@ -35,7 +37,7 @@ func (h *ContractInspectHandlers) FindAllContractsHandler(env rollmelette.EnvIns
 }
 
 func (h *ContractInspectHandlers) FindContractBySymbolHandler(env rollmelette.EnvInspector, ctx context.Context) error {
-	symbol := router.PathValue(ctx, "symbol")
+	symbol := strings.ToUpper(router.PathValue(ctx, "symbol"))
 	findOrderBySymbol := contract_usecase.NewFindContractBySymbolUseCase(h.ContractRepository)
 	contract, err := findOrderBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{
 		Symbol: symbol,

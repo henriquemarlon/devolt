@@ -2,11 +2,10 @@ package user_usecase
 
 import (
 	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 type DeleteUserByAddressInputDTO struct {
-	Address common.Address
+	Address string
 }
 
 type DeleteUserByAddressUseCase struct {

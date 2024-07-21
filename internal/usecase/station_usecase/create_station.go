@@ -4,26 +4,25 @@ import (
 	"math/big"
 
 	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 )
 
 type CreateStationInputDTO struct {
-	Id             string         `json:"id"`
-	Owner          common.Address `json:"owner"`
-	PricePerCredit *big.Int       `json:"price_per_credit"`
-	Latitude       float64        `json:"latitude"`
-	Longitude      float64        `json:"longitude"`
+	Id             string   `json:"id"`
+	Owner          string   `json:"owner"`
+	PricePerCredit *big.Int `json:"price_per_credit"`
+	Latitude       float64  `json:"latitude"`
+	Longitude      float64  `json:"longitude"`
 }
 
 type CreateStationOutputDTO struct {
-	Id             string         `json:"id"`
-	Owner          common.Address `json:"owner"`
-	State          string         `json:"state"`
-	PricePerCredit *big.Int       `json:"price_per_credit"`
-	Latitude       float64        `json:"latitude"`
-	Longitude      float64        `json:"longitude"`
-	CreatedAt      int64          `json:"created_at"`
+	Id             string   `json:"id"`
+	Owner          string   `json:"owner"`
+	State          string   `json:"state"`
+	PricePerCredit *big.Int `json:"price_per_credit"`
+	Latitude       float64  `json:"latitude"`
+	Longitude      float64  `json:"longitude"`
+	CreatedAt      int64    `json:"created_at"`
 }
 
 type CreateStationUseCase struct {

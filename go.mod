@@ -9,6 +9,7 @@ require (
 	github.com/pulumi/pulumi/sdk/v3 v3.124.0
 	github.com/rollmelette/rollmelette v0.1.1
 	github.com/stretchr/testify v1.9.0
+	github.com/test-go/testify v1.1.4
 	gorm.io/driver/sqlite v1.5.6
 	gorm.io/gorm v1.25.10
 )

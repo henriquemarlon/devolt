@@ -3,8 +3,6 @@ package entity
 import (
 	"errors"
 	"math/big"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
 var (
@@ -32,17 +30,17 @@ const (
 )
 
 type Bid struct {
-	Id        uint           `json:"id" gorm:"primaryKey"`
-	AuctionId uint           `json:"auction_id" gorm:"not null;index"`
-	Bidder    common.Address `json:"bidder" gorm:"not null"`
-	Credits   *big.Int       `json:"credits" gorm:"type:bigint;not null"`
-	Price     *big.Int       `json:"price" gorm:"type:bigint;not null"`
-	State     BidState       `json:"state" gorm:"type:text;not null"`
-	CreatedAt int64          `json:"created_at" gorm:"not null"`
-	UpdatedAt int64          `json:"updated_at" gorm:"default:0"`
+	Id        uint     `json:"id" gorm:"primaryKey"`
+	AuctionId uint     `json:"auction_id" gorm:"not null;index"`
+	Bidder    string   `json:"bidder" gorm:"not null"`
+	Credits   *big.Int `json:"credits" gorm:"type:bigint;not null"`
+	Price     *big.Int `json:"price" gorm:"type:bigint;not null"`
+	State     BidState `json:"state" gorm:"type:text;not null"`
+	CreatedAt int64    `json:"created_at" gorm:"not null"`
+	UpdatedAt int64    `json:"updated_at" gorm:"default:0"`
 }
 
-func NewBid(auctionId uint, bidder common.Address, credits *big.Int, price *big.Int, createdAt int64) (*Bid, error) {
+func NewBid(auctionId uint, bidder string, credits *big.Int, price *big.Int, createdAt int64) (*Bid, error) {
 	bid := &Bid{
 		AuctionId: auctionId,
 		Bidder:    bidder,
@@ -58,7 +56,7 @@ func NewBid(auctionId uint, bidder common.Address, credits *big.Int, price *big.
 }
 
 func (b *Bid) Validate() error {
-	if b.AuctionId == 0 || b.Bidder == (common.Address{}) || b.Credits.Cmp(big.NewInt(0)) <= 0 || b.Price.Cmp(big.NewInt(0)) <= 0 {
+	if b.AuctionId == 0 || b.Bidder == "" || b.Credits.Cmp(big.NewInt(0)) <= 0 || b.Price.Cmp(big.NewInt(0)) <= 0 {
 		return ErrInvalidBid
 	}
 	return nil

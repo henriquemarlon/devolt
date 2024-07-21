@@ -20,13 +20,13 @@ func TestFindUserByAddressUseCase(t *testing.T) {
 	mockUser := &entity.User{
 		Id:        1,
 		Role:      "admin",
-		Address:   common.HexToAddress("0x123"),
+		Address:   common.HexToAddress("0x123").String(),
 		CreatedAt: createdAt,
 		UpdatedAt: updatedAt,
 	}
 
 	input := &FindUserByAddressInputDTO{
-		Address: common.HexToAddress("0x123"),
+		Address: common.HexToAddress("0x123").String(),
 	}
 
 	mockRepo.On("FindUserByAddress", input.Address).Return(mockUser, nil)

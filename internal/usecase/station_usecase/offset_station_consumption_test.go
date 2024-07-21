@@ -27,7 +27,7 @@ func TestOffSetStationConsumptionUseCase(t *testing.T) {
 	mockStation := &entity.Station{
 		Id:             "station_1",
 		Consumption:    stationConsumption,
-		Owner:          common.HexToAddress("0x123"),
+		Owner:          common.HexToAddress("0x123").String(),
 		PricePerCredit: big.NewInt(10),
 		State:          entity.StationStateActive,
 		Latitude:       40.7128,
@@ -82,7 +82,7 @@ func TestOffSetStationConsumptionUseCase_Unauthorized(t *testing.T) {
 	mockStation := &entity.Station{
 		Id:             "station_1",
 		Consumption:    stationConsumption,
-		Owner:          common.HexToAddress("0x123"),
+		Owner:          common.HexToAddress("0x123").String(),
 		PricePerCredit: big.NewInt(10),
 		State:          entity.StationStateActive,
 		Latitude:       40.7128,

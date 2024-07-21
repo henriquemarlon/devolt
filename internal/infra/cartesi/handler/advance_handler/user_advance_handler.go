@@ -3,9 +3,12 @@ package advance_handler
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
+
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/contract_usecase"
 	"github.com/devolthq/devolt/internal/usecase/user_usecase"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 )
 
@@ -26,6 +29,8 @@ func (h *UserAdvanceHandlers) CreateUserHandler(env rollmelette.Env, metadata ro
 	if err := json.Unmarshal(payload, &input); err != nil {
 		return err
 	}
+	input.Address = strings.ToLower(input.Address)
+	
 	createUser := user_usecase.NewCreateUserUseCase(h.UserRepository)
 	res, err := createUser.Execute(&input, metadata)
 	if err != nil {
@@ -81,19 +86,19 @@ func (h *UserAdvanceHandlers) WithdrawAppHandler(env rollmelette.Env, metadata r
 	if err != nil {
 		return err
 	}
-	voltBalance := env.ERC20BalanceOf(volt.Address, application)
+	voltBalance := env.ERC20BalanceOf(common.HexToAddress(volt.Address), application)
 	if voltBalance.Sign() == 0 {
 		return fmt.Errorf("no balance of %v to withdraw", volt.Symbol)
 	}
-	stablecoinBalance := env.ERC20BalanceOf(stablecoin.Address, application)
+	stablecoinBalance := env.ERC20BalanceOf(common.HexToAddress(stablecoin.Address), application)
 	if stablecoinBalance.Sign() == 0 {
 		return fmt.Errorf("no balance of %v to withdraw", stablecoin.Symbol)
 	}
-	voltVoucherIndex, err := env.ERC20Withdraw(volt.Address, application, voltBalance)
+	voltVoucherIndex, err := env.ERC20Withdraw(common.HexToAddress(volt.Address), application, voltBalance)
 	if err != nil {
 		return err
 	}
-	stablecoinVoucherIndex, err := env.ERC20Withdraw(stablecoin.Address, application, stablecoinBalance)
+	stablecoinVoucherIndex, err := env.ERC20Withdraw(common.HexToAddress(stablecoin.Address), application, stablecoinBalance)
 	if err != nil {
 		return err
 	}
@@ -111,19 +116,19 @@ func (h *UserAdvanceHandlers) WithdrawHandler(env rollmelette.Env, metadata roll
 	if err != nil {
 		return err
 	}
-	voltBalance := env.ERC20BalanceOf(volt.Address, metadata.MsgSender)
+	voltBalance := env.ERC20BalanceOf(common.HexToAddress(volt.Address), metadata.MsgSender)
 	if voltBalance.Sign() == 0 {
 		return fmt.Errorf("no balance of %v to withdraw", volt.Symbol)
 	}
-	stablecoinBalance := env.ERC20BalanceOf(stablecoin.Address, metadata.MsgSender)
+	stablecoinBalance := env.ERC20BalanceOf(common.HexToAddress(stablecoin.Address), metadata.MsgSender)
 	if stablecoinBalance.Sign() == 0 {
 		return fmt.Errorf("no balance of %v to withdraw", stablecoin.Symbol)
 	}
-	voltVoucherIndex, err := env.ERC20Withdraw(volt.Address, metadata.MsgSender, voltBalance)
+	voltVoucherIndex, err := env.ERC20Withdraw(common.HexToAddress(volt.Address), metadata.MsgSender, voltBalance)
 	if err != nil {
 		return err
 	}
-	stablecoinVoucherIndex, err := env.ERC20Withdraw(stablecoin.Address, metadata.MsgSender, stablecoinBalance)
+	stablecoinVoucherIndex, err := env.ERC20Withdraw(common.HexToAddress(stablecoin.Address), metadata.MsgSender, stablecoinBalance)
 	if err != nil {
 		return err
 	}

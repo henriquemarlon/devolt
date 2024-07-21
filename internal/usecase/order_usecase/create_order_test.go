@@ -20,7 +20,7 @@ func TestCreateOrderUseCase(t *testing.T) {
 	createOrderUseCase := NewCreateOrderUseCase(mockOrderRepo, mockStationRepo, mockContractRepo)
 
 	input := &CreateOrderInputDTO{
-		Buyer:     common.HexToAddress("0x123"),
+		Buyer:     common.HexToAddress("0x123").String(),
 		Credits:   big.NewInt(100),
 		StationId: "station_1",
 	}
@@ -29,19 +29,19 @@ func TestCreateOrderUseCase(t *testing.T) {
 
 	mockStation := &entity.Station{
 		Id:             "station_1",
-		Owner:          common.HexToAddress("0x456"),
+		Owner:          common.HexToAddress("0x456").String(),
 		PricePerCredit: big.NewInt(10),
 	}
 
 	mockContract := &entity.Contract{
 		Id:      1,
 		Symbol:  "USDC",
-		Address: common.HexToAddress("0x789"),
+		Address: common.HexToAddress("0x789").String(),
 	}
 
 	mockOrder := &entity.Order{
 		Id:             1,
-		Buyer:          common.HexToAddress("0x123"),
+		Buyer:          common.HexToAddress("0x123").String(),
 		Credits:        big.NewInt(100),
 		StationId:      "station_1",
 		PricePerCredit: big.NewInt(10),

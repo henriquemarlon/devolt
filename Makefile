@@ -14,6 +14,7 @@ env: ./.env.develop
 .PHONY: dev
 dev:
 	$(START_LOG)
+	# @rm -r devolt.db
 	@nonodo -- go run ./cmd/dapp/
 	$(END_LOG)
 

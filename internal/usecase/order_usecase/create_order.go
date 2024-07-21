@@ -9,19 +9,19 @@ import (
 )
 
 type CreateOrderInputDTO struct {
-	Buyer     common.Address `json:"buyer"`
-	Credits   *big.Int       `json:"credits"`
-	StationId string         `json:"station_id"`
+	Buyer     string   `json:"buyer"`
+	Credits   *big.Int `json:"credits"`
+	StationId string   `json:"station_id"`
 }
 
 type CreateOrderOutputDTO struct {
-	Id             uint           `json:"id"`
-	Buyer          common.Address `json:"buyer"`
-	Credits        *big.Int       `json:"credits"`
-	StationId      string         `json:"station_id"`
-	StationOwner   common.Address `json:"station_address"`
-	PricePerCredit *big.Int       `json:"price_per_credit"`
-	CreatedAt      int64          `json:"created_at"`
+	Id             uint     `json:"id"`
+	Buyer          string   `json:"buyer"`
+	Credits        *big.Int `json:"credits"`
+	StationId      string   `json:"station_id"`
+	StationOwner   string   `json:"station_address"`
+	PricePerCredit *big.Int `json:"price_per_credit"`
+	CreatedAt      int64    `json:"created_at"`
 }
 
 type CreateOrderUseCase struct {
@@ -48,7 +48,7 @@ func (u *CreateOrderUseCase) Execute(input *CreateOrderInputDTO, deposit rollmel
 	if err != nil {
 		return nil, err
 	}
-	if stablecoin.Address != orderDeposit.Token {
+	if common.HexToAddress(stablecoin.Address) != orderDeposit.Token {
 		return nil, fmt.Errorf("invalid contract address provided for bid creation: %v", orderDeposit.Token)
 	}
 

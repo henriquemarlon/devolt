@@ -22,7 +22,7 @@ func TestFindAllStationsUseCase(t *testing.T) {
 		{
 			Id:             "station_1",
 			Consumption:    big.NewInt(500),
-			Owner:          common.HexToAddress("0x123"),
+			Owner:          common.HexToAddress("0x123").String(),
 			PricePerCredit: big.NewInt(10),
 			State:          entity.StationStateActive,
 			Latitude:       40.7128,
@@ -32,7 +32,7 @@ func TestFindAllStationsUseCase(t *testing.T) {
 			Orders: []*entity.Order{
 				{
 					Id:             1,
-					Buyer:          common.HexToAddress("0x456"),
+					Buyer:          common.HexToAddress("0x456").String(),
 					StationId:      "station_1",
 					Credits:        big.NewInt(100),
 					PricePerCredit: big.NewInt(10),
@@ -44,7 +44,7 @@ func TestFindAllStationsUseCase(t *testing.T) {
 		{
 			Id:             "station_2",
 			Consumption:    big.NewInt(300),
-			Owner:          common.HexToAddress("0x789"),
+			Owner:          common.HexToAddress("0x789").String(),
 			PricePerCredit: big.NewInt(20),
 			State:          entity.StationStateInactive,
 			Latitude:       34.0522,

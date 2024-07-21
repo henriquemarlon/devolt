@@ -1,11 +1,10 @@
 package inspect_handler
 
 import (
-	// "context"
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
+	"strings"
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/contract_usecase"
@@ -28,9 +27,10 @@ func NewUserInspectHandlers(userRepository entity.UserRepository, contractReposi
 }
 
 func (h *UserInspectHandlers) FindUserByAddressHandler(env rollmelette.EnvInspector, ctx context.Context) error {
+	address := strings.ToLower(router.PathValue(ctx, "address"))
 	findUserByAddress := user_usecase.NewFindUserByAddressUseCase(h.UserRepository)
 	res, err := findUserByAddress.Execute(&user_usecase.FindUserByAddressInputDTO{
-		Address: common.BytesToAddress([]byte(router.PathValue(ctx, "address"))),
+		Address: address,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to find User: %w", err)
@@ -59,14 +59,13 @@ func (h *UserInspectHandlers) FindAllUsersHandler(env rollmelette.EnvInspector, 
 
 func (h *UserInspectHandlers) BalanceHandler(env rollmelette.EnvInspector, ctx context.Context) error {
 	findContractBySymbol := contract_usecase.NewFindContractBySymbolUseCase(h.ContractRepository)
-	log.Printf("symbol: %s", router.PathValue(ctx, "symbol"))
 	contract, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{
-		Symbol: router.PathValue(ctx, "symbol"),
+		Symbol: strings.ToUpper(router.PathValue(ctx, "symbol")),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to find contract: %w", err)
 	}
-	balanceBytes, err := json.Marshal(env.ERC20BalanceOf(contract.Address, common.HexToAddress(router.PathValue(ctx, "address"))))
+	balanceBytes, err := json.Marshal(env.ERC20BalanceOf(common.HexToAddress(contract.Address), common.HexToAddress(router.PathValue(ctx, "address"))))
 	if err != nil {
 		return fmt.Errorf("failed to marshal balance: %w", err)
 	}

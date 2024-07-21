@@ -10,18 +10,18 @@ import (
 )
 
 type CreateBidInputDTO struct {
-	Bidder common.Address `json:"bidder"`
-	Price  *big.Int       `json:"price"`
+	Bidder string   `json:"bidder"`
+	Price  *big.Int `json:"price"`
 }
 
 type CreateBidOutputDTO struct {
-	Id        uint           `json:"id"`
-	AuctionId uint           `json:"auction_id"`
-	Bidder    common.Address `json:"bidder"`
-	Credits   *big.Int       `json:"credits"`
-	Price     *big.Int       `json:"price"`
-	State     string         `json:"state"`
-	CreatedAt int64          `json:"created_at"`
+	Id        uint     `json:"id"`
+	AuctionId uint     `json:"auction_id"`
+	Bidder    string   `json:"bidder"`
+	Credits   *big.Int `json:"credits"`
+	Price     *big.Int `json:"price"`
+	State     string   `json:"state"`
+	CreatedAt int64    `json:"created_at"`
 }
 
 type CreateBidUseCase struct {
@@ -48,7 +48,7 @@ func (c *CreateBidUseCase) Execute(input *CreateBidInputDTO, deposit rollmelette
 	if err != nil {
 		return nil, err
 	}
-	if bidDeposit.Token != volt.Address {
+	if bidDeposit.Token != common.HexToAddress(volt.Address) {
 		return nil, fmt.Errorf("invalid contract address provided for bid creation: %v", bidDeposit.Token)
 	}
 

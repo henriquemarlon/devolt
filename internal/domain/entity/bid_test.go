@@ -16,11 +16,11 @@ func TestNewBid(t *testing.T) {
 	price := big.NewInt(500)
 	createdAt := time.Now().Unix()
 
-	bid, err := NewBid(auctionId, bidder, credits, price, createdAt)
+	bid, err := NewBid(auctionId, bidder.String(), credits, price, createdAt)
 	assert.Nil(t, err)
 	assert.NotNil(t, bid)
 	assert.Equal(t, auctionId, bid.AuctionId)
-	assert.Equal(t, bidder, bid.Bidder)
+	assert.Equal(t, bidder.String(), bid.Bidder)
 	assert.Equal(t, credits, bid.Credits)
 	assert.Equal(t, price, bid.Price)
 	assert.Equal(t, BidStatePending, bid.State)
@@ -35,7 +35,7 @@ func TestBid_Validate(t *testing.T) {
 	// Invalid credits
 	bid := &Bid{
 		AuctionId: auctionId,
-		Bidder:    bidder,
+		Bidder:    bidder.String(),
 		Credits:   big.NewInt(-1),
 		Price:     big.NewInt(500),
 		State:     BidStatePending,
@@ -54,13 +54,13 @@ func TestBid_Validate(t *testing.T) {
 
 	// Invalid bidder
 	bid.Price = big.NewInt(500)
-	bid.Bidder = common.Address{}
+	bid.Bidder = ""
 	err = bid.Validate()
 	assert.NotNil(t, err)
 	assert.Equal(t, ErrInvalidBid, err)
 
 	// Valid bid
-	bid.Bidder = common.HexToAddress("0x123")
+	bid.Bidder = common.HexToAddress("0x123").String()
 	err = bid.Validate()
 	assert.Nil(t, err)
 }

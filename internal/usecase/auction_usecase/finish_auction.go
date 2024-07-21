@@ -76,7 +76,7 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 		bidsDTO = append(bidsDTO, &FinishAuctionSubDTO{
 			Id:        bid.Id,
 			AuctionId: bid.AuctionId,
-			Bidder:    bid.Bidder,
+			Bidder:    common.HexToAddress(bid.Bidder),
 			Credits:   bid.Credits,
 			Price:     bid.Price,
 			CreatedAt: bid.CreatedAt,
@@ -95,7 +95,7 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 			// Create bid with exactly required credits
 			acceptedBid := &entity.Bid{
 				AuctionId: bid.AuctionId,
-				Bidder:    bid.Bidder,
+				Bidder:    bid.Bidder.String(),
 				Credits:   remainingCredits,
 				Price:     new(big.Int).Div(new(big.Int).Mul(bid.Price, remainingCredits), bid.Credits),
 				State:     "partial_accepted",
@@ -106,7 +106,7 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 			// Create reject bid with remaining credits the exceed the required
 			rejectedBid := &entity.Bid{
 				AuctionId: bid.AuctionId,
-				Bidder:    bid.Bidder,
+				Bidder:    bid.Bidder.String(),
 				Credits:   new(big.Int).Sub(bid.Credits, remainingCredits),
 				Price:     new(big.Int).Div(new(big.Int).Mul(bid.Price, new(big.Int).Sub(bid.Credits, remainingCredits)), bid.Credits),
 				State:     "rejected",
@@ -136,7 +136,7 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 			_, err = u.BidRepository.UpdateBid(&entity.Bid{
 				Id:        bid.Id,
 				AuctionId: bid.AuctionId,
-				Bidder:    bid.Bidder,
+				Bidder:    bid.Bidder.String(),
 				Credits:   bid.Credits,
 				Price:     bid.Price,
 				State:     "accepted",
@@ -153,7 +153,7 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 			_, err = u.BidRepository.UpdateBid(&entity.Bid{
 				Id:        bid.Id,
 				AuctionId: bid.AuctionId,
-				Bidder:    bid.Bidder,
+				Bidder:    bid.Bidder.String(),
 				Credits:   bid.Credits,
 				Price:     bid.Price,
 				State:     "rejected",

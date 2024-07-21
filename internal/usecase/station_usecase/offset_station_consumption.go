@@ -15,14 +15,14 @@ type OffSetStationConsumptionInputDTO struct {
 }
 
 type OffSetStationConsumptionOutputDTO struct {
-	Id             string         `json:"id"`
-	Consumption    *big.Int       `json:"consumption"`
-	Owner          common.Address `json:"owner"`
-	PricePerCredit *big.Int       `json:"price_per_credit"`
-	State          string         `json:"state"`
-	Latitude       float64        `json:"latitude"`
-	Longitude      float64        `json:"longitude"`
-	UpdatedAt      int64          `json:"updated_at"`
+	Id             string   `json:"id"`
+	Consumption    *big.Int `json:"consumption"`
+	Owner          string   `json:"owner"`
+	PricePerCredit *big.Int `json:"price_per_credit"`
+	State          string   `json:"state"`
+	Latitude       float64  `json:"latitude"`
+	Longitude      float64  `json:"longitude"`
+	UpdatedAt      int64    `json:"updated_at"`
 }
 
 type OffSetStationConsumptionUseCase struct {
@@ -40,7 +40,7 @@ func (u *OffSetStationConsumptionUseCase) Execute(input *OffSetStationConsumptio
 	if err != nil {
 		return nil, err
 	}
-	if station.Owner != metadata.MsgSender {
+	if common.HexToAddress(station.Owner) != metadata.MsgSender {
 		return nil, fmt.Errorf("can't offSet station consumption, because the station owner is not equal to the msg_sender address, expected: %v, got: %v", station.Owner, metadata.MsgSender)
 	}
 

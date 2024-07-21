@@ -18,7 +18,7 @@ func TestFindAllAuctionsUseCase(t *testing.T) {
 		{
 			Id:        1,
 			AuctionId: 1,
-			Bidder:    common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678"),
+			Bidder:    common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678").String(),
 			Credits:   big.NewInt(500),
 			Price:     big.NewInt(500),
 			State:     "active",
@@ -31,7 +31,7 @@ func TestFindAllAuctionsUseCase(t *testing.T) {
 		{
 			Id:        2,
 			AuctionId: 2,
-			Bidder:    common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678"),
+			Bidder:    common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678").String(),
 			Credits:   big.NewInt(600),
 			Price:     big.NewInt(600),
 			State:     "active",
@@ -82,7 +82,7 @@ func TestFindAllAuctionsUseCase(t *testing.T) {
 	for i, bid := range (*output)[0].Bids {
 		assert.Equal(t, mockBids1[i].Id, bid.Id)
 		assert.Equal(t, mockBids1[i].AuctionId, bid.AuctionId)
-		assert.Equal(t, mockBids1[i].Bidder, bid.Bidder)
+		assert.Equal(t, mockBids1[i].Bidder, bid.Bidder.String())
 		assert.Equal(t, mockBids1[i].Credits, bid.Credits)
 		assert.Equal(t, mockBids1[i].Price, bid.Price)
 		assert.Equal(t, string(mockBids1[i].State), bid.State)
@@ -102,7 +102,7 @@ func TestFindAllAuctionsUseCase(t *testing.T) {
 	for i, bid := range (*output)[1].Bids {
 		assert.Equal(t, mockBids2[i].Id, bid.Id)
 		assert.Equal(t, mockBids2[i].AuctionId, bid.AuctionId)
-		assert.Equal(t, mockBids2[i].Bidder, bid.Bidder)
+		assert.Equal(t, mockBids2[i].Bidder, bid.Bidder.String())
 		assert.Equal(t, mockBids2[i].Credits, bid.Credits)
 		assert.Equal(t, mockBids2[i].Price, bid.Price)
 		assert.Equal(t, string(mockBids2[i].State), bid.State)

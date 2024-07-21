@@ -19,7 +19,7 @@ func TestFindUserByRoleUseCase(t *testing.T) {
 	mockUser := &entity.User{
 		Id:        1,
 		Role:      "admin",
-		Address:   common.HexToAddress("0x123"),
+		Address:   common.HexToAddress("0x123").String(),
 		CreatedAt: createdAt,
 		UpdatedAt: updatedAt,
 	}

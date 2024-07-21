@@ -3,6 +3,7 @@ package advance_handler
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/contract_usecase"
@@ -24,6 +25,8 @@ func (h *ContractAdvanceHandlers) CreateContractHandler(env rollmelette.Env, met
 	if err := json.Unmarshal(payload, &input); err != nil {
 		return err
 	}
+	input.Address = strings.ToLower(input.Address)
+
 	createContract := contract_usecase.NewCreateContractUseCase(h.ContractRepository)
 	res, err := createContract.Execute(&input, metadata)
 	if err != nil {
@@ -38,6 +41,8 @@ func (h *ContractAdvanceHandlers) UpdateContractHandler(env rollmelette.Env, met
 	if err := json.Unmarshal(payload, &input); err != nil {
 		return err
 	}
+	input.Address = strings.ToLower(input.Address)
+
 	updateContract := contract_usecase.NewUpdateContractUseCase(h.ContractRepository)
 	res, err := updateContract.Execute(&input, metadata)
 	if err != nil {

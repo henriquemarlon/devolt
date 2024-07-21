@@ -4,34 +4,36 @@ import (
 	"context"
 	"github.com/devolthq/devolt/internal/usecase/user_usecase"
 	"github.com/devolthq/devolt/pkg/router"
+	di "github.com/devolthq/devolt/tools/dependency_injection"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 	"log"
 	"log/slog"
+	"strings"
 )
 
 func main() {
 	//////////////////////// Setup Handlers //////////////////////////
-	ah, err := NewAdvanceHandlers()
+	ah, err := di.NewAdvanceHandlers()
 	if err != nil {
 		log.Fatalf("Failed to initialize advance handlers from wire: %v", err)
 	}
 
-	ih, err := NewInspectHandlers()
+	ih, err := di.NewInspectHandlers()
 	if err != nil {
 		log.Fatalf("Failed to initialize inspect handlers from wire: %v", err)
 	}
 
-	ms, err := NewMiddlewares()
+	ms, err := di.NewMiddlewares()
 	if err != nil {
 		log.Fatalf("Failed to initialize middlewares from wire: %v", err)
 	}
 
 	//////////////////////// Initial Owner //////////////////////////
-	initialOwner := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+	initialOwner := common.HexToAddress("0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266")
 	createUser := user_usecase.NewCreateUserUseCase(ah.UserAdvanceHandlers.UserRepository)
 	if _, err = createUser.Execute(&user_usecase.CreateUserInputDTO{
-		Address: initialOwner,
+		Address: strings.ToLower(initialOwner.String()),
 		Role:    "admin",
 	}, rollmelette.Metadata{}); err != nil {
 		slog.Error("failed to setup initial onwer", "error", err)

@@ -10,7 +10,7 @@ import (
 
 func TestNewContract(t *testing.T) {
 	symbol := "ETH"
-	address := common.HexToAddress("0x123")
+	address := common.HexToAddress("0x123").String()
 	createdAt := time.Now().Unix()
 
 	contract, err := NewContract(symbol, address, createdAt)
@@ -27,7 +27,7 @@ func TestContract_Validate(t *testing.T) {
 	// Invalid symbol
 	contract := &Contract{
 		Symbol:    "",
-		Address:   common.HexToAddress("0x123"),
+		Address:   common.HexToAddress("0x123").String(),
 		CreatedAt: createdAt,
 	}
 	err := contract.Validate()
@@ -36,13 +36,13 @@ func TestContract_Validate(t *testing.T) {
 
 	// Invalid address
 	contract.Symbol = "ETH"
-	contract.Address = common.Address{}
+	contract.Address = ""
 	err = contract.Validate()
 	assert.NotNil(t, err)
 	assert.Equal(t, ErrInvalidContract, err)
 
 	// Valid contract
-	contract.Address = common.HexToAddress("0x123")
+	contract.Address = common.HexToAddress("0x123").String()
 	err = contract.Validate()
 	assert.Nil(t, err)
 }

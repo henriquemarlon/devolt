@@ -4,25 +4,24 @@ import (
 	"math/big"
 
 	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 )
 
 type UpdateOrderInputDTO struct {
-	Id             uint           `json:"id"`
-	Buyer          common.Address `json:"buyer"`
-	Credits        *big.Int       `json:"credits"`
-	StationId      string         `json:"station_id"`
-	PricePerCredit *big.Int       `json:"price_per_credit"`
+	Id             uint     `json:"id"`
+	Buyer          string   `json:"buyer"`
+	Credits        *big.Int `json:"credits"`
+	StationId      string   `json:"station_id"`
+	PricePerCredit *big.Int `json:"price_per_credit"`
 }
 
 type UpdateOrderOutputDTO struct {
-	Id             uint           `json:"id"`
-	Buyer          common.Address `json:"buyer"`
-	Credits        *big.Int       `json:"credits"`
-	StationId      string         `json:"station_id"`
-	PricePerCredit *big.Int       `json:"price_per_credit"`
-	UpdatedAt      int64          `json:"updated_at"`
+	Id             uint     `json:"id"`
+	Buyer          string   `json:"buyer"`
+	Credits        *big.Int `json:"credits"`
+	StationId      string   `json:"station_id"`
+	PricePerCredit *big.Int `json:"price_per_credit"`
+	UpdatedAt      int64    `json:"updated_at"`
 }
 
 type UpdateOrderUseCase struct {

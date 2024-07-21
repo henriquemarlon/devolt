@@ -2,11 +2,10 @@ package user_usecase
 
 import (
 	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 type FindUserByAddressInputDTO struct {
-	Address common.Address `json:"address"`
+	Address string `json:"address"`
 }
 
 type FindUserByAddressUseCase struct {
