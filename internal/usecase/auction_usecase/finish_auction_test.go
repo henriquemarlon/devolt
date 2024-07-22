@@ -1,97 +1,74 @@
 package auction_usecase
 
-// import (
-// 	"math/big"
-// 	"testing"
+import (
+	"math/big"
+	"testing"
+	"time"
 
-// 	"github.com/devolthq/devolt/internal/domain/entity"
-// 	"github.com/ethereum/go-ethereum/common"
-// 	"github.com/rollmelette/rollmelette"
-// 	"github.com/stretchr/testify/assert"
-// 	"github.com/stretchr/testify/mock"
-// 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
-// )
+	"github.com/devolthq/devolt/internal/domain/entity"
+	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/devolthq/devolt/pkg/custom_type"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/rollmelette/rollmelette"
+)
 
-// func TestFinishAuctionUseCase(t *testing.T) {
-// 	mockAuctionRepo := new(repository.MockAuctionRepository)
-// 	mockBidRepo := new(repository.MockBidRepository)
-// 	finishAuction := NewFinishAuctionUseCase(mockAuctionRepo, mockBidRepo)
+func TestFinishAuctionUseCase(t *testing.T) {
+	mockAuctionRepo := new(repository.MockAuctionRepository)
+	mockBidRepo := new(repository.MockBidRepository)
+	finishAuctionUseCase := NewFinishAuctionUseCase(mockAuctionRepo, mockBidRepo)
 
-// 	mockAuction := &entity.Auction{
-// 		Id:         1,
-// 		Credits:    big.NewInt(1000),
-// 		PriceLimit: big.NewInt(2000),
-// 		State:      "active",
-// 		ExpiresAt:  1000,
-// 		CreatedAt:  900,
-// 		UpdatedAt:  900,
-// 	}
+	activeAuction := &entity.Auction{
+		Id:         1,
+		Credits:    custom_type.NewBigInt(big.NewInt(1000)),
+		PriceLimit: custom_type.NewBigInt(big.NewInt(500)),
+		State:      entity.AuctionOngoing,
+		ExpiresAt:  time.Now().Add(-1 * time.Hour).Unix(), // expired auction
+		CreatedAt:  time.Now().Unix(),
+		UpdatedAt:  time.Now().Unix(),
+	}
 
-// 	mockBids := []*entity.Bid{
-// 		{
-// 			Id:        1,
-// 			AuctionId: 1,
-// 			Bidder:    common.HexToAddress("0x0"),
-// 			Credits:   big.NewInt(500),
-// 			Price:     big.NewInt(1000),
-// 			CreatedAt: 950,
-// 		},
-// 		{
-// 			Id:        2,
-// 			AuctionId: 1,
-// 			Bidder:    common.HexToAddress("0x1"),
-// 			Credits:   big.NewInt(600),
-// 			Price:     big.NewInt(1200),
-// 			CreatedAt: 960,
-// 		},
-// 	}
+	mockBids := []*entity.Bid{
+		{
+			Id:        1,
+			AuctionId: 1,
+			Bidder:    custom_type.NewAddress(common.HexToAddress("0x1")),
+			Credits:   custom_type.NewBigInt(big.NewInt(500)),
+			Price:     custom_type.NewBigInt(big.NewInt(250)),
+			State:     entity.BidStatePending,
+			CreatedAt: time.Now().Unix(),
+			UpdatedAt: time.Now().Unix(),
+		},
+		{
+			Id:        2,
+			AuctionId: 1,
+			Bidder:    custom_type.NewAddress(common.HexToAddress("0x2")),
+			Credits:   custom_type.NewBigInt(big.NewInt(700)),
+			Price:     custom_type.NewBigInt(big.NewInt(350)),
+			State:     entity.BidStatePending,
+			CreatedAt: time.Now().Unix(),
+			UpdatedAt: time.Now().Unix(),
+		},
+	}
 
-// 	updatedBids := []*entity.Bid{
-// 		{
-// 			Id:        1,
-// 			AuctionId: 1,
-// 			Bidder:    common.HexToAddress("0x0"),
-// 			Credits:   big.NewInt(500),
-// 			Price:     big.NewInt(1000),
-// 			State:     "accepted",
-// 			UpdatedAt: 1100,
-// 		},
-// 		{
-// 			Id:        2,
-// 			AuctionId: 1,
-// 			Bidder:    common.HexToAddress("0x1"),
-// 			Credits:   big.NewInt(600),
-// 			Price:     big.NewInt(1200),
-// 			State:     "rejected",
-// 			UpdatedAt: 1100,
-// 		},
-// 	}
+	mockAuctionRepo.On("FindActiveAuction").Return(activeAuction, nil)
+	mockBidRepo.On("FindBidsByAuctionId", uint(1)).Return(mockBids, nil)
+	mockBidRepo.On("CreateBid", mock.Anything).Return(&entity.Bid{}, nil)
+	mockBidRepo.On("DeleteBid", mock.AnythingOfType("uint")).Return(nil)
+	mockBidRepo.On("UpdateBid", mock.Anything).Return(nil, nil)
+	mockAuctionRepo.On("UpdateAuction", mock.Anything).Return(nil, nil)
 
-// 	mockAuctionRepo.On("FindActiveAuction").Return(mockAuction, nil)
-// 	mockBidRepo.On("FindBidsByAuctionId", uint(1)).Return(mockBids, nil)
-// 	mockBidRepo.On("UpdateBid", mock.AnythingOfType("*entity.Bid")).Return(func(bid *entity.Bid) *entity.Bid {
-// 		for _, updatedBid := range updatedBids {
-// 			if updatedBid.Id == bid.Id {
-// 				return updatedBid
-// 			}
-// 		}
-// 		return bid
-// 	}, nil)
-// 	mockBidRepo.On("CreateBid", mock.AnythingOfType("*entity.Bid")).Return(func(bid *entity.Bid) *entity.Bid { return bid }, nil)
-// 	mockBidRepo.On("DeleteBid", uint(1)).Return(nil)
-// 	mockBidRepo.On("DeleteBid", uint(2)).Return(nil)
-// 	mockAuctionRepo.On("UpdateAuction", mock.AnythingOfType("*entity.Auction")).Return(func(auction *entity.Auction) *entity.Auction {
-// 		auction.State = "finished"
-// 		auction.UpdatedAt = 1100
-// 		return auction
-// 	}, nil)
+	metadata := rollmelette.Metadata{
+		BlockTimestamp: time.Now().Unix(),
+	}
 
-// 	metadata := rollmelette.Metadata{BlockTimestamp: 1100}
-// 	output, err := finishAuction.Execute(metadata)
-// 	assert.Nil(t, err)
-// 	assert.NotNil(t, output)
-// 	assert.Equal(t, uint(1), output.Id)
+	output, err := finishAuctionUseCase.Execute(metadata)
 
-// 	mockAuctionRepo.AssertExpectations(t)
-// 	mockBidRepo.AssertExpectations(t)
-// }
+	assert.Nil(t, err)
+	assert.NotNil(t, output)
+	assert.Equal(t, activeAuction.Id, output.Id)
+
+	mockAuctionRepo.AssertExpectations(t)
+	mockBidRepo.AssertExpectations(t)
+}

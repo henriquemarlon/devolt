@@ -38,6 +38,7 @@ func (s *IntegrationTestSuite) TestItCreateUser() {
 	}
 	expectedOutput := `created user with address: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 and role: admin`
 	result := s.tester.Advance(sender, input)
+	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 }
 
@@ -53,6 +54,7 @@ func (s *IntegrationTestSuite) TestItUpdateUser() {
 	}
 	expectedOutput := "updated user with address: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 and role: admin"
 	result := s.tester.Advance(sender, input)
+	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 }
 
@@ -69,6 +71,7 @@ func (s *IntegrationTestSuite) TestItDeleteUser() {
 	}
 	expectedOutput := fmt.Sprintf(`deleted user with address: %v`, address)
 	result := s.tester.Advance(sender, input)
+	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 }
 
@@ -89,6 +92,7 @@ func (s *IntegrationTestSuite) TestItCreateContract() {
 	}
 	expectedOutput := `created contract with symbol: VOLT and address: 0x0000000000000000000000000000000000000001`
 	result := s.tester.Advance(sender, input)
+	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 }
 
@@ -104,6 +108,7 @@ func (s *IntegrationTestSuite) TestItUpdateContract() {
 	}
 	expectedOutput := `updated contract with symbol: VOLT and address: 0x0000000000000000000000000000000000000003`
 	result := s.tester.Advance(sender, input)
+	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 }
 
@@ -119,6 +124,7 @@ func (s *IntegrationTestSuite) TestItDeleteContract() {
 	}
 	expectedOutput := `deleted contract with symbol: VOLT`
 	result := s.tester.Advance(sender, input)
+	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 }
 
@@ -136,6 +142,7 @@ func (s *IntegrationTestSuite) TestItCreateStation() {
 	}
 	expectedOutput := `created station with id: station-1 and owner: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8`
 	result := s.tester.Advance(sender, input)
+	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 }
 
@@ -151,6 +158,7 @@ func (s *IntegrationTestSuite) TestItUpdateStation() {
 	}
 	expectedOutput := `updated station with id: station-1, address: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 and consumption: 100`
 	result := s.tester.Advance(sender, input)
+	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 }
 
@@ -166,6 +174,7 @@ func (s *IntegrationTestSuite) TestItDeleteStation() {
 	}
 	expectedOutput := `deleted station with id: station-1`
 	result := s.tester.Advance(sender, input)
+	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 }
 
