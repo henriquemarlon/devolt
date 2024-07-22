@@ -21,7 +21,7 @@ func SetupSQlite() (*gorm.DB, error) {
 		},
 	)
 
-	db, err := gorm.Open(sqlite.Open("devolt.db"), &gorm.Config{
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{
 		Logger: newLogger,
 	})
 	if err != nil {

@@ -21,18 +21,18 @@
 
 - **createContract:**
   - [x] Test creating a contract with valid data.
-  - [ ] Test creating a contract without sufficient permissions.
-  - [ ] Test creating a contract with invalid data.
+  - [x  ] Test creating a contract without sufficient permissions.
+  - [x] Test creating a contract with invalid data.
 
 - **updateContract:**
   - [x] Test updating a contract with valid data.
-  - [ ] Test updating a contract without sufficient permissions.
-  - [ ] Test updating a non-existent contract.
+  - [x] Test updating a contract without sufficient permissions.
+  - [x] Test updating a non-existent contract.
 
 - **deleteContract:**
   - [x] Test deleting a contract with valid ID.
-  - [ ] Test deleting a contract without sufficient permissions.
-  - [ ] Test deleting a non-existent contract.
+  - [x] Test deleting a contract without sufficient permissions.
+  - [x] Test deleting a non-existent contract.
 
 ## Bid Management
 
@@ -88,13 +88,13 @@
 
 - **createUser:**
   - [x] Test creating a user with valid data.
-  - [ ] Test creating a user without sufficient permissions.
-  - [ ] Test creating a user with invalid data.
+  - [x] Test creating a user without sufficient permissions.
+  - [x] Test creating a user with invalid data.
 
 - **updateUser:**
   - [x] Test updating a user with valid data.
-  - [ ] Test updating a user without sufficient permissions.
-  - [ ] Test updating a non-existent user.
+  - [x] Test updating a user without sufficient permissions.
+  - [x] Test updating a non-existent user.
 
 - **withdrawApp:**
   - [ ] Test withdrawing application funds with valid data.
@@ -102,5 +102,5 @@
 
 - **deleteUser:**
   - [x] Test deleting a user with valid address.
-  - [ ] Test deleting a user without sufficient permissions.
-  - [ ] Test deleting a non-existent user.
+  - [x] Test deleting a user without sufficient permissions.
+  - [x] Test deleting a non-existent user.
