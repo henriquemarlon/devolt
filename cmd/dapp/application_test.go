@@ -20,7 +20,7 @@ type IntegrationTestSuite struct {
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
-	app := SetupApplication()
+	app := SetupApplicationMemory()
 	s.tester = rollmelette.NewTester(app)
 }
 

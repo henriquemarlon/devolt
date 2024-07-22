@@ -8,7 +8,7 @@ import (
 
 func main() {
 	//////////////////////// Setup Application //////////////////////////
-	app := SetupApplication()
+	app := SetupApplicationPersistent()
 
 	///////////////////////// Rollmelette //////////////////////////
 	ctx := context.Background()

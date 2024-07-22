@@ -18,8 +18,8 @@ import (
 
 // Injectors from wire.go:
 
-func NewMiddlewares() (*Middlewares, error) {
-	gormDB, err := configs.SetupSQlite()
+func NewMiddlewaresPersistent() (*Middlewares, error) {
+	gormDB, err := configs.SetupSQlitePersistent()
 	if err != nil {
 		return nil, err
 	}
@@ -31,8 +31,21 @@ func NewMiddlewares() (*Middlewares, error) {
 	return middlewares, nil
 }
 
-func NewAdvanceHandlers() (*AdvanceHandlers, error) {
-	gormDB, err := configs.SetupSQlite()
+func NewMiddlewaresMemory() (*Middlewares, error) {
+	gormDB, err := configs.SetupSQliteMemory()
+	if err != nil {
+		return nil, err
+	}
+	userRepositorySqlite := db.NewUserRepositorySqlite(gormDB)
+	rbacMiddleware := middleware.NewRBACMiddleware(userRepositorySqlite)
+	middlewares := &Middlewares{
+		RBAC: rbacMiddleware,
+	}
+	return middlewares, nil
+}
+
+func NewAdvanceHandlersPersistent() (*AdvanceHandlers, error) {
+	gormDB, err := configs.SetupSQlitePersistent()
 	if err != nil {
 		return nil, err
 	}
@@ -59,8 +72,64 @@ func NewAdvanceHandlers() (*AdvanceHandlers, error) {
 	return advanceHandlers, nil
 }
 
-func NewInspectHandlers() (*InspectHandlers, error) {
-	gormDB, err := configs.SetupSQlite()
+func NewAdvanceHandlersMemory() (*AdvanceHandlers, error) {
+	gormDB, err := configs.SetupSQliteMemory()
+	if err != nil {
+		return nil, err
+	}
+	bidRepositorySqlite := db.NewBidRepositorySqlite(gormDB)
+	userRepositorySqlite := db.NewUserRepositorySqlite(gormDB)
+	contractRepositorySqlite := db.NewContractRepositorySqlite(gormDB)
+	auctionRepositorySqlite := db.NewAuctionRepositorySqlite(gormDB)
+	bidAdvanceHandlers := advance_handler.NewBidAdvanceHandlers(bidRepositorySqlite, userRepositorySqlite, contractRepositorySqlite, auctionRepositorySqlite)
+	userAdvanceHandlers := advance_handler.NewUserAdvanceHandlers(userRepositorySqlite, contractRepositorySqlite)
+	orderRepositorySqlite := db.NewOrderRepositorySqlite(gormDB)
+	stationRepositorySqlite := db.NewStationRepositorySqlite(gormDB)
+	orderAdvanceHandlers := advance_handler.NewOrderAdvanceHandlers(orderRepositorySqlite, stationRepositorySqlite, contractRepositorySqlite)
+	stationAdvanceHandlers := advance_handler.NewStationAdvanceHandlers(stationRepositorySqlite, contractRepositorySqlite)
+	auctionAdvanceHandlers := advance_handler.NewAuctionAdvanceHandlers(bidRepositorySqlite, userRepositorySqlite, auctionRepositorySqlite, contractRepositorySqlite)
+	contractAdvanceHandlers := advance_handler.NewContractAdvanceHandlers(contractRepositorySqlite)
+	advanceHandlers := &AdvanceHandlers{
+		BidAdvanceHandlers:      bidAdvanceHandlers,
+		UserAdvanceHandlers:     userAdvanceHandlers,
+		OrderAdvanceHandlers:    orderAdvanceHandlers,
+		StationAdvanceHandlers:  stationAdvanceHandlers,
+		AuctionAdvanceHandlers:  auctionAdvanceHandlers,
+		ContractAdvanceHandlers: contractAdvanceHandlers,
+	}
+	return advanceHandlers, nil
+}
+
+func NewInspectHandlersPersistent() (*InspectHandlers, error) {
+	gormDB, err := configs.SetupSQlitePersistent()
+	if err != nil {
+		return nil, err
+	}
+	bidRepositorySqlite := db.NewBidRepositorySqlite(gormDB)
+	bidInspectHandlers := inspect_handler.NewBidInspectHandlers(bidRepositorySqlite)
+	userRepositorySqlite := db.NewUserRepositorySqlite(gormDB)
+	contractRepositorySqlite := db.NewContractRepositorySqlite(gormDB)
+	userInspectHandlers := inspect_handler.NewUserInspectHandlers(userRepositorySqlite, contractRepositorySqlite)
+	orderRepositorySqlite := db.NewOrderRepositorySqlite(gormDB)
+	orderInspectHandlers := inspect_handler.NewOrderInspectHandlers(orderRepositorySqlite)
+	stationRepositorySqlite := db.NewStationRepositorySqlite(gormDB)
+	stationInspectHandlers := inspect_handler.NewStationInspectHandlers(stationRepositorySqlite)
+	auctionRepositorySqlite := db.NewAuctionRepositorySqlite(gormDB)
+	auctionInspectHandlers := inspect_handler.NewAuctionInspectHandlers(auctionRepositorySqlite)
+	contractInspectHandlers := inspect_handler.NewContractInspectHandlers(contractRepositorySqlite)
+	inspectHandlers := &InspectHandlers{
+		BidInspectHandlers:      bidInspectHandlers,
+		UserInspectHandlers:     userInspectHandlers,
+		OrderInspectHandlers:    orderInspectHandlers,
+		StationInspectHandlers:  stationInspectHandlers,
+		AuctionInspectHandlers:  auctionInspectHandlers,
+		ContractInspectHandlers: contractInspectHandlers,
+	}
+	return inspectHandlers, nil
+}
+
+func NewInspectHandlersMemory() (*InspectHandlers, error) {
+	gormDB, err := configs.SetupSQliteMemory()
 	if err != nil {
 		return nil, err
 	}

@@ -65,9 +65,9 @@ var setMiddleware = wire.NewSet(
 	middleware.NewRBACMiddleware,
 )
 
-func NewMiddlewares() (*Middlewares, error) {
+func NewMiddlewaresPersistent() (*Middlewares, error) {
 	wire.Build(
-		configs.SetupSQlite,
+		configs.SetupSQlitePersistent,
 		setUserRepositoryDependency,
 		setMiddleware,
 		wire.Struct(new(Middlewares), "*"),
@@ -75,9 +75,19 @@ func NewMiddlewares() (*Middlewares, error) {
 	return nil, nil
 }
 
-func NewAdvanceHandlers() (*AdvanceHandlers, error) {
+func NewMiddlewaresMemory() (*Middlewares, error) {
 	wire.Build(
-		configs.SetupSQlite,
+		configs.SetupSQliteMemory,
+		setUserRepositoryDependency,
+		setMiddleware,
+		wire.Struct(new(Middlewares), "*"),
+	)
+	return nil, nil
+}
+
+func NewAdvanceHandlersPersistent() (*AdvanceHandlers, error) {
+	wire.Build(
+		configs.SetupSQlitePersistent,
 		setBidRepositoryDependency,
 		setUserRepositoryDependency,
 		setOrderRepositoryDependency,
@@ -90,9 +100,39 @@ func NewAdvanceHandlers() (*AdvanceHandlers, error) {
 	return nil, nil
 }
 
-func NewInspectHandlers() (*InspectHandlers, error) {
+func NewAdvanceHandlersMemory() (*AdvanceHandlers, error) {
 	wire.Build(
-		configs.SetupSQlite,
+		configs.SetupSQliteMemory,
+		setBidRepositoryDependency,
+		setUserRepositoryDependency,
+		setOrderRepositoryDependency,
+		setStationRepositoryDependency,
+		setAuctionRepositoryDependency,
+		setContractRepositoryDependency,
+		setAdvanceHandlers,
+		wire.Struct(new(AdvanceHandlers), "*"),
+	)
+	return nil, nil
+}
+
+func NewInspectHandlersPersistent() (*InspectHandlers, error) {
+	wire.Build(
+		configs.SetupSQlitePersistent,
+		setBidRepositoryDependency,
+		setUserRepositoryDependency,
+		setOrderRepositoryDependency,
+		setStationRepositoryDependency,
+		setAuctionRepositoryDependency,
+		setContractRepositoryDependency,
+		setInspectHandlers,
+		wire.Struct(new(InspectHandlers), "*"),
+	)
+	return nil, nil
+}
+
+func NewInspectHandlersMemory() (*InspectHandlers, error) {
+	wire.Build(
+		configs.SetupSQliteMemory,
 		setBidRepositoryDependency,
 		setUserRepositoryDependency,
 		setOrderRepositoryDependency,
