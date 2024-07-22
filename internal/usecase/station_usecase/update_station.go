@@ -1,30 +1,33 @@
 package station_usecase
 
 import (
-	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/rollmelette/rollmelette"
 	"math/big"
+
+	"github.com/devolthq/devolt/internal/domain/entity"
+	"github.com/devolthq/devolt/pkg/custom_type"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/rollmelette/rollmelette"
 )
 
 type UpdateStationInputDTO struct {
-	Id             string   `json:"id"`
-	Consumption    *big.Int `json:"consumption"`
-	Owner          string   `json:"owner"`
-	PricePerCredit *big.Int `json:"price_per_credit"`
-	State          string   `json:"state"`
-	Latitude       float64  `json:"latitude"`
-	Longitude      float64  `json:"longitude"`
+	Id             string         `json:"id"`
+	Consumption    *big.Int       `json:"consumption"`
+	Owner          common.Address `json:"owner"`
+	PricePerCredit *big.Int       `json:"price_per_credit"`
+	State          string         `json:"state"`
+	Latitude       float64        `json:"latitude"`
+	Longitude      float64        `json:"longitude"`
 }
 
 type UpdateStationOutputDTO struct {
-	Id             string   `json:"id"`
-	Consumption    *big.Int `json:"consumption"`
-	Owner          string   `json:"owner"`
-	PricePerCredit *big.Int `json:"price_per_credit"`
-	State          string   `json:"state"`
-	Latitude       float64  `json:"latitude"`
-	Longitude      float64  `json:"longitude"`
-	UpdatedAt      int64    `json:"updated_at"`
+	Id             string              `json:"id"`
+	Consumption    custom_type.BigInt  `json:"consumption"`
+	Owner          custom_type.Address `json:"owner"`
+	PricePerCredit custom_type.BigInt  `json:"price_per_credit"`
+	State          string              `json:"state"`
+	Latitude       float64             `json:"latitude"`
+	Longitude      float64             `json:"longitude"`
+	UpdatedAt      int64               `json:"updated_at"`
 }
 
 type UpdateStationUseCase struct {
@@ -40,9 +43,9 @@ func NewUpdateStationUseCase(stationRepository entity.StationRepository) *Update
 func (u *UpdateStationUseCase) Execute(input *UpdateStationInputDTO, metadata rollmelette.Metadata) (*UpdateStationOutputDTO, error) {
 	res, err := u.StationRepository.UpdateStation(&entity.Station{
 		Id:             input.Id,
-		Consumption:    input.Consumption,
-		Owner:          input.Owner,
-		PricePerCredit: input.PricePerCredit,
+		Consumption:    custom_type.NewBigInt(input.Consumption),
+		Owner:          custom_type.NewAddress(input.Owner),
+		PricePerCredit: custom_type.NewBigInt(input.PricePerCredit),
 		State:          entity.StationState(input.State),
 		Latitude:       input.Latitude,
 		Longitude:      input.Longitude,

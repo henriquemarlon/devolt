@@ -3,19 +3,20 @@ package auction_usecase
 import (
 	"fmt"
 	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/devolthq/devolt/pkg/custom_type"
+	types "github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/rollmelette/rollmelette"
 	"math/big"
 	"sort"
 )
 
 type FinishAuctionSubDTO struct {
-	Id        uint           `json:"id"`
-	AuctionId uint           `json:"auction_id"`
-	Bidder    common.Address `json:"bidder"`
-	Credits   *big.Int       `json:"credits"`
-	Price     *big.Int       `json:"price"`
-	CreatedAt int64          `json:"created_at"`
+	Id        uint                `json:"id"`
+	AuctionId uint                `json:"auction_id"`
+	Bidder    custom_type.Address `json:"bidder"`
+	Credits   types.BigInt        `json:"credits"`
+	Price     types.BigInt        `json:"price"`
+	CreatedAt int64               `json:"created_at"`
 }
 
 type FinishAuctionOutputDTO struct {
@@ -45,8 +46,8 @@ func (a ByPriceCreditsRatioCreatedAt) Swap(i, j int) {
 }
 
 func (a ByPriceCreditsRatioCreatedAt) Less(i, j int) bool {
-	pricePerCreditI := new(big.Int).Div(new(big.Int).Set(a[i].Price), a[i].Credits)
-	pricePerCreditJ := new(big.Int).Div(new(big.Int).Set(a[j].Price), a[j].Credits)
+	pricePerCreditI := new(big.Int).Div(a[i].Price.Int, a[i].Credits.Int)
+	pricePerCreditJ := new(big.Int).Div(a[j].Price.Int, a[j].Credits.Int)
 	if pricePerCreditI.Cmp(pricePerCreditJ) == 0 {
 		return a[i].CreatedAt < a[j].CreatedAt
 	}
@@ -69,14 +70,14 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 	}
 
 	totalCredits := big.NewInt(0)
-	requiredCredits := new(big.Int).Set(activeAuction.Credits)
+	requiredCredits := activeAuction.Credits.Int
 
 	var bidsDTO []*FinishAuctionSubDTO
 	for _, bid := range bids {
 		bidsDTO = append(bidsDTO, &FinishAuctionSubDTO{
 			Id:        bid.Id,
 			AuctionId: bid.AuctionId,
-			Bidder:    common.HexToAddress(bid.Bidder),
+			Bidder:    bid.Bidder,
 			Credits:   bid.Credits,
 			Price:     bid.Price,
 			CreatedAt: bid.CreatedAt,
@@ -91,13 +92,18 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 		}
 
 		remainingCredits := new(big.Int).Sub(requiredCredits, totalCredits)
-		if bid.Credits.Cmp(remainingCredits) > 0 {
+		if bid.Credits.Int.Cmp(remainingCredits) > 0 {
+			acceptedBidCredits := types.NewBigInt(remainingCredits)
+			rejectedBidCredits := types.NewBigInt(new(big.Int).Sub(bid.Credits.Int, remainingCredits))
+			acceptedBidPrice := types.NewBigInt(new(big.Int).Div(new(big.Int).Mul(bid.Price.Int, remainingCredits), bid.Credits.Int))
+			rejectedBidPrice := types.NewBigInt(new(big.Int).Div(new(big.Int).Mul(bid.Price.Int, rejectedBidCredits.Int), bid.Credits.Int))
+
 			// Create bid with exactly required credits
 			acceptedBid := &entity.Bid{
 				AuctionId: bid.AuctionId,
-				Bidder:    bid.Bidder.String(),
-				Credits:   remainingCredits,
-				Price:     new(big.Int).Div(new(big.Int).Mul(bid.Price, remainingCredits), bid.Credits),
+				Bidder:    bid.Bidder,
+				Credits:   acceptedBidCredits,
+				Price:     acceptedBidPrice,
 				State:     "partial_accepted",
 				CreatedAt: bid.CreatedAt,
 				UpdatedAt: metadata.BlockTimestamp,
@@ -106,9 +112,9 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 			// Create reject bid with remaining credits the exceed the required
 			rejectedBid := &entity.Bid{
 				AuctionId: bid.AuctionId,
-				Bidder:    bid.Bidder.String(),
-				Credits:   new(big.Int).Sub(bid.Credits, remainingCredits),
-				Price:     new(big.Int).Div(new(big.Int).Mul(bid.Price, new(big.Int).Sub(bid.Credits, remainingCredits)), bid.Credits),
+				Bidder:    bid.Bidder,
+				Credits:   rejectedBidCredits,
+				Price:     rejectedBidPrice,
 				State:     "rejected",
 				CreatedAt: bid.CreatedAt,
 				UpdatedAt: metadata.BlockTimestamp,
@@ -132,11 +138,11 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 
 			totalCredits.Add(totalCredits, remainingCredits)
 		} else {
-			totalCredits.Add(totalCredits, bid.Credits)
+			totalCredits.Add(totalCredits, bid.Credits.Int)
 			_, err = u.BidRepository.UpdateBid(&entity.Bid{
 				Id:        bid.Id,
 				AuctionId: bid.AuctionId,
-				Bidder:    bid.Bidder.String(),
+				Bidder:    bid.Bidder,
 				Credits:   bid.Credits,
 				Price:     bid.Price,
 				State:     "accepted",
@@ -149,11 +155,11 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 	}
 
 	for _, bid := range bidsDTO {
-		if bid.Credits.Cmp(big.NewInt(0)) > 0 && bid.Credits.Cmp(totalCredits) > 0 {
+		if bid.Credits.Int.Cmp(big.NewInt(0)) > 0 && bid.Credits.Int.Cmp(totalCredits) > 0 {
 			_, err = u.BidRepository.UpdateBid(&entity.Bid{
 				Id:        bid.Id,
 				AuctionId: bid.AuctionId,
-				Bidder:    bid.Bidder.String(),
+				Bidder:    bid.Bidder,
 				Credits:   bid.Credits,
 				Price:     bid.Price,
 				State:     "rejected",

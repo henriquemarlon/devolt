@@ -1,13 +1,15 @@
 package order_usecase
 
 import (
-	"github.com/devolthq/devolt/internal/domain/entity"
-	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/stretchr/testify/assert"
 	"math/big"
 	"testing"
 	"time"
+
+	"github.com/devolthq/devolt/internal/domain/entity"
+	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/devolthq/devolt/pkg/custom_type"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFindAllOrderUseCase(t *testing.T) {
@@ -20,19 +22,19 @@ func TestFindAllOrderUseCase(t *testing.T) {
 	mockOrders := []*entity.Order{
 		{
 			Id:             1,
-			Buyer:          common.HexToAddress("0x123").String(),
-			Credits:        big.NewInt(100),
+			Buyer:          custom_type.NewAddress(common.HexToAddress("0x123")),
+			Credits:        custom_type.NewBigInt(big.NewInt(100)),
 			StationId:      "station_1",
-			PricePerCredit: big.NewInt(10),
+			PricePerCredit: custom_type.NewBigInt(big.NewInt(10)),
 			CreatedAt:      createdAt,
 			UpdatedAt:      updatedAt,
 		},
 		{
 			Id:             2,
-			Buyer:          common.HexToAddress("0x456").String(),
-			Credits:        big.NewInt(200),
+			Buyer:          custom_type.NewAddress(common.HexToAddress("0x123")),
+			Credits:        custom_type.NewBigInt(big.NewInt(200)),
 			StationId:      "station_2",
-			PricePerCredit: big.NewInt(20),
+			PricePerCredit: custom_type.NewBigInt(big.NewInt(20)),
 			CreatedAt:      createdAt,
 			UpdatedAt:      updatedAt,
 		},

@@ -2,19 +2,20 @@ package contract_usecase
 
 import (
 	"github.com/devolthq/devolt/internal/domain/entity"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/rollmelette/rollmelette"
 )
 
 type CreateContractInputDTO struct {
-	Symbol  string `json:"symbol"`
-	Address string `json:"address"`
+	Symbol  string              `json:"symbol"`
+	Address custom_type.Address `json:"address"`
 }
 
 type CreateContractOutputDTO struct {
-	Id        uint   `json:"id"`
-	Symbol    string `json:"symbol"`
-	Address   string `json:"address"`
-	CreatedAt int64  `json:"created_at"`
+	Id        uint                `json:"id"`
+	Symbol    string              `json:"symbol"`
+	Address   custom_type.Address `json:"address"`
+	CreatedAt int64               `json:"created_at"`
 }
 
 type CreateContractUseCase struct {

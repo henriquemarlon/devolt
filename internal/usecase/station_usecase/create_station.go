@@ -1,28 +1,29 @@
 package station_usecase
 
 import (
-	"math/big"
-
 	"github.com/devolthq/devolt/internal/domain/entity"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/rollmelette/rollmelette"
 )
 
 type CreateStationInputDTO struct {
-	Id             string   `json:"id"`
-	Owner          string   `json:"owner"`
-	PricePerCredit *big.Int `json:"price_per_credit"`
-	Latitude       float64  `json:"latitude"`
-	Longitude      float64  `json:"longitude"`
+	Id             string              `json:"id"`
+	Owner          custom_type.Address `json:"owner"`
+	Consumption    custom_type.BigInt  `json:"consumption"`
+	PricePerCredit custom_type.BigInt  `json:"price_per_credit"`
+	Latitude       float64             `json:"latitude"`
+	Longitude      float64             `json:"longitude"`
 }
 
 type CreateStationOutputDTO struct {
-	Id             string   `json:"id"`
-	Owner          string   `json:"owner"`
-	State          string   `json:"state"`
-	PricePerCredit *big.Int `json:"price_per_credit"`
-	Latitude       float64  `json:"latitude"`
-	Longitude      float64  `json:"longitude"`
-	CreatedAt      int64    `json:"created_at"`
+	Id             string              `json:"id"`
+	Owner          custom_type.Address `json:"owner"`
+	State          string              `json:"state"`
+	Consumption    custom_type.BigInt  `json:"consumption"`
+	PricePerCredit custom_type.BigInt  `json:"price_per_credit"`
+	Latitude       float64             `json:"latitude"`
+	Longitude      float64             `json:"longitude"`
+	CreatedAt      int64               `json:"created_at"`
 }
 
 type CreateStationUseCase struct {
@@ -36,7 +37,7 @@ func NewCreateStationUseCase(stationRepository entity.StationRepository) *Create
 }
 
 func (u *CreateStationUseCase) Execute(input *CreateStationInputDTO, metadata rollmelette.Metadata) (*CreateStationOutputDTO, error) {
-	station, err := entity.NewStation(input.Id, input.Owner, input.PricePerCredit, input.Latitude, input.Longitude, metadata.BlockTimestamp)
+	station, err := entity.NewStation(input.Id, input.Owner, input.Consumption, input.PricePerCredit, input.Latitude, input.Longitude, metadata.BlockTimestamp)
 	if err != nil {
 		return nil, err
 	}
@@ -47,6 +48,7 @@ func (u *CreateStationUseCase) Execute(input *CreateStationInputDTO, metadata ro
 	return &CreateStationOutputDTO{
 		Id:             res.Id,
 		Owner:          res.Owner,
+		Consumption:    res.Consumption,
 		PricePerCredit: res.PricePerCredit,
 		State:          string(res.State),
 		Latitude:       res.Latitude,

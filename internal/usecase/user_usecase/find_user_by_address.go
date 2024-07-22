@@ -2,10 +2,11 @@ package user_usecase
 
 import (
 	"github.com/devolthq/devolt/internal/domain/entity"
+	"github.com/devolthq/devolt/pkg/custom_type"
 )
 
 type FindUserByAddressInputDTO struct {
-	Address string `json:"address"`
+	Address custom_type.Address `json:"address"`
 }
 
 type FindUserByAddressUseCase struct {

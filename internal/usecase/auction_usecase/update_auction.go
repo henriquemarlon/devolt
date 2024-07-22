@@ -1,27 +1,26 @@
 package auction_usecase
 
 import (
-	"math/big"
-
 	"github.com/devolthq/devolt/internal/domain/entity"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/rollmelette/rollmelette"
 )
 
 type UpdateAuctionInputDTO struct {
-	Id         uint     `json:"id"`
-	Credits    *big.Int `json:"credits"`
-	PriceLimit *big.Int `json:"price_limit"`
-	State      string   `json:"state"`
-	ExpiresAt  int64    `json:"expires_at"`
+	Id         uint               `json:"id"`
+	Credits    custom_type.BigInt `json:"credits"`
+	PriceLimit custom_type.BigInt `json:"price_limit"`
+	State      string             `json:"state"`
+	ExpiresAt  int64              `json:"expires_at"`
 }
 
 type UpdateAuctionOutputDTO struct {
-	Id         uint     `json:"id"`
-	Credits    *big.Int `json:"credits"`
-	PriceLimit *big.Int `json:"price_limit"`
-	State      string   `json:"state"`
-	ExpiresAt  int64    `json:"expires_at"`
-	UpdatedAt  int64    `json:"updated_at"`
+	Id         uint               `json:"id"`
+	Credits    custom_type.BigInt `json:"credits"`
+	PriceLimit custom_type.BigInt `json:"price_limit"`
+	State      string             `json:"state"`
+	ExpiresAt  int64              `json:"expires_at"`
+	UpdatedAt  int64              `json:"updated_at"`
 }
 
 type UpdateAuctionUseCase struct {

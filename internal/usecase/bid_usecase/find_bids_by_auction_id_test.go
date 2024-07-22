@@ -1,13 +1,15 @@
 package bid_usecase
 
 import (
-	"github.com/devolthq/devolt/internal/domain/entity"
-	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/stretchr/testify/assert"
 	"math/big"
 	"testing"
 	"time"
+
+	"github.com/devolthq/devolt/internal/domain/entity"
+	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/devolthq/devolt/pkg/custom_type"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFindBidsByAuctionIdUseCase(t *testing.T) {
@@ -21,9 +23,9 @@ func TestFindBidsByAuctionIdUseCase(t *testing.T) {
 		{
 			Id:        1,
 			AuctionId: 1,
-			Bidder:    common.HexToAddress("0x1").String(),
-			Credits:   big.NewInt(100),
-			Price:     big.NewInt(50),
+			Bidder:    custom_type.NewAddress(common.HexToAddress("0x1")),
+			Credits:   custom_type.NewBigInt(big.NewInt(100)),
+			Price:     custom_type.NewBigInt(big.NewInt(50)),
 			State:     entity.BidStatePending,
 			CreatedAt: createdAt,
 			UpdatedAt: updatedAt,
@@ -31,9 +33,9 @@ func TestFindBidsByAuctionIdUseCase(t *testing.T) {
 		{
 			Id:        2,
 			AuctionId: 1,
-			Bidder:    common.HexToAddress("0x2").String(),
-			Credits:   big.NewInt(200),
-			Price:     big.NewInt(150),
+			Bidder:    custom_type.NewAddress(common.HexToAddress("0x2")),
+			Credits:   custom_type.NewBigInt(big.NewInt(200)),
+			Price:     custom_type.NewBigInt(big.NewInt(150)),
 			State:     entity.BidStateAccepted,
 			CreatedAt: createdAt,
 			UpdatedAt: updatedAt,

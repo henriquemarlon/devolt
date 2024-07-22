@@ -2,26 +2,27 @@ package order_usecase
 
 import (
 	"fmt"
-	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/rollmelette/rollmelette"
 	"math/big"
+
+	"github.com/devolthq/devolt/internal/domain/entity"
+	"github.com/devolthq/devolt/pkg/custom_type"
+	"github.com/rollmelette/rollmelette"
 )
 
 type CreateOrderInputDTO struct {
-	Buyer     string   `json:"buyer"`
-	Credits   *big.Int `json:"credits"`
-	StationId string   `json:"station_id"`
+	Buyer     custom_type.Address `json:"buyer"`
+	Credits   custom_type.BigInt  `json:"credits"`
+	StationId string              `json:"station_id"`
 }
 
 type CreateOrderOutputDTO struct {
-	Id             uint     `json:"id"`
-	Buyer          string   `json:"buyer"`
-	Credits        *big.Int `json:"credits"`
-	StationId      string   `json:"station_id"`
-	StationOwner   string   `json:"station_address"`
-	PricePerCredit *big.Int `json:"price_per_credit"`
-	CreatedAt      int64    `json:"created_at"`
+	Id             uint                `json:"id"`
+	Buyer          custom_type.Address `json:"buyer"`
+	Credits        custom_type.BigInt  `json:"credits"`
+	StationId      string              `json:"station_id"`
+	StationOwner   custom_type.Address `json:"station_address"`
+	PricePerCredit custom_type.BigInt  `json:"price_per_credit"`
+	CreatedAt      int64               `json:"created_at"`
 }
 
 type CreateOrderUseCase struct {
@@ -48,8 +49,8 @@ func (u *CreateOrderUseCase) Execute(input *CreateOrderInputDTO, deposit rollmel
 	if err != nil {
 		return nil, err
 	}
-	if common.HexToAddress(stablecoin.Address) != orderDeposit.Token {
-		return nil, fmt.Errorf("invalid contract address provided for bid creation: %v", orderDeposit.Token)
+	if stablecoin.Address.Address != orderDeposit.Token {
+		return nil, fmt.Errorf("invalid contract address provided for order creation: %v", orderDeposit.Token)
 	}
 
 	station, err := u.StationRepository.FindStationById(input.StationId)
@@ -57,12 +58,12 @@ func (u *CreateOrderUseCase) Execute(input *CreateOrderInputDTO, deposit rollmel
 		return nil, err
 	}
 
-	paid := new(big.Int).Mul(station.PricePerCredit, input.Credits)
+	paid := new(big.Int).Mul(station.PricePerCredit.Int, input.Credits.Int)
 	if paid.Cmp(orderDeposit.Amount) == -1 {
 		return nil, fmt.Errorf("order payment is less than station price")
 	}
 
-	order, err := entity.NewOrder(input.Buyer, input.Credits, input.StationId, station.PricePerCredit, metadata.BlockTimestamp)
+	order, err := entity.NewOrder(input.Buyer, input.Credits, input.StationId, station.PricePerCredit.Int, metadata.BlockTimestamp)
 	if err != nil {
 		return nil, err
 	}

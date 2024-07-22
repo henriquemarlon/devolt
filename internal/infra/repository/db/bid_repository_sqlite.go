@@ -1,4 +1,4 @@
-package sqlite
+package db
 
 import (
 	"fmt"
@@ -36,7 +36,7 @@ func (r *BidRepositorySqlite) FindBidsByState(auctionId uint, state string) ([]*
 
 func (r *BidRepositorySqlite) FindBidById(id uint) (*entity.Bid, error) {
 	var bid entity.Bid
-	err := r.Db.First(&bid, id).Error
+	err := r.Db.First(&bid, "bid_id = ?", id).Error
 	if err != nil {
 		return nil, fmt.Errorf("failed to find bid by ID: %w", err)
 	}
@@ -70,7 +70,7 @@ func (r *BidRepositorySqlite) UpdateBid(input *entity.Bid) (*entity.Bid, error) 
 }
 
 func (r *BidRepositorySqlite) DeleteBid(id uint) error {
-	err := r.Db.Delete(&entity.Bid{}, id).Error
+	err := r.Db.Delete(&entity.Bid{}, "bid_id = ?", id).Error
 	if err != nil {
 		return fmt.Errorf("failed to delete bid: %w", err)
 	}

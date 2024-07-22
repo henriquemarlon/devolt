@@ -9,6 +9,7 @@ import (
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/order_usecase"
 	"github.com/devolthq/devolt/pkg/router"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 )
 
@@ -60,7 +61,7 @@ func (h *OrderInspectHandlers) FindOrdersByUserHandler(env rollmelette.EnvInspec
 	user := router.PathValue(ctx, "address")
 	findOrderByUser := order_usecase.NewFindOrdersByUserUseCase(h.OrderRepository)
 	res, err := findOrderByUser.Execute(&order_usecase.FindOrderByUserInputDTO{
-		User: user,
+		User: common.HexToAddress(user),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to find order by user: %w from user: %s", err, router.PathValue(ctx, "user"))

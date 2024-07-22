@@ -7,6 +7,7 @@ import (
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 	"github.com/stretchr/testify/assert"
@@ -19,8 +20,8 @@ func TestCreateBidUseCase(t *testing.T) {
 	mockAuctionRepo := new(repository.MockAuctionRepository)
 	createBidUseCase := NewCreateBidUseCase(mockBidRepo, mockContractRepo, mockAuctionRepo)
 
-	credits := big.NewInt(1000)
-	priceLimit := big.NewInt(500)
+	credits := custom_type.NewBigInt(big.NewInt(1000))
+	priceLimit := custom_type.NewBigInt(big.NewInt(500))
 	expiresAt := time.Now().Add(24 * time.Hour).Unix()
 	createdAt := time.Now().Unix()
 	updatedAt := time.Now().Unix()
@@ -38,15 +39,15 @@ func TestCreateBidUseCase(t *testing.T) {
 	mockContract := &entity.Contract{
 		Id:      1,
 		Symbol:  "VOLT",
-		Address: common.HexToAddress("0x123").String(),
+		Address: custom_type.NewAddress(common.HexToAddress("0x123")),
 	}
 
 	mockBid := &entity.Bid{
 		Id:        1,
 		AuctionId: mockAuction.Id,
-		Bidder:    common.HexToAddress("0x1").String(),
+		Bidder:    custom_type.NewAddress(common.HexToAddress("0x1")),
 		Credits:   credits,
-		Price:     big.NewInt(400),
+		Price:     custom_type.NewBigInt(big.NewInt(500)),
 		State:     entity.BidStatePending,
 		CreatedAt: createdAt,
 		UpdatedAt: updatedAt,
@@ -57,13 +58,13 @@ func TestCreateBidUseCase(t *testing.T) {
 	mockBidRepo.On("CreateBid", mock.AnythingOfType("*entity.Bid")).Return(mockBid, nil)
 
 	input := &CreateBidInputDTO{
-		Bidder: common.HexToAddress("0x1").String(),
-		Price:  big.NewInt(400),
+		Bidder: custom_type.NewAddress(common.HexToAddress("0x1")),
+		Price:  custom_type.NewBigInt(big.NewInt(500)),
 	}
 
 	deposit := &rollmelette.ERC20Deposit{
 		Token:  common.HexToAddress("0x123"),
-		Amount: credits,
+		Amount: credits.Int,
 	}
 
 	metadata := rollmelette.Metadata{

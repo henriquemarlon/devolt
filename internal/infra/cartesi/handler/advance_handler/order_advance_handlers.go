@@ -3,14 +3,11 @@ package advance_handler
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
-	"strings"
-
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/contract_usecase"
 	"github.com/devolthq/devolt/internal/usecase/order_usecase"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
+	"math/big"
 )
 
 type OrderAdvanceHandlers struct {
@@ -36,8 +33,6 @@ func (h *OrderAdvanceHandlers) CreateOrderHandler(env rollmelette.Env, metadata 
 	if err := json.Unmarshal(payload, &input); err != nil {
 		return fmt.Errorf("failed to unmarshal input: %w", err)
 	}
-	input.Buyer = strings.ToLower(input.Buyer)
-
 	createOrder := order_usecase.NewCreateOrderUseCase(h.OrderRepository, h.StationRepository, h.ContractRepository)
 	res, err := createOrder.Execute(&input, deposit, metadata)
 	if err != nil {
@@ -57,13 +52,13 @@ func (h *OrderAdvanceHandlers) CreateOrderHandler(env rollmelette.Env, metadata 
 
 	// The station owner gets 40% of the order amount
 	stationFee := new(big.Int).Div(new(big.Int).Mul(deposit.(*rollmelette.ERC20Deposit).Amount, big.NewInt(40)), big.NewInt(100))
-	if err := env.ERC20Transfer(common.HexToAddress(volt.Address), metadata.MsgSender, common.HexToAddress(res.StationOwner), stationFee); err != nil {
+	if err := env.ERC20Transfer(volt.Address.Address, metadata.MsgSender, res.StationOwner.Address, stationFee); err != nil {
 		return err
 	}
 
 	// The application gets the remainder which would be split between the cost of the energy and DeVolt fees
 	remainderValue := new(big.Int).Sub(deposit.(*rollmelette.ERC20Deposit).Amount, stationFee)
-	if err := env.ERC20Transfer(common.HexToAddress(volt.Address), metadata.MsgSender, application, remainderValue); err != nil {
+	if err := env.ERC20Transfer(volt.Address.Address, metadata.MsgSender, application, remainderValue); err != nil {
 		return err
 	}
 
@@ -76,7 +71,6 @@ func (h *OrderAdvanceHandlers) UpdateOrderHandler(env rollmelette.Env, metadata 
 	if err := json.Unmarshal(payload, &input); err != nil {
 		return fmt.Errorf("failed to unmarshal input: %w", err)
 	}
-	input.Buyer = strings.ToLower(input.Buyer)
 	updateOrder := order_usecase.NewUpdateOrderUseCase(h.OrderRepository)
 	res, err := updateOrder.Execute(&input, metadata)
 	if err != nil {

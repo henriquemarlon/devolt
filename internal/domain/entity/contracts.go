@@ -2,6 +2,9 @@ package entity
 
 import (
 	"errors"
+
+	"github.com/devolthq/devolt/pkg/custom_type"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 var (
@@ -18,14 +21,14 @@ type ContractRepository interface {
 }
 
 type Contract struct {
-	Id        uint   `json:"id" gorm:"primaryKey"`
-	Symbol    string `json:"symbol" gorm:"uniqueIndex;not null"`
-	Address   string `json:"address" gorm:"type:text;not null"`
-	CreatedAt int64  `json:"created_at" gorm:"not null"`
-	UpdatedAt int64  `json:"updated_at" gorm:"default:0"`
+	Id        uint                `json:"id" gorm:"primaryKey"`
+	Symbol    string              `json:"symbol" gorm:"uniqueIndex;not null"`
+	Address   custom_type.Address `json:"address" gorm:"type:text;not null"`
+	CreatedAt int64               `json:"created_at" gorm:"not null"`
+	UpdatedAt int64               `json:"updated_at" gorm:"default:0"`
 }
 
-func NewContract(symbol string, address string, createdAt int64) (*Contract, error) {
+func NewContract(symbol string, address custom_type.Address, createdAt int64) (*Contract, error) {
 	contract := &Contract{
 		Symbol:    symbol,
 		Address:   address,
@@ -38,7 +41,7 @@ func NewContract(symbol string, address string, createdAt int64) (*Contract, err
 }
 
 func (c *Contract) Validate() error {
-	if c.Symbol == "" || c.Address == "" {
+	if c.Symbol == "" || c.Address.Address == (common.Address{}) {
 		return ErrInvalidContract
 	}
 	return nil

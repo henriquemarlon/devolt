@@ -1,12 +1,14 @@
 package user_usecase
 
 import (
-	"github.com/devolthq/devolt/internal/domain/entity"
-	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/devolthq/devolt/internal/domain/entity"
+	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/devolthq/devolt/pkg/custom_type"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFindUserByRoleUseCase(t *testing.T) {
@@ -19,7 +21,7 @@ func TestFindUserByRoleUseCase(t *testing.T) {
 	mockUser := &entity.User{
 		Id:        1,
 		Role:      "admin",
-		Address:   common.HexToAddress("0x123").String(),
+		Address:   custom_type.NewAddress(common.HexToAddress("0x123")),
 		CreatedAt: createdAt,
 		UpdatedAt: updatedAt,
 	}

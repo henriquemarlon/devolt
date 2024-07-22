@@ -6,9 +6,7 @@ import (
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/contract_usecase"
 	"github.com/devolthq/devolt/internal/usecase/user_usecase"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
-	"strings"
 )
 
 type UserAdvanceHandlers struct {
@@ -28,18 +26,12 @@ func (h *UserAdvanceHandlers) CreateUserHandler(env rollmelette.Env, metadata ro
 	if err := json.Unmarshal(payload, &input); err != nil {
 		return err
 	}
-	input.Address = strings.ToLower(input.Address)
-
 	createUser := user_usecase.NewCreateUserUseCase(h.UserRepository)
 	res, err := createUser.Execute(&input, metadata)
 	if err != nil {
 		return err
 	}
-	user, err := json.Marshal(res)
-	if err != nil {
-		return fmt.Errorf("failed to marshal User: %w", err)
-	}
-	env.Notice(user)
+	env.Notice([]byte(fmt.Sprintf("created user with address: %v and role: %v", res.Address.Address, res.Role)))
 	return nil
 }
 
@@ -53,7 +45,7 @@ func (h *UserAdvanceHandlers) UpdateUserHandler(env rollmelette.Env, metadata ro
 	if err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("updated user with address: %v and role: %v", res.Address, res.Role)))
+	env.Notice([]byte(fmt.Sprintf("updated user with address: %v and role: %v", res.Address.Address, res.Role)))
 	return nil
 }
 
@@ -67,7 +59,7 @@ func (h *UserAdvanceHandlers) DeleteUserByAddressHandler(env rollmelette.Env, me
 	if err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("deleted user with address: %v", input.Address)))
+	env.Notice([]byte(fmt.Sprintf("deleted user with address: %v", input.Address.Address)))
 	return nil
 }
 
@@ -85,19 +77,19 @@ func (h *UserAdvanceHandlers) WithdrawAppHandler(env rollmelette.Env, metadata r
 	if err != nil {
 		return err
 	}
-	voltBalance := env.ERC20BalanceOf(common.HexToAddress(volt.Address), application)
+	voltBalance := env.ERC20BalanceOf(volt.Address.Address, application)
 	if voltBalance.Sign() == 0 {
 		return fmt.Errorf("no balance of %v to withdraw", volt.Symbol)
 	}
-	stablecoinBalance := env.ERC20BalanceOf(common.HexToAddress(stablecoin.Address), application)
+	stablecoinBalance := env.ERC20BalanceOf(stablecoin.Address.Address, application)
 	if stablecoinBalance.Sign() == 0 {
 		return fmt.Errorf("no balance of %v to withdraw", stablecoin.Symbol)
 	}
-	voltVoucherIndex, err := env.ERC20Withdraw(common.HexToAddress(volt.Address), application, voltBalance)
+	voltVoucherIndex, err := env.ERC20Withdraw(volt.Address.Address, application, voltBalance)
 	if err != nil {
 		return err
 	}
-	stablecoinVoucherIndex, err := env.ERC20Withdraw(common.HexToAddress(stablecoin.Address), application, stablecoinBalance)
+	stablecoinVoucherIndex, err := env.ERC20Withdraw(stablecoin.Address.Address, application, stablecoinBalance)
 	if err != nil {
 		return err
 	}
@@ -115,19 +107,19 @@ func (h *UserAdvanceHandlers) WithdrawHandler(env rollmelette.Env, metadata roll
 	if err != nil {
 		return err
 	}
-	voltBalance := env.ERC20BalanceOf(common.HexToAddress(volt.Address), metadata.MsgSender)
+	voltBalance := env.ERC20BalanceOf(volt.Address.Address, metadata.MsgSender)
 	if voltBalance.Sign() == 0 {
 		return fmt.Errorf("no balance of %v to withdraw", volt.Symbol)
 	}
-	stablecoinBalance := env.ERC20BalanceOf(common.HexToAddress(stablecoin.Address), metadata.MsgSender)
+	stablecoinBalance := env.ERC20BalanceOf(stablecoin.Address.Address, metadata.MsgSender)
 	if stablecoinBalance.Sign() == 0 {
 		return fmt.Errorf("no balance of %v to withdraw", stablecoin.Symbol)
 	}
-	voltVoucherIndex, err := env.ERC20Withdraw(common.HexToAddress(volt.Address), metadata.MsgSender, voltBalance)
+	voltVoucherIndex, err := env.ERC20Withdraw(volt.Address.Address, metadata.MsgSender, voltBalance)
 	if err != nil {
 		return err
 	}
-	stablecoinVoucherIndex, err := env.ERC20Withdraw(common.HexToAddress(stablecoin.Address), metadata.MsgSender, stablecoinBalance)
+	stablecoinVoucherIndex, err := env.ERC20Withdraw(stablecoin.Address.Address, metadata.MsgSender, stablecoinBalance)
 	if err != nil {
 		return err
 	}

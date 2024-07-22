@@ -6,6 +6,7 @@ import (
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 	"github.com/stretchr/testify/assert"
@@ -18,7 +19,7 @@ func TestCreateContractUseCase(t *testing.T) {
 
 	input := &CreateContractInputDTO{
 		Symbol:  "VOLT",
-		Address: common.HexToAddress("0x123").String(),
+		Address: custom_type.NewAddress(common.HexToAddress("0x123")),
 	}
 
 	createdAt := time.Now().Unix()

@@ -8,7 +8,6 @@ import (
 	"github.com/devolthq/devolt/internal/usecase/auction_usecase"
 	"github.com/devolthq/devolt/internal/usecase/bid_usecase"
 	"github.com/devolthq/devolt/internal/usecase/contract_usecase"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 )
 
@@ -95,7 +94,7 @@ func (h *AuctionAdvanceHandlers) FinishAuctionHandler(env rollmelette.Env, metad
 		return err
 	}
 	for _, bid := range acceptedBids {
-		if err := env.ERC20Transfer(common.HexToAddress(stablecoin.Address), application, common.HexToAddress(bid.Bidder), bid.Price); err != nil {
+		if err := env.ERC20Transfer(stablecoin.Address.Address, application, bid.Bidder.Address, bid.Price.Int); err != nil {
 			env.Report([]byte(err.Error()))
 		}
 	}
@@ -108,7 +107,7 @@ func (h *AuctionAdvanceHandlers) FinishAuctionHandler(env rollmelette.Env, metad
 		return err
 	}
 	for _, bid := range partialAcceptedBids {
-		if err := env.ERC20Transfer(common.HexToAddress(stablecoin.Address), application, common.HexToAddress(bid.Bidder), bid.Price); err != nil {
+		if err := env.ERC20Transfer(stablecoin.Address.Address, application, bid.Bidder.Address, bid.Price.Int); err != nil {
 			env.Report([]byte(err.Error()))
 		}
 	}
@@ -121,7 +120,7 @@ func (h *AuctionAdvanceHandlers) FinishAuctionHandler(env rollmelette.Env, metad
 		return err
 	}
 	for _, bid := range rejectedBids {
-		if err := env.ERC20Transfer(common.HexToAddress(volt.Address), application, common.HexToAddress(bid.Bidder), bid.Credits); err != nil {
+		if err := env.ERC20Transfer(volt.Address.Address, application, bid.Bidder.Address, bid.Credits.Int); err != nil {
 			env.Report([]byte(err.Error()))
 		}
 	}

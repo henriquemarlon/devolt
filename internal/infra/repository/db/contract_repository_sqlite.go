@@ -1,4 +1,4 @@
-package sqlite
+package db
 
 import (
 	"fmt"
@@ -44,7 +44,7 @@ func (r *ContractRepositorySqlite) FindContractBySymbol(symbol string) (*entity.
 }
 
 func (r *ContractRepositorySqlite) UpdateContract(contract *entity.Contract) (*entity.Contract, error) {
-	err := r.Db.Save(contract).Error
+	err := r.Db.Model(&entity.Contract{}).Where("symbol = ?", contract.Symbol).Updates(contract).Error
 	if err != nil {
 		return nil, fmt.Errorf("failed to update contract: %w", err)
 	}

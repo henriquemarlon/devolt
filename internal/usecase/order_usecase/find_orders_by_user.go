@@ -2,10 +2,12 @@ package order_usecase
 
 import (
 	"github.com/devolthq/devolt/internal/domain/entity"
+	"github.com/devolthq/devolt/pkg/custom_type"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type FindOrderByUserInputDTO struct {
-	User string
+	User common.Address `json:"user"`
 }
 
 type FindOrderByUserOutputDTO []*FindOrderOutputDTO
@@ -21,7 +23,7 @@ func NewFindOrdersByUserUseCase(orderRepository entity.OrderRepository) *FindOrd
 }
 
 func (u *FindOrdersByUserUseCase) Execute(input *FindOrderByUserInputDTO) (FindOrderByUserOutputDTO, error) {
-	res, err := u.OrderRepository.FindOrdersByUser(input.User)
+	res, err := u.OrderRepository.FindOrdersByUser(custom_type.NewAddress(input.User))
 	if err != nil {
 		return nil, err
 	}

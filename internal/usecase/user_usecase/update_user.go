@@ -2,6 +2,7 @@ package user_usecase
 
 import (
 	"github.com/devolthq/devolt/internal/domain/entity"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 )
@@ -13,10 +14,10 @@ type UpdateUserInputDTO struct {
 }
 
 type UpdateUserOutputDTO struct {
-	Id        uint           `json:"id"`
-	Role      string         `json:"role"`
-	Address   common.Address `json:"address"`
-	UpdatedAt int64          `json:"update_at"`
+	Id        uint                `json:"id"`
+	Role      string              `json:"role"`
+	Address   custom_type.Address `json:"address"`
+	UpdatedAt int64               `json:"update_at"`
 }
 
 type UpdateUserUseCase struct {
@@ -33,7 +34,7 @@ func (u *UpdateUserUseCase) Execute(input *UpdateUserInputDTO, metadata rollmele
 	res, err := u.UserRepository.UpdateUser(&entity.User{
 		Id:        input.Id,
 		Role:      input.Role,
-		Address:   input.Address.String(),
+		Address:   custom_type.NewAddress(input.Address),
 		UpdatedAt: metadata.BlockTimestamp,
 	})
 	if err != nil {
@@ -42,7 +43,7 @@ func (u *UpdateUserUseCase) Execute(input *UpdateUserInputDTO, metadata rollmele
 	return &UpdateUserOutputDTO{
 		Id:        res.Id,
 		Role:      res.Role,
-		Address:   common.HexToAddress(res.Address),
+		Address:   res.Address,
 		UpdatedAt: res.UpdatedAt,
 	}, nil
 }

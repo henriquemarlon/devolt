@@ -7,6 +7,7 @@ import (
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 	"github.com/stretchr/testify/assert"
@@ -20,8 +21,8 @@ func TestCreateOrderUseCase(t *testing.T) {
 	createOrderUseCase := NewCreateOrderUseCase(mockOrderRepo, mockStationRepo, mockContractRepo)
 
 	input := &CreateOrderInputDTO{
-		Buyer:     common.HexToAddress("0x123").String(),
-		Credits:   big.NewInt(100),
+		Buyer:     custom_type.NewAddress(common.HexToAddress("0x123")),
+		Credits:   custom_type.NewBigInt(big.NewInt(100)),
 		StationId: "station_1",
 	}
 
@@ -29,22 +30,22 @@ func TestCreateOrderUseCase(t *testing.T) {
 
 	mockStation := &entity.Station{
 		Id:             "station_1",
-		Owner:          common.HexToAddress("0x456").String(),
-		PricePerCredit: big.NewInt(10),
+		Owner:          custom_type.NewAddress(common.HexToAddress("0x123")),
+		PricePerCredit: custom_type.NewBigInt(big.NewInt(10)),
 	}
 
 	mockContract := &entity.Contract{
 		Id:      1,
 		Symbol:  "USDC",
-		Address: common.HexToAddress("0x789").String(),
+		Address: custom_type.NewAddress(common.HexToAddress("0x789")),
 	}
 
 	mockOrder := &entity.Order{
 		Id:             1,
-		Buyer:          common.HexToAddress("0x123").String(),
-		Credits:        big.NewInt(100),
+		Buyer:          custom_type.NewAddress(common.HexToAddress("0x123")),
+		Credits:        custom_type.NewBigInt(big.NewInt(100)),
 		StationId:      "station_1",
-		PricePerCredit: big.NewInt(10),
+		PricePerCredit: custom_type.NewBigInt(big.NewInt(10)),
 		CreatedAt:      createdAt,
 	}
 

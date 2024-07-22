@@ -6,6 +6,7 @@ import (
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 	"github.com/stretchr/testify/assert"
@@ -22,14 +23,14 @@ func TestUpdateContractUseCase(t *testing.T) {
 	mockContract := &entity.Contract{
 		Id:        1,
 		Symbol:    "VOLT",
-		Address:   common.HexToAddress("0x123").String(),
+		Address:   custom_type.NewAddress(common.HexToAddress("0x123")),
 		CreatedAt: createdAt,
 		UpdatedAt: updatedAt,
 	}
 
 	input := &UpdateContractInputDTO{
 		Id:      mockContract.Id,
-		Address: common.HexToAddress("0x123").String(),
+		Address: common.HexToAddress("0x123"),
 		Symbol:  "VOLT",
 	}
 

@@ -6,6 +6,7 @@ import (
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 )
@@ -18,9 +19,9 @@ func TestFindAllAuctionsUseCase(t *testing.T) {
 		{
 			Id:        1,
 			AuctionId: 1,
-			Bidder:    common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678").String(),
-			Credits:   big.NewInt(500),
-			Price:     big.NewInt(500),
+			Bidder:    custom_type.NewAddress(common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678")),
+			Credits:   custom_type.NewBigInt(big.NewInt(500)),
+			Price:     custom_type.NewBigInt(big.NewInt(500)),
 			State:     "active",
 			CreatedAt: 20242024,
 			UpdatedAt: 20242025,
@@ -31,9 +32,9 @@ func TestFindAllAuctionsUseCase(t *testing.T) {
 		{
 			Id:        2,
 			AuctionId: 2,
-			Bidder:    common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678").String(),
-			Credits:   big.NewInt(600),
-			Price:     big.NewInt(600),
+			Bidder:    custom_type.NewAddress(common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678")),
+			Credits:   custom_type.NewBigInt(big.NewInt(600)),
+			Price:     custom_type.NewBigInt(big.NewInt(600)),
 			State:     "active",
 			CreatedAt: 20242026,
 			UpdatedAt: 20242027,
@@ -42,8 +43,8 @@ func TestFindAllAuctionsUseCase(t *testing.T) {
 
 	mockAuction1 := &entity.Auction{
 		Id:         1,
-		Credits:    big.NewInt(1000),
-		PriceLimit: big.NewInt(1000),
+		Credits:    custom_type.NewBigInt(big.NewInt(1000)),
+		PriceLimit: custom_type.NewBigInt(big.NewInt(1000)),
 		State:      "active",
 		Bids:       mockBids1,
 		ExpiresAt:  20252024,
@@ -53,8 +54,8 @@ func TestFindAllAuctionsUseCase(t *testing.T) {
 
 	mockAuction2 := &entity.Auction{
 		Id:         2,
-		Credits:    big.NewInt(2000),
-		PriceLimit: big.NewInt(2000),
+		Credits:    custom_type.NewBigInt(big.NewInt(2000)),
+		PriceLimit: custom_type.NewBigInt(big.NewInt(2000)),
 		State:      "active",
 		Bids:       mockBids2,
 		ExpiresAt:  20252026,
@@ -82,7 +83,7 @@ func TestFindAllAuctionsUseCase(t *testing.T) {
 	for i, bid := range (*output)[0].Bids {
 		assert.Equal(t, mockBids1[i].Id, bid.Id)
 		assert.Equal(t, mockBids1[i].AuctionId, bid.AuctionId)
-		assert.Equal(t, mockBids1[i].Bidder, bid.Bidder.String())
+		assert.Equal(t, mockBids1[i].Bidder, bid.Bidder)
 		assert.Equal(t, mockBids1[i].Credits, bid.Credits)
 		assert.Equal(t, mockBids1[i].Price, bid.Price)
 		assert.Equal(t, string(mockBids1[i].State), bid.State)
@@ -102,7 +103,7 @@ func TestFindAllAuctionsUseCase(t *testing.T) {
 	for i, bid := range (*output)[1].Bids {
 		assert.Equal(t, mockBids2[i].Id, bid.Id)
 		assert.Equal(t, mockBids2[i].AuctionId, bid.AuctionId)
-		assert.Equal(t, mockBids2[i].Bidder, bid.Bidder.String())
+		assert.Equal(t, mockBids2[i].Bidder, bid.Bidder)
 		assert.Equal(t, mockBids2[i].Credits, bid.Credits)
 		assert.Equal(t, mockBids2[i].Price, bid.Price)
 		assert.Equal(t, string(mockBids2[i].State), bid.State)

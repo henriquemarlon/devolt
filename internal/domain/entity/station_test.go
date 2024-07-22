@@ -1,23 +1,24 @@
 package entity
 
 import (
+	"github.com/devolthq/devolt/pkg/custom_type"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/stretchr/testify/assert"
 	"math/big"
 	"testing"
 	"time"
-
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNewStation(t *testing.T) {
 	id := "station-1"
-	owner := common.HexToAddress("0x123").String()
-	pricePerCredit := big.NewInt(50)
+	owner := custom_type.NewAddress(common.HexToAddress("0x123"))
+	consumption := custom_type.NewBigInt(big.NewInt(1000))
+	pricePerCredit := custom_type.NewBigInt(big.NewInt(50))
 	latitude := 40.7128
 	longitude := -74.0060
 	createdAt := time.Now().Unix()
 
-	station, err := NewStation(id, owner, pricePerCredit, latitude, longitude, createdAt)
+	station, err := NewStation(id, owner, consumption, pricePerCredit, latitude, longitude, createdAt)
 	assert.Nil(t, err)
 	assert.NotNil(t, station)
 	assert.Equal(t, id, station.Id)
@@ -29,8 +30,8 @@ func TestNewStation(t *testing.T) {
 }
 
 func TestStation_Validate(t *testing.T) {
-	owner := common.HexToAddress("0x123").String()
-	pricePerCredit := big.NewInt(50)
+	owner := custom_type.NewAddress(common.HexToAddress("0x123"))
+	pricePerCredit := custom_type.NewBigInt(big.NewInt(50))
 	createdAt := time.Now().Unix()
 
 	// Invalid ID
@@ -48,14 +49,14 @@ func TestStation_Validate(t *testing.T) {
 
 	// Invalid owner
 	station.Id = "station-3"
-	station.Owner = ""
+	station.Owner = custom_type.NewAddress(common.Address{})
 	err = station.Validate()
 	assert.NotNil(t, err)
 	assert.Equal(t, ErrInvalidStation, err)
 
 	// Invalid price per credit
 	station.Owner = owner
-	station.PricePerCredit = nil
+	station.PricePerCredit.Int = nil
 	err = station.Validate()
 	assert.NotNil(t, err)
 	assert.Equal(t, ErrInvalidStation, err)

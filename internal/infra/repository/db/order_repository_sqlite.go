@@ -1,7 +1,8 @@
-package sqlite
+package db
 
 import (
 	"github.com/devolthq/devolt/internal/domain/entity"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"gorm.io/gorm"
 )
 
@@ -41,7 +42,7 @@ func (r *OrderRepositorySqlite) FindOrderById(id uint) (*entity.Order, error) {
 	return &order, nil
 }
 
-func (r *OrderRepositorySqlite) FindOrdersByUser(buyer string) ([]*entity.Order, error) {
+func (r *OrderRepositorySqlite) FindOrdersByUser(buyer custom_type.Address) ([]*entity.Order, error) {
 	var orders []*entity.Order
 	err := r.db.Where("buyer = ?", buyer).Find(&orders).Error
 	if err != nil {
@@ -59,7 +60,7 @@ func (r *OrderRepositorySqlite) UpdateOrder(order *entity.Order) (*entity.Order,
 }
 
 func (r *OrderRepositorySqlite) DeleteOrder(id uint) error {
-	err := r.db.Delete(&entity.Order{}, id).Error
+	err := r.db.Delete(&entity.Order{}, "order_id = ?", id).Error
 	if err != nil {
 		return err
 	}

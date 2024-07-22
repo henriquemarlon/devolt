@@ -9,6 +9,7 @@ import (
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/contract_usecase"
 	"github.com/devolthq/devolt/internal/usecase/user_usecase"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/devolthq/devolt/pkg/router"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
@@ -30,7 +31,7 @@ func (h *UserInspectHandlers) FindUserByAddressHandler(env rollmelette.EnvInspec
 	address := strings.ToLower(router.PathValue(ctx, "address"))
 	findUserByAddress := user_usecase.NewFindUserByAddressUseCase(h.UserRepository)
 	res, err := findUserByAddress.Execute(&user_usecase.FindUserByAddressInputDTO{
-		Address: address,
+		Address: custom_type.NewAddress(common.HexToAddress(address)),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to find User: %w", err)
@@ -65,7 +66,7 @@ func (h *UserInspectHandlers) BalanceHandler(env rollmelette.EnvInspector, ctx c
 	if err != nil {
 		return fmt.Errorf("failed to find contract: %w", err)
 	}
-	balanceBytes, err := json.Marshal(env.ERC20BalanceOf(common.HexToAddress(contract.Address), common.HexToAddress(router.PathValue(ctx, "address"))))
+	balanceBytes, err := json.Marshal(env.ERC20BalanceOf(contract.Address.Address, common.HexToAddress(router.PathValue(ctx, "address"))))
 	if err != nil {
 		return fmt.Errorf("failed to marshal balance: %w", err)
 	}

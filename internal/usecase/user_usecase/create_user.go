@@ -2,19 +2,20 @@ package user_usecase
 
 import (
 	"github.com/devolthq/devolt/internal/domain/entity"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/rollmelette/rollmelette"
 )
 
 type CreateUserInputDTO struct {
-	Role    string `json:"role"`
-	Address string `json:"address"`
+	Role    string              `json:"role"`
+	Address custom_type.Address `json:"address"`
 }
 
 type CreateUserOutputDTO struct {
-	Id        uint   `json:"id"`
-	Role      string `json:"role"`
-	Address   string `json:"address"`
-	CreatedAt int64  `json:"created_at"`
+	Id        uint                `json:"id"`
+	Role      string              `json:"role"`
+	Address   custom_type.Address `json:"address"`
+	CreatedAt int64               `json:"created_at"`
 }
 
 type CreateUserUseCase struct {

@@ -1,4 +1,4 @@
-package sqlite
+package db
 
 import (
 	"github.com/devolthq/devolt/internal/domain/entity"
@@ -59,7 +59,7 @@ func (r *AuctionRepositorySqlite) UpdateAuction(input *entity.Auction) (*entity.
 }
 
 func (r *AuctionRepositorySqlite) DeleteAuction(id uint) error {
-	err := r.Db.Delete(&entity.Auction{}, id).Error
+	err := r.Db.Delete(&entity.Auction{}, "auction_id = ?", id).Error
 	if err != nil {
 		return err
 	}

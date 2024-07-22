@@ -5,12 +5,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewAuction(t *testing.T) {
-	credits := big.NewInt(1000)
-	priceLimit := big.NewInt(500)
+	credits := custom_type.NewBigInt(big.NewInt(1000))
+	priceLimit := custom_type.NewBigInt(big.NewInt(500))
 	expiresAt := time.Now().Add(24 * time.Hour).Unix()
 	createdAt := time.Now().Unix()
 
@@ -28,8 +29,8 @@ func TestAuction_Validate(t *testing.T) {
 	createdAt := time.Now().Unix()
 	expiresAt := time.Now().Add(-24 * time.Hour).Unix() // Past time
 	auction := &Auction{
-		Credits:    big.NewInt(1000),
-		PriceLimit: big.NewInt(-1), // Invalid price limit
+		Credits:    custom_type.NewBigInt(big.NewInt(1000)),
+		PriceLimit: custom_type.NewBigInt(big.NewInt(0)), // Invalid price limit
 		ExpiresAt:  expiresAt,
 		CreatedAt:  createdAt,
 	}
@@ -39,7 +40,7 @@ func TestAuction_Validate(t *testing.T) {
 	assert.Equal(t, ErrInvalidAuction, err)
 
 	// Correct the validation errors
-	auction.PriceLimit = big.NewInt(500)
+	auction.PriceLimit = custom_type.NewBigInt(big.NewInt(500))
 	auction.ExpiresAt = time.Now().Add(24 * time.Hour).Unix()
 	err = auction.Validate()
 	assert.Nil(t, err)
@@ -49,7 +50,7 @@ func TestAuctionStateTransition(t *testing.T) {
 	createdAt := time.Now().Unix()
 	expiresAt := time.Now().Add(24 * time.Hour).Unix()
 
-	auction, _ := NewAuction(big.NewInt(1000), big.NewInt(500), expiresAt, createdAt)
+	auction, _ := NewAuction(custom_type.NewBigInt(big.NewInt(1000)), custom_type.NewBigInt(big.NewInt(500)), expiresAt, createdAt)
 	assert.Equal(t, AuctionOngoing, auction.State)
 
 	// Transition to finished
@@ -67,8 +68,8 @@ func TestAuctionExpiration(t *testing.T) {
 
 	auction := &Auction{
 		Id:         1,
-		Credits:    big.NewInt(1000),
-		PriceLimit: big.NewInt(500),
+		Credits:    custom_type.NewBigInt(big.NewInt(1000)),
+		PriceLimit: custom_type.NewBigInt(big.NewInt(500)),
 		State:      AuctionOngoing,
 		ExpiresAt:  expiresAt,
 		CreatedAt:  createdAt,

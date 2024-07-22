@@ -7,6 +7,7 @@ import (
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 	"github.com/stretchr/testify/assert"
@@ -20,15 +21,15 @@ func TestOffSetStationConsumptionUseCase(t *testing.T) {
 	createdAt := time.Now().Unix()
 	updatedAt := time.Now().Unix()
 
-	stationConsumption := big.NewInt(500)
-	creditsToBeOffSet := big.NewInt(100)
-	newConsumption := big.NewInt(400)
+	stationConsumption := custom_type.NewBigInt(big.NewInt(500))
+	creditsToBeOffSet := custom_type.NewBigInt(big.NewInt(100))
+	newConsumption := custom_type.NewBigInt(big.NewInt(400))
 
 	mockStation := &entity.Station{
 		Id:             "station_1",
 		Consumption:    stationConsumption,
-		Owner:          common.HexToAddress("0x123").String(),
-		PricePerCredit: big.NewInt(10),
+		Owner:          custom_type.NewAddress(common.HexToAddress("0x123")),
+		PricePerCredit: custom_type.NewBigInt(big.NewInt(10)),
 		State:          entity.StationStateActive,
 		Latitude:       40.7128,
 		Longitude:      -74.0060,
@@ -76,14 +77,14 @@ func TestOffSetStationConsumptionUseCase_Unauthorized(t *testing.T) {
 	createdAt := time.Now().Unix()
 	updatedAt := time.Now().Unix()
 
-	stationConsumption := big.NewInt(500)
-	creditsToBeOffSet := big.NewInt(100)
+	stationConsumption := custom_type.NewBigInt(big.NewInt(500))
+	creditsToBeOffSet := custom_type.NewBigInt(big.NewInt(100))
 
 	mockStation := &entity.Station{
 		Id:             "station_1",
 		Consumption:    stationConsumption,
-		Owner:          common.HexToAddress("0x123").String(),
-		PricePerCredit: big.NewInt(10),
+		Owner:          custom_type.NewAddress(common.HexToAddress("0x123")),
+		PricePerCredit: custom_type.NewBigInt(big.NewInt(10)),
 		State:          entity.StationStateActive,
 		Latitude:       40.7128,
 		Longitude:      -74.0060,

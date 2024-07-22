@@ -7,6 +7,7 @@ import (
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,9 +22,9 @@ func TestFindAllStationsUseCase(t *testing.T) {
 	mockStations := []*entity.Station{
 		{
 			Id:             "station_1",
-			Consumption:    big.NewInt(500),
-			Owner:          common.HexToAddress("0x123").String(),
-			PricePerCredit: big.NewInt(10),
+			Consumption:    custom_type.NewBigInt(big.NewInt(500)),
+			Owner:          custom_type.NewAddress(common.HexToAddress("0x123")),
+			PricePerCredit: custom_type.NewBigInt(big.NewInt(10)),
 			State:          entity.StationStateActive,
 			Latitude:       40.7128,
 			Longitude:      -74.0060,
@@ -32,10 +33,10 @@ func TestFindAllStationsUseCase(t *testing.T) {
 			Orders: []*entity.Order{
 				{
 					Id:             1,
-					Buyer:          common.HexToAddress("0x456").String(),
+					Buyer:          custom_type.NewAddress(common.HexToAddress("0x456")),
 					StationId:      "station_1",
-					Credits:        big.NewInt(100),
-					PricePerCredit: big.NewInt(10),
+					Credits:        custom_type.NewBigInt(big.NewInt(100)),
+					PricePerCredit: custom_type.NewBigInt(big.NewInt(10)),
 					CreatedAt:      createdAt,
 					UpdatedAt:      updatedAt,
 				},
@@ -43,9 +44,9 @@ func TestFindAllStationsUseCase(t *testing.T) {
 		},
 		{
 			Id:             "station_2",
-			Consumption:    big.NewInt(300),
-			Owner:          common.HexToAddress("0x789").String(),
-			PricePerCredit: big.NewInt(20),
+			Consumption:    custom_type.NewBigInt(big.NewInt(300)),
+			Owner:          custom_type.NewAddress(common.HexToAddress("0x789")),
+			PricePerCredit: custom_type.NewBigInt(big.NewInt(20)),
 			State:          entity.StationStateInactive,
 			Latitude:       34.0522,
 			Longitude:      -118.2437,

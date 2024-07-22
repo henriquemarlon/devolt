@@ -9,38 +9,38 @@ import (
 	"github.com/devolthq/devolt/internal/infra/cartesi/handler/advance_handler"
 	"github.com/devolthq/devolt/internal/infra/cartesi/handler/inspect_handler"
 	"github.com/devolthq/devolt/internal/infra/cartesi/middleware"
-	"github.com/devolthq/devolt/internal/infra/repository/sqlite"
+	"github.com/devolthq/devolt/internal/infra/repository/db"
 	"github.com/google/wire"
 )
 
 var setBidRepositoryDependency = wire.NewSet(
-	sqlite.NewBidRepositorySqlite,
-	wire.Bind(new(entity.BidRepository), new(*sqlite.BidRepositorySqlite)),
+	db.NewBidRepositorySqlite,
+	wire.Bind(new(entity.BidRepository), new(*db.BidRepositorySqlite)),
 )
 
 var setAuctionRepositoryDependency = wire.NewSet(
-	sqlite.NewAuctionRepositorySqlite,
-	wire.Bind(new(entity.AuctionRepository), new(*sqlite.AuctionRepositorySqlite)),
+	db.NewAuctionRepositorySqlite,
+	wire.Bind(new(entity.AuctionRepository), new(*db.AuctionRepositorySqlite)),
 )
 
 var setOrderRepositoryDependency = wire.NewSet(
-	sqlite.NewOrderRepositorySqlite,
-	wire.Bind(new(entity.OrderRepository), new(*sqlite.OrderRepositorySqlite)),
+	db.NewOrderRepositorySqlite,
+	wire.Bind(new(entity.OrderRepository), new(*db.OrderRepositorySqlite)),
 )
 
 var setStationRepositoryDependency = wire.NewSet(
-	sqlite.NewStationRepositorySqlite,
-	wire.Bind(new(entity.StationRepository), new(*sqlite.StationRepositorySqlite)),
+	db.NewStationRepositorySqlite,
+	wire.Bind(new(entity.StationRepository), new(*db.StationRepositorySqlite)),
 )
 
 var setContractRepositoryDependency = wire.NewSet(
-	sqlite.NewContractRepositorySqlite,
-	wire.Bind(new(entity.ContractRepository), new(*sqlite.ContractRepositorySqlite)),
+	db.NewContractRepositorySqlite,
+	wire.Bind(new(entity.ContractRepository), new(*db.ContractRepositorySqlite)),
 )
 
 var setUserRepositoryDependency = wire.NewSet(
-	sqlite.NewUserRepositorySqlite,
-	wire.Bind(new(entity.UserRepository), new(*sqlite.UserRepositorySqlite)),
+	db.NewUserRepositorySqlite,
+	wire.Bind(new(entity.UserRepository), new(*db.UserRepositorySqlite)),
 )
 
 var setAdvanceHandlers = wire.NewSet(

@@ -1,10 +1,10 @@
-package sqlite
+package db
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/devolthq/devolt/internal/domain/entity"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"gorm.io/gorm"
 )
 
@@ -35,11 +35,11 @@ func (r *UserRepositorySqlite) FindUserByRole(role string) (*entity.User, error)
 	return &user, nil
 }
 
-func (r *UserRepositorySqlite) FindUserByAddress(address string) (*entity.User, error) {
+func (r *UserRepositorySqlite) FindUserByAddress(address custom_type.Address) (*entity.User, error) {
 	var user entity.User
 	err := r.Db.Where("address = ?", address).First(&user).Error
 	if err != nil {
-		return nil, fmt.Errorf("failed to find user by address %v: %w", strings.ToLower(address), err)
+		return nil, fmt.Errorf("failed to find user by address %v: %w", address, err)
 	}
 	return &user, nil
 }
@@ -54,15 +54,15 @@ func (r *UserRepositorySqlite) FindAllUsers() ([]*entity.User, error) {
 }
 
 func (r *UserRepositorySqlite) UpdateUser(input *entity.User) (*entity.User, error) {
-	err := r.Db.Save(input).Error
+	err := r.Db.Model(&entity.User{}).Where("address = ?", input.Address).Updates(input).Error
 	if err != nil {
 		return nil, fmt.Errorf("failed to update user: %w", err)
 	}
 	return input, nil
 }
 
-func (r *UserRepositorySqlite) DeleteUserByAddress(address string) error {
-	err := r.Db.Where("address = ?", address).Delete(&entity.User{}).Error
+func (r *UserRepositorySqlite) DeleteUserByAddress(address custom_type.Address) error {
+	err := r.Db.Delete(&entity.User{}, "address = ?", address).Error
 	if err != nil {
 		return fmt.Errorf("failed to delete user by address: %w", err)
 	}

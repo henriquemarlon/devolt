@@ -1,13 +1,14 @@
 package main
 
 import (
+	"log"
+	"log/slog"
+
 	"github.com/devolthq/devolt/internal/usecase/user_usecase"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/devolthq/devolt/pkg/router"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
-	"log"
-	"log/slog"
-	"strings"
 )
 
 func SetupApplication() *router.Router {
@@ -31,7 +32,7 @@ func SetupApplication() *router.Router {
 	initialOwner := common.HexToAddress("0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266")
 	createUser := user_usecase.NewCreateUserUseCase(ah.UserAdvanceHandlers.UserRepository)
 	if _, err = createUser.Execute(&user_usecase.CreateUserInputDTO{
-		Address: strings.ToLower(initialOwner.String()),
+		Address: custom_type.NewAddress(initialOwner),
 		Role:    "admin",
 	}, rollmelette.Metadata{}); err != nil {
 		slog.Error("failed to setup initial onwer", "error", err)

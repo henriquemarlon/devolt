@@ -7,6 +7,7 @@ import (
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 	"github.com/stretchr/testify/assert"
@@ -22,9 +23,9 @@ func TestUpdateStationUseCase(t *testing.T) {
 
 	mockStation := &entity.Station{
 		Id:             "station_1",
-		Consumption:    big.NewInt(500),
-		Owner:          common.HexToAddress("0x123").String(),
-		PricePerCredit: big.NewInt(10),
+		Consumption:    custom_type.NewBigInt(big.NewInt(500)),
+		Owner:          custom_type.NewAddress(common.HexToAddress("0x123")),
+		PricePerCredit: custom_type.NewBigInt(big.NewInt(10)),
 		State:          entity.StationStateActive,
 		Latitude:       40.7128,
 		Longitude:      -74.0060,
@@ -34,9 +35,9 @@ func TestUpdateStationUseCase(t *testing.T) {
 
 	input := &UpdateStationInputDTO{
 		Id:             mockStation.Id,
-		Consumption:    mockStation.Consumption,
-		Owner:          mockStation.Owner,
-		PricePerCredit: mockStation.PricePerCredit,
+		Consumption:    mockStation.Consumption.Int,
+		Owner:          mockStation.Owner.Address,
+		PricePerCredit: mockStation.PricePerCredit.Int,
 		State:          string(mockStation.State),
 		Latitude:       mockStation.Latitude,
 		Longitude:      mockStation.Longitude,

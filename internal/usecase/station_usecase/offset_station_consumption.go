@@ -5,24 +5,24 @@ import (
 	"math/big"
 
 	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/rollmelette/rollmelette"
 )
 
 type OffSetStationConsumptionInputDTO struct {
-	Id                string   `json:"id"`
-	CreditsToBeOffSet *big.Int `json:"credits_to_be_offSet"`
+	Id                string             `json:"id"`
+	CreditsToBeOffSet custom_type.BigInt `json:"credits_to_be_offSet"`
 }
 
 type OffSetStationConsumptionOutputDTO struct {
-	Id             string   `json:"id"`
-	Consumption    *big.Int `json:"consumption"`
-	Owner          string   `json:"owner"`
-	PricePerCredit *big.Int `json:"price_per_credit"`
-	State          string   `json:"state"`
-	Latitude       float64  `json:"latitude"`
-	Longitude      float64  `json:"longitude"`
-	UpdatedAt      int64    `json:"updated_at"`
+	Id             string              `json:"id"`
+	Consumption    custom_type.BigInt  `json:"consumption"`
+	Owner          custom_type.Address `json:"owner"`
+	PricePerCredit custom_type.BigInt  `json:"price_per_credit"`
+	State          string              `json:"state"`
+	Latitude       float64             `json:"latitude"`
+	Longitude      float64             `json:"longitude"`
+	UpdatedAt      int64               `json:"updated_at"`
 }
 
 type OffSetStationConsumptionUseCase struct {
@@ -40,12 +40,11 @@ func (u *OffSetStationConsumptionUseCase) Execute(input *OffSetStationConsumptio
 	if err != nil {
 		return nil, err
 	}
-	if common.HexToAddress(station.Owner) != metadata.MsgSender {
-		return nil, fmt.Errorf("can't offSet station consumption, because the station owner is not equal to the msg_sender address, expected: %v, got: %v", station.Owner, metadata.MsgSender)
+	if station.Owner.Address != metadata.MsgSender {
+		return nil, fmt.Errorf("can't offSet station consumption, because the station owner is not equal to the msg_sender address, expected: %v, got: %v", station.Owner.Address, metadata.MsgSender)
 	}
 
-	consumption := new(big.Int)
-	consumption.Sub(station.Consumption, input.CreditsToBeOffSet)
+	consumption := custom_type.NewBigInt(new(big.Int).Sub(station.Consumption.Int, input.CreditsToBeOffSet.Int))
 
 	res, err := u.StationRepository.UpdateStation(&entity.Station{
 		Id:          input.Id,

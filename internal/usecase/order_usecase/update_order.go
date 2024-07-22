@@ -1,27 +1,27 @@
 package order_usecase
 
 import (
-	"math/big"
-
 	"github.com/devolthq/devolt/internal/domain/entity"
+	"github.com/devolthq/devolt/pkg/custom_type"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 )
 
 type UpdateOrderInputDTO struct {
-	Id             uint     `json:"id"`
-	Buyer          string   `json:"buyer"`
-	Credits        *big.Int `json:"credits"`
-	StationId      string   `json:"station_id"`
-	PricePerCredit *big.Int `json:"price_per_credit"`
+	Id             uint               `json:"id"`
+	Buyer          common.Address     `json:"buyer"`
+	Credits        custom_type.BigInt `json:"credits"`
+	StationId      string             `json:"station_id"`
+	PricePerCredit custom_type.BigInt `json:"price_per_credit"`
 }
 
 type UpdateOrderOutputDTO struct {
-	Id             uint     `json:"id"`
-	Buyer          string   `json:"buyer"`
-	Credits        *big.Int `json:"credits"`
-	StationId      string   `json:"station_id"`
-	PricePerCredit *big.Int `json:"price_per_credit"`
-	UpdatedAt      int64    `json:"updated_at"`
+	Id             uint                `json:"id"`
+	Buyer          custom_type.Address `json:"buyer"`
+	Credits        custom_type.BigInt  `json:"credits"`
+	StationId      string              `json:"station_id"`
+	PricePerCredit custom_type.BigInt  `json:"price_per_credit"`
+	UpdatedAt      int64               `json:"updated_at"`
 }
 
 type UpdateOrderUseCase struct {
@@ -37,7 +37,7 @@ func NewUpdateOrderUseCase(orderRepository entity.OrderRepository) *UpdateOrderU
 func (u *UpdateOrderUseCase) Execute(input *UpdateOrderInputDTO, metadata rollmelette.Metadata) (*UpdateOrderOutputDTO, error) {
 	order, err := u.OrderRepository.UpdateOrder(&entity.Order{
 		Id:             input.Id,
-		Buyer:          input.Buyer,
+		Buyer:          custom_type.NewAddress(input.Buyer),
 		Credits:        input.Credits,
 		StationId:      input.StationId,
 		PricePerCredit: input.PricePerCredit,

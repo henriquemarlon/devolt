@@ -6,6 +6,7 @@ import (
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 	"github.com/stretchr/testify/assert"
@@ -22,7 +23,7 @@ func TestUpdateUserUseCase(t *testing.T) {
 	mockUser := &entity.User{
 		Id:        1,
 		Role:      "user",
-		Address:   common.HexToAddress("0x123").String(),
+		Address:   custom_type.NewAddress(common.HexToAddress("0x123")),
 		CreatedAt: createdAt,
 		UpdatedAt: updatedAt,
 	}
@@ -30,7 +31,7 @@ func TestUpdateUserUseCase(t *testing.T) {
 	input := &UpdateUserInputDTO{
 		Id:      mockUser.Id,
 		Role:    "admin",
-		Address: common.HexToAddress(mockUser.Address),
+		Address: mockUser.Address.Address,
 	}
 
 	metadata := rollmelette.Metadata{
@@ -40,7 +41,7 @@ func TestUpdateUserUseCase(t *testing.T) {
 	updatedUser := &entity.User{
 		Id:        mockUser.Id,
 		Role:      input.Role,
-		Address:   input.Address.String(),
+		Address:   custom_type.NewAddress(input.Address),
 		CreatedAt: mockUser.CreatedAt,
 		UpdatedAt: metadata.BlockTimestamp,
 	}
@@ -53,7 +54,7 @@ func TestUpdateUserUseCase(t *testing.T) {
 	assert.NotNil(t, output)
 	assert.Equal(t, updatedUser.Id, output.Id)
 	assert.Equal(t, updatedUser.Role, output.Role)
-	assert.Equal(t, updatedUser.Address, output.Address.String())
+	assert.Equal(t, updatedUser.Address, output.Address)
 	assert.Equal(t, updatedUser.UpdatedAt, output.UpdatedAt)
 
 	mockRepo.AssertExpectations(t)

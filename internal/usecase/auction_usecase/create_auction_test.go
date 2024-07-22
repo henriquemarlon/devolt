@@ -1,22 +1,24 @@
 package auction_usecase
 
 import (
-	"github.com/devolthq/devolt/internal/domain/entity"
-	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
-	"github.com/rollmelette/rollmelette"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"math/big"
 	"testing"
 	"time"
+
+	"github.com/devolthq/devolt/internal/domain/entity"
+	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/devolthq/devolt/pkg/custom_type"
+	"github.com/rollmelette/rollmelette"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestCreateAuctionUseCase(t *testing.T) {
 	mockRepo := new(repository.MockAuctionRepository)
 	createAuctionUseCase := NewCreateAuctionUseCase(mockRepo)
 
-	credits := big.NewInt(1000)
-	priceLimit := big.NewInt(500)
+	credits := custom_type.NewBigInt(big.NewInt(1000))
+	priceLimit := custom_type.NewBigInt(big.NewInt(500))
 	expiresAt := time.Now().Add(24 * time.Hour).Unix()
 	createdAt := time.Now().Unix()
 

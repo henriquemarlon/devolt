@@ -12,18 +12,18 @@ import (
 	"github.com/devolthq/devolt/internal/infra/cartesi/handler/advance_handler"
 	"github.com/devolthq/devolt/internal/infra/cartesi/handler/inspect_handler"
 	"github.com/devolthq/devolt/internal/infra/cartesi/middleware"
-	"github.com/devolthq/devolt/internal/infra/repository/sqlite"
+	"github.com/devolthq/devolt/internal/infra/repository/db"
 	"github.com/google/wire"
 )
 
 // Injectors from wire.go:
 
 func NewMiddlewares() (*Middlewares, error) {
-	db, err := configs.SetupSQlite()
+	gormDB, err := configs.SetupSQlite()
 	if err != nil {
 		return nil, err
 	}
-	userRepositorySqlite := sqlite.NewUserRepositorySqlite(db)
+	userRepositorySqlite := db.NewUserRepositorySqlite(gormDB)
 	rbacMiddleware := middleware.NewRBACMiddleware(userRepositorySqlite)
 	middlewares := &Middlewares{
 		RBAC: rbacMiddleware,
@@ -32,18 +32,18 @@ func NewMiddlewares() (*Middlewares, error) {
 }
 
 func NewAdvanceHandlers() (*AdvanceHandlers, error) {
-	db, err := configs.SetupSQlite()
+	gormDB, err := configs.SetupSQlite()
 	if err != nil {
 		return nil, err
 	}
-	bidRepositorySqlite := sqlite.NewBidRepositorySqlite(db)
-	userRepositorySqlite := sqlite.NewUserRepositorySqlite(db)
-	contractRepositorySqlite := sqlite.NewContractRepositorySqlite(db)
-	auctionRepositorySqlite := sqlite.NewAuctionRepositorySqlite(db)
+	bidRepositorySqlite := db.NewBidRepositorySqlite(gormDB)
+	userRepositorySqlite := db.NewUserRepositorySqlite(gormDB)
+	contractRepositorySqlite := db.NewContractRepositorySqlite(gormDB)
+	auctionRepositorySqlite := db.NewAuctionRepositorySqlite(gormDB)
 	bidAdvanceHandlers := advance_handler.NewBidAdvanceHandlers(bidRepositorySqlite, userRepositorySqlite, contractRepositorySqlite, auctionRepositorySqlite)
 	userAdvanceHandlers := advance_handler.NewUserAdvanceHandlers(userRepositorySqlite, contractRepositorySqlite)
-	orderRepositorySqlite := sqlite.NewOrderRepositorySqlite(db)
-	stationRepositorySqlite := sqlite.NewStationRepositorySqlite(db)
+	orderRepositorySqlite := db.NewOrderRepositorySqlite(gormDB)
+	stationRepositorySqlite := db.NewStationRepositorySqlite(gormDB)
 	orderAdvanceHandlers := advance_handler.NewOrderAdvanceHandlers(orderRepositorySqlite, stationRepositorySqlite, contractRepositorySqlite)
 	stationAdvanceHandlers := advance_handler.NewStationAdvanceHandlers(stationRepositorySqlite, contractRepositorySqlite)
 	auctionAdvanceHandlers := advance_handler.NewAuctionAdvanceHandlers(bidRepositorySqlite, userRepositorySqlite, auctionRepositorySqlite, contractRepositorySqlite)
@@ -60,20 +60,20 @@ func NewAdvanceHandlers() (*AdvanceHandlers, error) {
 }
 
 func NewInspectHandlers() (*InspectHandlers, error) {
-	db, err := configs.SetupSQlite()
+	gormDB, err := configs.SetupSQlite()
 	if err != nil {
 		return nil, err
 	}
-	bidRepositorySqlite := sqlite.NewBidRepositorySqlite(db)
+	bidRepositorySqlite := db.NewBidRepositorySqlite(gormDB)
 	bidInspectHandlers := inspect_handler.NewBidInspectHandlers(bidRepositorySqlite)
-	userRepositorySqlite := sqlite.NewUserRepositorySqlite(db)
-	contractRepositorySqlite := sqlite.NewContractRepositorySqlite(db)
+	userRepositorySqlite := db.NewUserRepositorySqlite(gormDB)
+	contractRepositorySqlite := db.NewContractRepositorySqlite(gormDB)
 	userInspectHandlers := inspect_handler.NewUserInspectHandlers(userRepositorySqlite, contractRepositorySqlite)
-	orderRepositorySqlite := sqlite.NewOrderRepositorySqlite(db)
+	orderRepositorySqlite := db.NewOrderRepositorySqlite(gormDB)
 	orderInspectHandlers := inspect_handler.NewOrderInspectHandlers(orderRepositorySqlite)
-	stationRepositorySqlite := sqlite.NewStationRepositorySqlite(db)
+	stationRepositorySqlite := db.NewStationRepositorySqlite(gormDB)
 	stationInspectHandlers := inspect_handler.NewStationInspectHandlers(stationRepositorySqlite)
-	auctionRepositorySqlite := sqlite.NewAuctionRepositorySqlite(db)
+	auctionRepositorySqlite := db.NewAuctionRepositorySqlite(gormDB)
 	auctionInspectHandlers := inspect_handler.NewAuctionInspectHandlers(auctionRepositorySqlite)
 	contractInspectHandlers := inspect_handler.NewContractInspectHandlers(contractRepositorySqlite)
 	inspectHandlers := &InspectHandlers{
@@ -89,17 +89,17 @@ func NewInspectHandlers() (*InspectHandlers, error) {
 
 // wire.go:
 
-var setBidRepositoryDependency = wire.NewSet(sqlite.NewBidRepositorySqlite, wire.Bind(new(entity.BidRepository), new(*sqlite.BidRepositorySqlite)))
+var setBidRepositoryDependency = wire.NewSet(db.NewBidRepositorySqlite, wire.Bind(new(entity.BidRepository), new(*db.BidRepositorySqlite)))
 
-var setAuctionRepositoryDependency = wire.NewSet(sqlite.NewAuctionRepositorySqlite, wire.Bind(new(entity.AuctionRepository), new(*sqlite.AuctionRepositorySqlite)))
+var setAuctionRepositoryDependency = wire.NewSet(db.NewAuctionRepositorySqlite, wire.Bind(new(entity.AuctionRepository), new(*db.AuctionRepositorySqlite)))
 
-var setOrderRepositoryDependency = wire.NewSet(sqlite.NewOrderRepositorySqlite, wire.Bind(new(entity.OrderRepository), new(*sqlite.OrderRepositorySqlite)))
+var setOrderRepositoryDependency = wire.NewSet(db.NewOrderRepositorySqlite, wire.Bind(new(entity.OrderRepository), new(*db.OrderRepositorySqlite)))
 
-var setStationRepositoryDependency = wire.NewSet(sqlite.NewStationRepositorySqlite, wire.Bind(new(entity.StationRepository), new(*sqlite.StationRepositorySqlite)))
+var setStationRepositoryDependency = wire.NewSet(db.NewStationRepositorySqlite, wire.Bind(new(entity.StationRepository), new(*db.StationRepositorySqlite)))
 
-var setContractRepositoryDependency = wire.NewSet(sqlite.NewContractRepositorySqlite, wire.Bind(new(entity.ContractRepository), new(*sqlite.ContractRepositorySqlite)))
+var setContractRepositoryDependency = wire.NewSet(db.NewContractRepositorySqlite, wire.Bind(new(entity.ContractRepository), new(*db.ContractRepositorySqlite)))
 
-var setUserRepositoryDependency = wire.NewSet(sqlite.NewUserRepositorySqlite, wire.Bind(new(entity.UserRepository), new(*sqlite.UserRepositorySqlite)))
+var setUserRepositoryDependency = wire.NewSet(db.NewUserRepositorySqlite, wire.Bind(new(entity.UserRepository), new(*db.UserRepositorySqlite)))
 
 var setAdvanceHandlers = wire.NewSet(advance_handler.NewOrderAdvanceHandlers, advance_handler.NewStationAdvanceHandlers, advance_handler.NewContractAdvanceHandlers, advance_handler.NewUserAdvanceHandlers, advance_handler.NewAuctionAdvanceHandlers, advance_handler.NewBidAdvanceHandlers)
 

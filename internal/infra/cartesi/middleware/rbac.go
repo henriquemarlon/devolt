@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/user_usecase"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/devolthq/devolt/pkg/router"
 	"github.com/rollmelette/rollmelette"
 )
@@ -26,7 +26,7 @@ func (m *RBACMiddleware) Middleware(handlerFunc router.AdvanceHandlerFunc, role 
 	return func(env rollmelette.Env, metadata rollmelette.Metadata, deposit rollmelette.Deposit, payload []byte) error {
 		findUserByAddress := user_usecase.NewFindUserByAddressUseCase(m.UserRepository)
 		user, err := findUserByAddress.Execute(&user_usecase.FindUserByAddressInputDTO{
-			Address: strings.ToLower(metadata.MsgSender.String()),
+			Address: custom_type.NewAddress(metadata.MsgSender),
 		})
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {

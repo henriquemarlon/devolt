@@ -3,8 +3,6 @@ package advance_handler
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
-
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/contract_usecase"
 	"github.com/rollmelette/rollmelette"
@@ -25,14 +23,12 @@ func (h *ContractAdvanceHandlers) CreateContractHandler(env rollmelette.Env, met
 	if err := json.Unmarshal(payload, &input); err != nil {
 		return err
 	}
-	input.Address = strings.ToLower(input.Address)
-
 	createContract := contract_usecase.NewCreateContractUseCase(h.ContractRepository)
 	res, err := createContract.Execute(&input, metadata)
 	if err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("created contract with symbol: %v and address: %v", res.Symbol, res.Address)))
+	env.Notice([]byte(fmt.Sprintf("created contract with symbol: %v and address: %v", res.Symbol, res.Address.Address)))
 	return nil
 }
 
@@ -41,14 +37,12 @@ func (h *ContractAdvanceHandlers) UpdateContractHandler(env rollmelette.Env, met
 	if err := json.Unmarshal(payload, &input); err != nil {
 		return err
 	}
-	input.Address = strings.ToLower(input.Address)
-
 	updateContract := contract_usecase.NewUpdateContractUseCase(h.ContractRepository)
 	res, err := updateContract.Execute(&input, metadata)
 	if err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("updated contract with symbol: %v and address: %v", res.Symbol, res.Address)))
+	env.Notice([]byte(fmt.Sprintf("updated contract with symbol: %v and address: %v", res.Symbol, res.Address.Address)))
 	return nil
 }
 

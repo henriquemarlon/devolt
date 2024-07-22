@@ -7,6 +7,7 @@ import (
 
 	"github.com/devolthq/devolt/internal/domain/entity"
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 )
@@ -15,8 +16,8 @@ func TestFindAuctionByIdUseCase(t *testing.T) {
 	mockRepo := new(repository.MockAuctionRepository)
 	findAuctionByIdUseCase := NewFindAuctionByIdUseCase(mockRepo)
 
-	credits := big.NewInt(1000)
-	priceLimit := big.NewInt(500)
+	credits := custom_type.NewBigInt(big.NewInt(1000))
+	priceLimit := custom_type.NewBigInt(big.NewInt(500))
 	expiresAt := time.Now().Add(24 * time.Hour).Unix()
 	createdAt := time.Now().Unix()
 	updatedAt := time.Now().Unix()
@@ -25,9 +26,9 @@ func TestFindAuctionByIdUseCase(t *testing.T) {
 		{
 			Id:        1,
 			AuctionId: 1,
-			Bidder:    common.HexToAddress("0x1").String(),
-			Credits:   big.NewInt(100),
-			Price:     big.NewInt(50),
+			Bidder:    custom_type.NewAddress(common.HexToAddress("0x1")),
+			Credits:   custom_type.NewBigInt(big.NewInt(100)),
+			Price:     custom_type.NewBigInt(big.NewInt(100)),
 			State:     entity.BidStatePending,
 			CreatedAt: createdAt,
 			UpdatedAt: updatedAt,
@@ -67,7 +68,7 @@ func TestFindAuctionByIdUseCase(t *testing.T) {
 	for i, bid := range mockAuction.Bids {
 		assert.Equal(t, bid.Id, output.Bids[i].Id)
 		assert.Equal(t, bid.AuctionId, output.Bids[i].AuctionId)
-		assert.Equal(t, bid.Bidder, output.Bids[i].Bidder.String())
+		assert.Equal(t, bid.Bidder, output.Bids[i].Bidder)
 		assert.Equal(t, bid.Credits, output.Bids[i].Credits)
 		assert.Equal(t, bid.Price, output.Bids[i].Price)
 		assert.Equal(t, string(bid.State), output.Bids[i].State)

@@ -3,12 +3,9 @@ package advance_handler
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
-
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/bid_usecase"
 	"github.com/devolthq/devolt/internal/usecase/contract_usecase"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 )
 
@@ -33,8 +30,6 @@ func (h *BidAdvanceHandlers) CreateBidHandler(env rollmelette.Env, metadata roll
 	if err := json.Unmarshal(payload, &input); err != nil {
 		return err
 	}
-	input.Bidder = strings.ToLower(input.Bidder)
-
 	createBid := bid_usecase.NewCreateBidUseCase(h.BidRepository, h.ContractRepository, h.AuctionRepository)
 	res, err := createBid.Execute(&input, deposit, metadata)
 	if err != nil {
@@ -52,7 +47,7 @@ func (h *BidAdvanceHandlers) CreateBidHandler(env rollmelette.Env, metadata roll
 		return fmt.Errorf("no application address defined yet")
 	}
 
-	if err := env.ERC20Transfer(common.HexToAddress(volt.Address), metadata.MsgSender, application, res.Credits); err != nil {
+	if err := env.ERC20Transfer(volt.Address.Address, metadata.MsgSender, application, res.Credits.Int); err != nil {
 		return err
 	}
 	env.Notice([]byte(fmt.Sprintf("created bid with id: %v and amount of credits: %v and price: %v", res.Id, res.Credits, res.Price)))

@@ -3,6 +3,7 @@ package entity
 import (
 	"errors"
 
+	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
 )
 
@@ -14,21 +15,21 @@ var (
 type UserRepository interface {
 	CreateUser(User *User) (*User, error)
 	FindUserByRole(role string) (*User, error)
-	FindUserByAddress(address string) (*User, error)
+	FindUserByAddress(address custom_type.Address) (*User, error)
 	UpdateUser(User *User) (*User, error)
 	FindAllUsers() ([]*User, error)
-	DeleteUserByAddress(address string) error
+	DeleteUserByAddress(address custom_type.Address) error
 }
 
 type User struct {
-	Id        uint   `json:"id" gorm:"primaryKey"`
-	Role      string `json:"role" gorm:"not null"`
-	Address   string `json:"address" gorm:"type:text;uniqueIndex;not null"`
-	CreatedAt int64  `json:"created_at" gorm:"not null"`
-	UpdatedAt int64  `json:"updated_at" gorm:"default:0"`
+	Id        uint                `json:"id" gorm:"primaryKey"`
+	Role      string              `json:"role" gorm:"not null"`
+	Address   custom_type.Address `json:"address" gorm:"type:text;uniqueIndex;not null"`
+	CreatedAt int64               `json:"created_at" gorm:"not null"`
+	UpdatedAt int64               `json:"updated_at" gorm:"default:0"`
 }
 
-func NewUser(role string, address string, created_at int64) (*User, error) {
+func NewUser(role string, address custom_type.Address, created_at int64) (*User, error) {
 	user := &User{
 		Role:      role,
 		Address:   address,
@@ -41,7 +42,7 @@ func NewUser(role string, address string, created_at int64) (*User, error) {
 }
 
 func (u *User) Validate() error {
-	if u.Role == "" || u.Address == (common.Address{}.String()) {
+	if u.Role == "" || u.Address.Address == (common.Address{}) {
 		return ErrInvalidUser
 	}
 	return nil
