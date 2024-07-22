@@ -39,7 +39,7 @@ func (r *UserRepositorySqlite) FindUserByAddress(address custom_type.Address) (*
 	var user entity.User
 	err := r.Db.Where("address = ?", address).First(&user).Error
 	if err != nil {
-		return nil, fmt.Errorf("failed to find user by address %v: %w", address, err)
+		return nil, fmt.Errorf("failed to find user by address %v: %w", address.Address, err)
 	}
 	return &user, nil
 }
@@ -54,17 +54,23 @@ func (r *UserRepositorySqlite) FindAllUsers() ([]*entity.User, error) {
 }
 
 func (r *UserRepositorySqlite) UpdateUser(input *entity.User) (*entity.User, error) {
-	err := r.Db.Model(&entity.User{}).Where("address = ?", input.Address).Updates(input).Error
-	if err != nil {
-		return nil, fmt.Errorf("failed to update user: %w", err)
+	res := r.Db.Model(&entity.User{}).Where("address = ?", input.Address).Updates(input)
+	if res.Error != nil {
+		return nil, fmt.Errorf("failed to update user: %w", res.Error)
+	}
+	if res.RowsAffected == 0 {
+		return nil, entity.ErrUserNotFound
 	}
 	return input, nil
 }
 
 func (r *UserRepositorySqlite) DeleteUserByAddress(address custom_type.Address) error {
-	err := r.Db.Delete(&entity.User{}, "address = ?", address).Error
-	if err != nil {
-		return fmt.Errorf("failed to delete user by address: %w", err)
+	res := r.Db.Delete(&entity.User{}, "address = ?", address)
+	if res.Error != nil {
+		return fmt.Errorf("failed to delete user: %w", res.Error)
+	}
+	if res.RowsAffected == 0 {
+		return entity.ErrUserNotFound
 	}
 	return nil
 }

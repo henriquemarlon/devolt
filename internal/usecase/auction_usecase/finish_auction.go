@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/pkg/custom_type"
-	types "github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/rollmelette/rollmelette"
 	"math/big"
 	"sort"
@@ -14,8 +13,8 @@ type FinishAuctionSubDTO struct {
 	Id        uint                `json:"id"`
 	AuctionId uint                `json:"auction_id"`
 	Bidder    custom_type.Address `json:"bidder"`
-	Credits   types.BigInt        `json:"credits"`
-	Price     types.BigInt        `json:"price"`
+	Credits   custom_type.BigInt        `json:"credits"`
+	Price     custom_type.BigInt        `json:"price"`
 	CreatedAt int64               `json:"created_at"`
 }
 
@@ -93,10 +92,10 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 
 		remainingCredits := new(big.Int).Sub(requiredCredits, totalCredits)
 		if bid.Credits.Int.Cmp(remainingCredits) > 0 {
-			acceptedBidCredits := types.NewBigInt(remainingCredits)
-			rejectedBidCredits := types.NewBigInt(new(big.Int).Sub(bid.Credits.Int, remainingCredits))
-			acceptedBidPrice := types.NewBigInt(new(big.Int).Div(new(big.Int).Mul(bid.Price.Int, remainingCredits), bid.Credits.Int))
-			rejectedBidPrice := types.NewBigInt(new(big.Int).Div(new(big.Int).Mul(bid.Price.Int, rejectedBidCredits.Int), bid.Credits.Int))
+			acceptedBidCredits := custom_type.NewBigInt(remainingCredits)
+			rejectedBidCredits := custom_type.NewBigInt(new(big.Int).Sub(bid.Credits.Int, remainingCredits))
+			acceptedBidPrice := custom_type.NewBigInt(new(big.Int).Div(new(big.Int).Mul(bid.Price.Int, remainingCredits), bid.Credits.Int))
+			rejectedBidPrice := custom_type.NewBigInt(new(big.Int).Div(new(big.Int).Mul(bid.Price.Int, rejectedBidCredits.Int), bid.Credits.Int))
 
 			// Create bid with exactly required credits
 			acceptedBid := &entity.Bid{

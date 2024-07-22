@@ -62,17 +62,23 @@ func (r *BidRepositorySqlite) FindAllBids() ([]*entity.Bid, error) {
 }
 
 func (r *BidRepositorySqlite) UpdateBid(input *entity.Bid) (*entity.Bid, error) {
-	err := r.Db.Save(input).Error
-	if err != nil {
-		return nil, fmt.Errorf("failed to update bid: %w", err)
+	res := r.Db.Model(&entity.Bid{}).Where("bid_id = ?", input.Id).Updates(input)
+	if res.Error != nil {
+		return nil, fmt.Errorf("failed to update bid: %w", res.Error)
+	}
+	if res.RowsAffected == 0 {
+		return nil, entity.ErrBidNotFound
 	}
 	return input, nil
 }
 
 func (r *BidRepositorySqlite) DeleteBid(id uint) error {
-	err := r.Db.Delete(&entity.Bid{}, "bid_id = ?", id).Error
-	if err != nil {
-		return fmt.Errorf("failed to delete bid: %w", err)
+	res := r.Db.Delete(&entity.Bid{}, "bid_id = ?", id)
+	if res.Error != nil {
+		return fmt.Errorf("failed to delete bid: %w", res.Error)
+	}
+	if res.RowsAffected == 0 {
+		return entity.ErrBidNotFound
 	}
 	return nil
 }
