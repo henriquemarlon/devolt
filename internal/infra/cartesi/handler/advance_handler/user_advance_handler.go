@@ -97,13 +97,27 @@ func (h *UserAdvanceHandlers) WithdrawAppHandler(env rollmelette.Env, metadata r
 	return nil
 }
 
-func (h *UserAdvanceHandlers) WithdrawHandler(env rollmelette.Env, metadata rollmelette.Metadata, deposit rollmelette.Deposit, payload []byte) error {
+func (h *UserAdvanceHandlers) WithdrawStablecoinHandler(env rollmelette.Env, metadata rollmelette.Metadata, deposit rollmelette.Deposit, payload []byte) error {
 	findContractBySymbol := contract_usecase.NewFindContractBySymbolUseCase(h.ContractRepository)
-	volt, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "VOLT"})
+	stablecoin, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "USDC"})
 	if err != nil {
 		return err
 	}
-	stablecoin, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "USDC"})
+	stablecoinBalance := env.ERC20BalanceOf(stablecoin.Address.Address, metadata.MsgSender)
+	if stablecoinBalance.Sign() == 0 {
+		return fmt.Errorf("no balance of %v to withdraw", stablecoin.Symbol)
+	}
+	stablecoinVoucherIndex, err := env.ERC20Withdraw(stablecoin.Address.Address, metadata.MsgSender, stablecoinBalance)
+	if err != nil {
+		return err
+	}
+	env.Notice([]byte(fmt.Sprintf("withdrawn %v and %v from %v with voucher index: %v", stablecoin.Symbol, stablecoinBalance, metadata.MsgSender, stablecoinVoucherIndex)))
+	return nil
+}
+
+func (h *UserAdvanceHandlers) WithdrawVoltHandler(env rollmelette.Env, metadata rollmelette.Metadata, deposit rollmelette.Deposit, payload []byte) error {
+	findContractBySymbol := contract_usecase.NewFindContractBySymbolUseCase(h.ContractRepository)
+	volt, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "VOLT"})
 	if err != nil {
 		return err
 	}
@@ -111,18 +125,10 @@ func (h *UserAdvanceHandlers) WithdrawHandler(env rollmelette.Env, metadata roll
 	if voltBalance.Sign() == 0 {
 		return fmt.Errorf("no balance of %v to withdraw", volt.Symbol)
 	}
-	stablecoinBalance := env.ERC20BalanceOf(stablecoin.Address.Address, metadata.MsgSender)
-	if stablecoinBalance.Sign() == 0 {
-		return fmt.Errorf("no balance of %v to withdraw", stablecoin.Symbol)
-	}
 	voltVoucherIndex, err := env.ERC20Withdraw(volt.Address.Address, metadata.MsgSender, voltBalance)
 	if err != nil {
 		return err
 	}
-	stablecoinVoucherIndex, err := env.ERC20Withdraw(stablecoin.Address.Address, metadata.MsgSender, stablecoinBalance)
-	if err != nil {
-		return err
-	}
-	env.Notice([]byte(fmt.Sprintf("withdrawn %v %v and %v %v from %v with voucher index of $VOLT: %v and $USDC: %v", volt.Symbol, voltBalance, stablecoin.Symbol, stablecoinBalance, metadata.MsgSender, voltVoucherIndex, stablecoinVoucherIndex)))
+	env.Notice([]byte(fmt.Sprintf("withdrawn %v and %v from %v with voucher index: %v", volt.Symbol, voltBalance, metadata.MsgSender, voltVoucherIndex)))
 	return nil
 }

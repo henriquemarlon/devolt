@@ -6,6 +6,7 @@
   - [ ] Test creating an order with valid data.
   - [ ] Test creating an order with missing required fields.
   - [ ] Test creating an order with invalid data.
+  - [ ] Test creating an order without compliant deposit.
 
 - **updateOrder:**
   - [ ] Test updating an order with valid data.
@@ -21,7 +22,7 @@
 
 - **createContract:**
   - [x] Test creating a contract with valid data.
-  - [x  ] Test creating a contract without sufficient permissions.
+  - [x ] Test creating a contract without sufficient permissions.
   - [x] Test creating a contract with invalid data.
 
 - **updateContract:**
@@ -82,9 +83,13 @@
 
 ## User Management
 
-- **withdraw:**
-  - [ ] Test withdrawing funds with valid data.
-  - [ ] Test withdrawing funds with insufficient balance.
+- **withdrawStablecoin:**
+  - [x] Test withdrawing funds with valid data.
+  - [x] Test withdrawing funds with insufficient balance.
+
+- **withdrawVolt:**
+  - [x] Test withdrawing funds with valid data.
+  - [x] Test withdrawing funds with insufficient balance.
 
 - **createUser:**
   - [x] Test creating a user with valid data.
