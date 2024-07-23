@@ -17,7 +17,7 @@ func SetupApplicationPersistent() *router.Router {
 		log.Fatalf("Failed to initialize inspect handlers from wire: %v", err)
 	}
 
-	ms, err := NewMiddlewearsPersistent()
+	ms, err := NewMiddlewaresPersistent()
 	if err != nil {
 		log.Fatalf("Failed to initialize middlewares from wire: %v", err)
 	}
@@ -90,7 +90,7 @@ func SetupApplicationMemory() *router.Router {
 		log.Fatalf("Failed to initialize inspect handlers from wire: %v", err)
 	}
 
-	ms, err := NewMiddlewearsMemory()
+	ms, err := NewMiddlewaresMemory()
 	if err != nil {
 		log.Fatalf("Failed to initialize middlewares from wire: %v", err)
 	}

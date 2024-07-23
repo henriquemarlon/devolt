@@ -968,7 +968,7 @@ func (s *IntegrationTestSuite) TestItCreateBidWhenAuctionIsNotOngoing() {
 	s.Len(voltResult.Notices, 1)
 	s.Equal(voltExpectedOutput, string(voltResult.Notices[0].Payload))
 
-	createAuctionPayload := []byte(fmt.Sprintf(`{"credits":"100000", "price_limit":"1000", "expires_at": %v}`, time.Now().Add(5 * time.Second).Unix()))
+	createAuctionPayload := []byte(fmt.Sprintf(`{"credits":"100000", "price_limit":"1000", "expires_at": %v}`, time.Now().Add(5*time.Second).Unix()))
 	createAuctionInput, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "createAuction",
 		Payload: createAuctionPayload,
