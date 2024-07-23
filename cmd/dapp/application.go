@@ -1,8 +1,8 @@
 package main
 
 import (
-	"log"
 	"github.com/devolthq/devolt/pkg/router"
+	"log"
 )
 
 func SetupApplicationPersistent() *router.Router {

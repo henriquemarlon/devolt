@@ -200,7 +200,7 @@ func (s *IntegrationTestSuite) TestItDeleteNonExistentUser() {
 func (s *IntegrationTestSuite) TestItWithdrawVolt() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	sender := common.HexToAddress("0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc")
-	
+
 	voltPayload := []byte(`{"symbol":"VOLT","address":"0x0000000000000000000000000000000000000001"}`)
 	voltInput, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "createContract",
@@ -351,7 +351,6 @@ func (s *IntegrationTestSuite) TestItWithdrawStablecoinWithInsuficientBalance() 
 	withdrawResult := s.tester.Advance(sender, input)
 	s.ErrorContains(withdrawResult.Err, expectedOutput)
 }
-
 
 ///////////////// Contract ///////////////////
 
@@ -632,7 +631,7 @@ func (s *IntegrationTestSuite) TestItDeleteNonExistentStation() {
 
 func (s *IntegrationTestSuite) TestItCreateOrder() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
-	
+
 	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
 	s.Nil(appAddressResult.Err)
 
@@ -675,7 +674,7 @@ func (s *IntegrationTestSuite) TestItCreateOrder() {
 	s.Equal(createOrderExpectedOutput, string(createOrderResult.Notices[0].Payload))
 }
 
-func (s *IntegrationTestSuite) TestItCreateOrderWithInvalidData() {	
+func (s *IntegrationTestSuite) TestItCreateOrderWithInvalidData() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 
 	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
@@ -903,7 +902,38 @@ func (s *IntegrationTestSuite) TestItDeleteNonExistentOrder() {
 
 /////////////////// Bids //////////////////
 
-func (s *IntegrationTestSuite) TestItCreateBidWhenAuctionIsNotOngoing() {
+func (s *IntegrationTestSuite) TestItCreateBid() {
+	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+
+	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
+	s.Nil(appAddressResult.Err)
+
+	voltPayload := []byte(`{"symbol":"VOLT","address":"0x0000000000000000000000000000000000000002"}`)
+	voltInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createContract",
+		Payload: voltPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	voltExpectedOutput := `created contract with symbol: VOLT and address: 0x0000000000000000000000000000000000000002`
+	voltResult := s.tester.Advance(admin, voltInput)
+	s.Len(voltResult.Notices, 1)
+	s.Equal(voltExpectedOutput, string(voltResult.Notices[0].Payload))
+
+	createAuctionPayload := []byte(fmt.Sprintf(`{"credits":"100000", "price_limit":"1000", "expires_at": %v}`, time.Now().Add(time.Hour).Unix()))
+	createAuctionInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createAuction",
+		Payload: createAuctionPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	createAuctionExpectedOutput := `created auction with id: 1`
+	createAuctionResult := s.tester.Advance(admin, createAuctionInput)
+	s.Len(createAuctionResult.Notices, 1)
+	s.Equal(createAuctionExpectedOutput, string(createAuctionResult.Notices[0].Payload))
+
 	sender := common.HexToAddress("0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65")
 	payload := []byte(`{"price":"1000"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -913,8 +943,57 @@ func (s *IntegrationTestSuite) TestItCreateBidWhenAuctionIsNotOngoing() {
 	if err != nil {
 		s.T().Fatal(err)
 	}
-	expectedOutput := `auction not found`
-	result := s.tester.Advance(sender, input)
+	expectedOutput := `created bid with id: 1 and amount of credits: 10000 and price: 1000`
+	result := s.tester.DepositERC20(common.HexToAddress("0x0000000000000000000000000000000000000002"), sender, big.NewInt(10000), input)
+	s.Len(result.Notices, 1)
+	s.Equal(expectedOutput, string(result.Notices[0].Payload))
+}
+
+func (s *IntegrationTestSuite) TestItCreateBidWhenAuctionIsNotOngoing() {
+	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+
+	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
+	s.Nil(appAddressResult.Err)
+
+	voltPayload := []byte(`{"symbol":"VOLT","address":"0x0000000000000000000000000000000000000002"}`)
+	voltInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createContract",
+		Payload: voltPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	voltExpectedOutput := `created contract with symbol: VOLT and address: 0x0000000000000000000000000000000000000002`
+	voltResult := s.tester.Advance(admin, voltInput)
+	s.Len(voltResult.Notices, 1)
+	s.Equal(voltExpectedOutput, string(voltResult.Notices[0].Payload))
+
+	createAuctionPayload := []byte(fmt.Sprintf(`{"credits":"100000", "price_limit":"1000", "expires_at": %v}`, time.Now().Add(5 * time.Second).Unix()))
+	createAuctionInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createAuction",
+		Payload: createAuctionPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	createAuctionExpectedOutput := `created auction with id: 1`
+	createAuctionResult := s.tester.Advance(admin, createAuctionInput)
+	s.Len(createAuctionResult.Notices, 1)
+	s.Equal(createAuctionExpectedOutput, string(createAuctionResult.Notices[0].Payload))
+
+	time.Sleep(6 * time.Second) // wait for auction to expire
+
+	sender := common.HexToAddress("0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65")
+	payload := []byte(`{"price":"1000"}`)
+	input, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createBid",
+		Payload: payload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	expectedOutput := `active auction expired, cannot create bid`
+	result := s.tester.DepositERC20(common.HexToAddress("0x0000000000000000000000000000000000000002"), sender, big.NewInt(10000), input)
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
