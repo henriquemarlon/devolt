@@ -29,6 +29,9 @@ func (r *AuctionRepositorySqlite) FindActiveAuction() (*entity.Auction, error) {
 	var auction entity.Auction
 	err := r.Db.Preload("Bids").Where("state = ?", "ongoing").First(&auction).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, entity.ErrAuctionNotFound
+		}
 		return nil, err
 	}
 	return &auction, nil
@@ -53,8 +56,11 @@ func (r *AuctionRepositorySqlite) FindAllAuctions() ([]*entity.Auction, error) {
 }
 
 func (r *AuctionRepositorySqlite) UpdateAuction(input *entity.Auction) (*entity.Auction, error) {
-	res := r.Db.Model(&entity.Auction{}).Where("auction_id = ?", input.Id).Omit("created_at").Updates(input)
+	res := r.Db.Model(&entity.Auction{}).Where("id = ?", input.Id).Omit("created_at").Updates(input)
 	if res.Error != nil {
+		if res.Error == gorm.ErrRecordNotFound {
+			return nil, entity.ErrAuctionNotFound
+		}
 		return nil, fmt.Errorf("failed to update auction: %w", res.Error)
 	}
 	if res.RowsAffected == 0 {

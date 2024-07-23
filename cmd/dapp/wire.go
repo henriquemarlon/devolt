@@ -65,7 +65,7 @@ var setMiddleware = wire.NewSet(
 	middleware.NewRBACMiddleware,
 )
 
-func NewMiddlewaresPersistent() (*Middlewares, error) {
+func NewMiddlewearsPersistent() (*Middlewares, error) {
 	wire.Build(
 		configs.SetupSQlitePersistent,
 		setUserRepositoryDependency,
@@ -75,7 +75,7 @@ func NewMiddlewaresPersistent() (*Middlewares, error) {
 	return nil, nil
 }
 
-func NewMiddlewaresMemory() (*Middlewares, error) {
+func NewMiddlewearsMemory() (*Middlewares, error) {
 	wire.Build(
 		configs.SetupSQliteMemory,
 		setUserRepositoryDependency,

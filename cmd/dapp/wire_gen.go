@@ -18,7 +18,7 @@ import (
 
 // Injectors from wire.go:
 
-func NewMiddlewaresPersistent() (*Middlewares, error) {
+func NewMiddlewearsPersistent() (*Middlewares, error) {
 	gormDB, err := configs.SetupSQlitePersistent()
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func NewMiddlewaresPersistent() (*Middlewares, error) {
 	return middlewares, nil
 }
 
-func NewMiddlewaresMemory() (*Middlewares, error) {
+func NewMiddlewearsMemory() (*Middlewares, error) {
 	gormDB, err := configs.SetupSQliteMemory()
 	if err != nil {
 		return nil, err

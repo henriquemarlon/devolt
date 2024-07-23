@@ -42,7 +42,7 @@ func (h *AuctionAdvanceHandlers) CreateAuctionHandler(env rollmelette.Env, metad
 	if err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("created auction with id: %v and expiration: %v", res.Id, res.ExpiresAt)))
+	env.Notice([]byte(fmt.Sprintf("created auction with id: %v", res.Id)))
 	return nil
 }
 

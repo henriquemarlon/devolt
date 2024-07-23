@@ -47,7 +47,7 @@ func (h *BidAdvanceHandlers) CreateBidHandler(env rollmelette.Env, metadata roll
 		return fmt.Errorf("no application address defined yet")
 	}
 
-	if err := env.ERC20Transfer(volt.Address.Address, metadata.MsgSender, application, res.Credits.Int); err != nil {
+	if err := env.ERC20Transfer(volt.Address.Address, res.Bidder.Address, application, res.Credits.Int); err != nil {
 		return err
 	}
 	env.Notice([]byte(fmt.Sprintf("created bid with id: %v and amount of credits: %v and price: %v", res.Id, res.Credits, res.Price)))

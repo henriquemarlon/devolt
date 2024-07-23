@@ -52,7 +52,7 @@ func (h *OrderAdvanceHandlers) CreateOrderHandler(env rollmelette.Env, metadata 
 
 	// The station owner gets 40% of the order amount
 	stationFee := new(big.Int).Div(new(big.Int).Mul(deposit.(*rollmelette.ERC20Deposit).Amount, big.NewInt(40)), big.NewInt(100))
-	if err := env.ERC20Transfer(stablecoin.Address.Address, deposit.(*rollmelette.ERC20Deposit).Sender, res.StationOwner.Address, stationFee); err != nil {
+	if err := env.ERC20Transfer(stablecoin.Address.Address, res.Buyer.Address, res.StationOwner.Address, stationFee); err != nil {
 		return err
 	}
 

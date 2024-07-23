@@ -58,11 +58,11 @@ func TestCreateBidUseCase(t *testing.T) {
 	mockBidRepo.On("CreateBid", mock.AnythingOfType("*entity.Bid")).Return(mockBid, nil)
 
 	input := &CreateBidInputDTO{
-		Bidder: custom_type.NewAddress(common.HexToAddress("0x1")),
 		Price:  custom_type.NewBigInt(big.NewInt(500)),
 	}
 
 	deposit := &rollmelette.ERC20Deposit{
+		Sender: common.HexToAddress("0x125"),
 		Token:  common.HexToAddress("0x123"),
 		Amount: credits.Int,
 	}

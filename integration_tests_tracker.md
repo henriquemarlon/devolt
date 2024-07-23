@@ -35,7 +35,7 @@
 
 - **createBid:**
   - [ ] Test creating a bid with valid data.
-  - [ ] Test create bid without auction ongoing.
+  - [x] Test create bid without auction ongoing.
 
 ## Station Management
 
@@ -61,14 +61,13 @@
 ## Auction Management
 
 - **createAuction:**
-  - [ ] Test creating an auction with valid data.
-  - [ ] Test creating an auction without sufficient permissions.
-  - [ ] Test creating an auction with invalid data.
+  - [x] Test creating an auction with valid data.
+  - [x] Test creating an auction without sufficient permissions.
+  - [x] Test creating an auction with invalid data.
 
 - **updateAuction:**
-  - [ ] Test updating an auction with valid data.
-  - [ ] Test updating an auction without sufficient permissions.
-  - [ ] Test updating a non-existent auction.
+  - [x] Test updating an auction without sufficient permissions.
+  - [x] Test updating a non-existent auction.
 
 - **finishAuction:**
   - [ ] Test finishing an auction that has expired.

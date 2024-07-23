@@ -2,13 +2,15 @@ package entity
 
 import (
 	"errors"
+	"math/big"
+
 	"github.com/devolthq/devolt/pkg/custom_type"
 )
 
 var (
 	ErrExpired         = errors.New("auction expired")
 	ErrAuctionNotFound = errors.New("auction not found")
-	ErrInvalidAuction  = errors.New("invalid price")
+	ErrInvalidAuction  = errors.New("invalid auction")
 )
 
 type AuctionRepository interface {
@@ -54,7 +56,7 @@ func NewAuction(credits custom_type.BigInt, priceLimit custom_type.BigInt, expir
 }
 
 func (a *Auction) Validate() error {
-	if a.Credits.Int == nil || a.PriceLimit.Int == nil || a.ExpiresAt == 0 || a.CreatedAt == 0 || a.CreatedAt >= a.ExpiresAt {
+	if a.Credits.Cmp(big.NewInt(0)) <= 0 || a.PriceLimit.Cmp(big.NewInt(0)) <= 0 || a.ExpiresAt == 0 || a.CreatedAt == 0 || a.CreatedAt >= a.ExpiresAt {
 		return ErrInvalidAuction
 	}
 	return nil

@@ -8,7 +8,6 @@ import (
 )
 
 type CreateBidInputDTO struct {
-	Bidder custom_type.Address `json:"bidder"`
 	Price  custom_type.BigInt  `json:"price"`
 }
 
@@ -62,7 +61,7 @@ func (c *CreateBidUseCase) Execute(input *CreateBidInputDTO, deposit rollmelette
 		return nil, fmt.Errorf("bid price exceeds active auction price limit")
 	}
 
-	bid, err := entity.NewBid(activeAuction.Id, input.Bidder, custom_type.NewBigInt(bidDeposit.Amount), input.Price, metadata.BlockTimestamp)
+	bid, err := entity.NewBid(activeAuction.Id, custom_type.NewAddress(bidDeposit.Sender), custom_type.NewBigInt(bidDeposit.Amount), input.Price, metadata.BlockTimestamp)
 	if err != nil {
 		return nil, err
 	}
