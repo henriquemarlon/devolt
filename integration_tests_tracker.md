@@ -34,8 +34,8 @@
 ## Bid Management
 
 - **createBid:**
-  - [ ] Test creating a bid with valid data.
-  - [x] Test create bid without auction ongoing.
+  - [x] Test creating a bid with valid data.
+  - [x] Test create bid when auction is not ongoing.
 
 ## Station Management
 

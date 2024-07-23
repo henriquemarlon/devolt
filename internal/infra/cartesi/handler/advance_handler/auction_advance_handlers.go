@@ -69,7 +69,7 @@ func (h *AuctionAdvanceHandlers) FinishAuctionHandler(env rollmelette.Env, metad
 
 	application, isDefined := env.AppAddress()
 	if !isDefined {
-		return fmt.Errorf("no application address defined yet")
+		return fmt.Errorf("no application address defined yet, contact the DeVolt support")
 	}
 
 	findContractBySymbol := contract_usecase.NewFindContractBySymbolUseCase(h.ContractRepository)

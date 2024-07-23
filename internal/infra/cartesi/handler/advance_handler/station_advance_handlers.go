@@ -3,6 +3,7 @@ package advance_handler
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/contract_usecase"
 	"github.com/devolthq/devolt/internal/usecase/station_usecase"
@@ -79,7 +80,7 @@ func (h *StationAdvanceHandlers) OffSetStationConsumptionHandler(env rollmelette
 	}
 	application, isDefined := env.AppAddress()
 	if !isDefined {
-		return fmt.Errorf("no application address defined yet")
+		return fmt.Errorf("no application address defined yet, contact the DeVolt support")
 	}
 	findContractBySymbol := contract_usecase.NewFindContractBySymbolUseCase(h.ContractRepository)
 	volt, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "VOLT"})

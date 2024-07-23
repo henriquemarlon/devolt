@@ -3,11 +3,12 @@ package advance_handler
 import (
 	"encoding/json"
 	"fmt"
+	"math/big"
+
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/contract_usecase"
 	"github.com/devolthq/devolt/internal/usecase/order_usecase"
 	"github.com/rollmelette/rollmelette"
-	"math/big"
 )
 
 type OrderAdvanceHandlers struct {
@@ -41,7 +42,7 @@ func (h *OrderAdvanceHandlers) CreateOrderHandler(env rollmelette.Env, metadata 
 
 	application, isDefined := env.AppAddress()
 	if !isDefined {
-		return fmt.Errorf("no application address defined yet, contact DeVolt support")
+		return fmt.Errorf("no application address defined yet, contact the DeVolt support")
 	}
 
 	findContractBySymbol := contract_usecase.NewFindContractBySymbolUseCase(h.ContractRepository)
