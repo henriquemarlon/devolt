@@ -53,7 +53,7 @@ func (r *AuctionRepositorySqlite) FindAllAuctions() ([]*entity.Auction, error) {
 }
 
 func (r *AuctionRepositorySqlite) UpdateAuction(input *entity.Auction) (*entity.Auction, error) {
-	res := r.Db.Model(&entity.Auction{}).Where("auction_id = ?", input.Id).Updates(input)
+	res := r.Db.Model(&entity.Auction{}).Where("auction_id = ?", input.Id).Omit("created_at").Updates(input)
 	if res.Error != nil {
 		return nil, fmt.Errorf("failed to update auction: %w", res.Error)
 	}

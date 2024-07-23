@@ -24,12 +24,12 @@ type OrderRepository interface {
 
 type Order struct {
 	Id             uint                `json:"id" gorm:"primaryKey"`
-	Buyer          custom_type.Address `json:"buyer" gorm:"type:text;not null"`
-	Credits        custom_type.BigInt  `json:"credits" gorm:"type:bigint;not null"`
-	StationId      string              `json:"station_id" gorm:"not null"`
-	PricePerCredit custom_type.BigInt  `json:"price_per_credit" gorm:"type:bigint;not null"`
-	CreatedAt      int64               `json:"created_at" gorm:"not null"`
-	UpdatedAt      int64               `json:"updated_at" gorm:"default:0"`
+	Buyer          custom_type.Address `json:"buyer,omitempty" gorm:"type:text;not null"`
+	Credits        custom_type.BigInt  `json:"credits,omitempty" gorm:"type:bigint;not null"`
+	StationId      string              `json:"station_id,omitempty" gorm:"not null"`
+	PricePerCredit custom_type.BigInt  `json:"price_per_credit,omitempty" gorm:"type:bigint;not null"`
+	CreatedAt      int64               `json:"created_at,omitempty" gorm:"not null"`
+	UpdatedAt      int64               `json:"updated_at,omitempty" gorm:"default:0"`
 }
 
 func NewOrder(buyer custom_type.Address, credits custom_type.BigInt, stationId string, pricePerCredit *big.Int, createdAt int64) (*Order, error) {

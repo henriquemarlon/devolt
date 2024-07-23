@@ -3,26 +3,22 @@
 ## Order Management
 
 - **createOrder:**
-  - [ ] Test creating an order with valid data.
-  - [ ] Test creating an order with missing required fields.
-  - [ ] Test creating an order with invalid data.
-  - [ ] Test creating an order without compliant deposit.
+  - [x] Test creating an order with valid data.
+  - [x] Test creating an order with invalid data.
 
 - **updateOrder:**
-  - [ ] Test updating an order with valid data.
-  - [ ] Test updating an order without sufficient permissions.
-  - [ ] Test updating an order with invalid data.
+  - [x] Test updating an order with valid data.
+  - [x] Test updating an order without sufficient permissions.
 
 - **deleteOrder:**
-  - [ ] Test deleting an order with valid ID.
-  - [ ] Test deleting an order without sufficient permissions.
-  - [ ] Test deleting a non-existent order.
+  - [x] Test deleting an order with valid ID.
+  - [x] Test deleting an order without sufficient permissions.
 
 ## Contract Management
 
 - **createContract:**
   - [x] Test creating a contract with valid data.
-  - [x ] Test creating a contract without sufficient permissions.
+  - [x] Test creating a contract without sufficient permissions.
   - [x] Test creating a contract with invalid data.
 
 - **updateContract:**
@@ -40,8 +36,6 @@
 - **createBid:**
   - [ ] Test creating a bid with valid data.
   - [ ] Test create bid without auction ongoing.
-  - [ ] Test creating a bid with missing required fields.
-  - [ ] Test creating a bid with invalid data.
 
 ## Station Management
 

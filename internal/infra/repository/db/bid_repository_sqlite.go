@@ -62,7 +62,7 @@ func (r *BidRepositorySqlite) FindAllBids() ([]*entity.Bid, error) {
 }
 
 func (r *BidRepositorySqlite) UpdateBid(input *entity.Bid) (*entity.Bid, error) {
-	res := r.Db.Model(&entity.Bid{}).Where("bid_id = ?", input.Id).Updates(input)
+	res := r.Db.Model(&entity.Bid{}).Where("bid_id = ?", input.Id).Omit("created_at").Updates(input)
 	if res.Error != nil {
 		return nil, fmt.Errorf("failed to update bid: %w", res.Error)
 	}

@@ -28,15 +28,15 @@ const (
 
 type Station struct {
 	Id             string              `json:"id" gorm:"primaryKey"`
-	Consumption    custom_type.BigInt  `json:"consumption" gorm:"type:bigint;not null"`
-	Owner          custom_type.Address `json:"owner" gorm:"not null"`
-	State          StationState        `json:"state" gorm:"type:text;not null"`
-	Orders         []*Order            `json:"orders" gorm:"foreignKey:StationId;constraint:OnDelete:CASCADE"`
-	PricePerCredit custom_type.BigInt  `json:"price_per_credit" gorm:"type:bigint;not null"`
-	Latitude       float64             `json:"latitude" gorm:"not null"`
-	Longitude      float64             `json:"longitude" gorm:"not null"`
-	CreatedAt      int64               `json:"created_at" gorm:"not null"`
-	UpdatedAt      int64               `json:"updated_at" gorm:"default:0"`
+	Consumption    custom_type.BigInt  `json:"consumption,omitempty" gorm:"type:bigint;not null"`
+	Owner          custom_type.Address `json:"owner,omitempty" gorm:"not null"`
+	State          StationState        `json:"state,omitempty" gorm:"type:text;not null"`
+	Orders         []*Order            `json:"orders,omitempty" gorm:"foreignKey:StationId;constraint:OnDelete:CASCADE"`
+	PricePerCredit custom_type.BigInt  `json:"price_per_credit,omitempty" gorm:"type:bigint;not null"`
+	Latitude       float64             `json:"latitude,omitempty" gorm:"not null"`
+	Longitude      float64             `json:"longitude,omitempty" gorm:"not null"`
+	CreatedAt      int64               `json:"created_at,omitempty" gorm:"not null"`
+	UpdatedAt      int64               `json:"updated_at,omitempty" gorm:"default:0"`
 }
 
 func NewStation(id string, owner custom_type.Address, consumption custom_type.BigInt, pricePerCredit custom_type.BigInt, latitude float64, longitude float64, createdAt int64) (*Station, error) {

@@ -2,13 +2,16 @@ package configs
 
 import (
 	"fmt"
-	"github.com/devolthq/devolt/internal/domain/entity"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 	"log"
 	"os"
 	"time"
+
+	"github.com/devolthq/devolt/internal/domain/entity"
+	"github.com/devolthq/devolt/pkg/custom_type"
+	"github.com/ethereum/go-ethereum/common"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func SetupSQlitePersistent() (*gorm.DB, error) {
@@ -35,6 +38,13 @@ func SetupSQlitePersistent() (*gorm.DB, error) {
 		&entity.Station{},
 		&entity.Contract{},
 	)
+
+	db.Create(&entity.User{
+		Role:      "admin",
+		Address:   custom_type.NewAddress(common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")),
+		CreatedAt: 0,
+	})
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to run migrations: %v", err)
 	}
@@ -51,7 +61,7 @@ func SetupSQliteMemory() (*gorm.DB, error) {
 		},
 	)
 
-	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{
 		Logger: newLogger,
 	})
 	if err != nil {
@@ -65,6 +75,11 @@ func SetupSQliteMemory() (*gorm.DB, error) {
 		&entity.Station{},
 		&entity.Contract{},
 	)
+	db.Create(&entity.User{
+		Role:      "admin",
+		Address:   custom_type.NewAddress(common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")),
+		CreatedAt: 0,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to run migrations: %v", err)
 	}

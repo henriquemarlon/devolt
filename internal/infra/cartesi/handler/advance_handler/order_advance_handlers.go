@@ -41,28 +41,28 @@ func (h *OrderAdvanceHandlers) CreateOrderHandler(env rollmelette.Env, metadata 
 
 	application, isDefined := env.AppAddress()
 	if !isDefined {
-		return fmt.Errorf("no application address defined yet")
+		return fmt.Errorf("no application address defined yet, contact DeVolt support")
 	}
 
 	findContractBySymbol := contract_usecase.NewFindContractBySymbolUseCase(h.ContractRepository)
-	volt, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "VOLT"})
+	stablecoin, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "USDC"})
 	if err != nil {
 		return err
 	}
 
 	// The station owner gets 40% of the order amount
 	stationFee := new(big.Int).Div(new(big.Int).Mul(deposit.(*rollmelette.ERC20Deposit).Amount, big.NewInt(40)), big.NewInt(100))
-	if err := env.ERC20Transfer(volt.Address.Address, metadata.MsgSender, res.StationOwner.Address, stationFee); err != nil {
+	if err := env.ERC20Transfer(stablecoin.Address.Address, deposit.(*rollmelette.ERC20Deposit).Sender, res.StationOwner.Address, stationFee); err != nil {
 		return err
 	}
 
 	// The application gets the remainder which would be split between the cost of the energy and DeVolt fees
 	remainderValue := new(big.Int).Sub(deposit.(*rollmelette.ERC20Deposit).Amount, stationFee)
-	if err := env.ERC20Transfer(volt.Address.Address, metadata.MsgSender, application, remainderValue); err != nil {
+	if err := env.ERC20Transfer(stablecoin.Address.Address, deposit.(*rollmelette.ERC20Deposit).Sender, application, remainderValue); err != nil {
 		return err
 	}
 
-	env.Notice([]byte(fmt.Sprintf("created order %v and paied %v as station fee and %v as application fee", res, stationFee, remainderValue)))
+	env.Notice([]byte(fmt.Sprintf("created order %v and paid %v as station fee and %v as application fee", res.Id, stationFee, remainderValue)))
 	return nil
 }
 
@@ -76,7 +76,7 @@ func (h *OrderAdvanceHandlers) UpdateOrderHandler(env rollmelette.Env, metadata 
 	if err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("updated order %v", res)))
+	env.Notice([]byte(fmt.Sprintf("updated order with id: %v and credits: %v", res.Id, res.Credits)))
 	return nil
 }
 
@@ -92,6 +92,6 @@ func (h *OrderAdvanceHandlers) DeleteOrderHandler(env rollmelette.Env, metadata 
 	if err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("deleted order %v", input.Id)))
+	env.Notice([]byte(fmt.Sprintf("deleted order with id: %v", input.Id)))
 	return nil
 }

@@ -21,8 +21,6 @@ func TestCreateOrderUseCase(t *testing.T) {
 	createOrderUseCase := NewCreateOrderUseCase(mockOrderRepo, mockStationRepo, mockContractRepo)
 
 	input := &CreateOrderInputDTO{
-		Buyer:     custom_type.NewAddress(common.HexToAddress("0x123")),
-		Credits:   custom_type.NewBigInt(big.NewInt(100)),
 		StationId: "station_1",
 	}
 
@@ -50,6 +48,7 @@ func TestCreateOrderUseCase(t *testing.T) {
 	}
 
 	deposit := &rollmelette.ERC20Deposit{
+		Sender: common.HexToAddress("0x123"),
 		Token:  common.HexToAddress("0x789"),
 		Amount: big.NewInt(1000),
 	}

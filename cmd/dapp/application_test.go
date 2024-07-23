@@ -21,7 +21,7 @@ type IntegrationTestSuite struct {
 	tester *rollmelette.Tester
 }
 
-func (s *IntegrationTestSuite) SetupSuite() {
+func (s *IntegrationTestSuite) SetupTest() {
 	app := SetupApplicationMemory()
 	s.tester = rollmelette.NewTester(app)
 }
@@ -135,6 +135,20 @@ func (s *IntegrationTestSuite) TestItUpdateNonExistentUser() {
 }
 
 func (s *IntegrationTestSuite) TestItDeleteUser() {
+	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+	createUserPayload := []byte(`{"address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","role":"admin"}`)
+	createUserInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createUser",
+		Payload: createUserPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	createUserExpectedOutput := `created user with address: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 and role: admin`
+	createUserResult := s.tester.Advance(admin, createUserInput)
+	s.Len(createUserResult.Notices, 1)
+	s.Equal(createUserExpectedOutput, string(createUserResult.Notices[0].Payload))
+
 	sender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	address := common.HexToAddress("0x70997970C51812dc3A010C7d01b50e0d17dc79C8").String()
 	payload := []byte(`{"address":"` + address + `"}`)
@@ -168,7 +182,7 @@ func (s *IntegrationTestSuite) TestItDeleteUserWithoutPermissions() {
 
 func (s *IntegrationTestSuite) TestItDeleteNonExistentUser() {
 	sender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
-	address := common.HexToAddress("0xNonExistentAddress").String()
+	address := common.HexToAddress("0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65").String()
 	payload := []byte(`{"address":"` + address + `"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "deleteUser",
@@ -200,10 +214,6 @@ func (s *IntegrationTestSuite) TestItWithdrawVolt() {
 	s.Len(voltResult.Notices, 1)
 	s.Equal(voltExpectedOutput, string(voltResult.Notices[0].Payload))
 
-	// Setup App Address
-	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
-	s.Nil(appAddressResult.Err)
-
 	s.tester.DepositERC20(common.HexToAddress("0x0000000000000000000000000000000000000001"), sender, big.NewInt(10000), []byte(""))
 
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -232,11 +242,25 @@ func (s *IntegrationTestSuite) TestItWithdrawVolt() {
 }
 
 func (s *IntegrationTestSuite) TestItWithdrawVoltWithInsuficientBalance() {
+	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	sender := common.HexToAddress("0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc")
 
 	// Setup App Address
 	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
 	s.Nil(appAddressResult.Err)
+
+	voltPayload := []byte(`{"symbol":"VOLT","address":"0x0000000000000000000000000000000000000001"}`)
+	voltInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createContract",
+		Payload: voltPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	voltExpectedOutput := `created contract with symbol: VOLT and address: 0x0000000000000000000000000000000000000001`
+	voltResult := s.tester.Advance(admin, voltInput)
+	s.Len(voltResult.Notices, 1)
+	s.Equal(voltExpectedOutput, string(voltResult.Notices[0].Payload))
 
 	input, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "withdrawVolt",
@@ -254,9 +278,8 @@ func (s *IntegrationTestSuite) TestItWithdrawVoltWithInsuficientBalance() {
 func (s *IntegrationTestSuite) TestItWithdrawStablecoin() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	sender := common.HexToAddress("0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc")
-	
-	// CREATE VOLT CONTRACT
-	stablecoinPayload := []byte(`{"symbol":"USDC","address":"0x0000000000000000000000000000000000000002"}`)
+
+	stablecoinPayload := []byte(`{"symbol":"USDC","address":"0x0000000000000000000000000000000000000001"}`)
 	stablecoinInput, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "createContract",
 		Payload: stablecoinPayload,
@@ -264,7 +287,7 @@ func (s *IntegrationTestSuite) TestItWithdrawStablecoin() {
 	if err != nil {
 		s.T().Fatal(err)
 	}
-	stablecoinExpectedOutput := `created contract with symbol: USDC and address: 0x0000000000000000000000000000000000000002`
+	stablecoinExpectedOutput := `created contract with symbol: USDC and address: 0x0000000000000000000000000000000000000001`
 	stablecoinResult := s.tester.Advance(admin, stablecoinInput)
 	s.Len(stablecoinResult.Notices, 1)
 	s.Equal(stablecoinExpectedOutput, string(stablecoinResult.Notices[0].Payload))
@@ -273,7 +296,7 @@ func (s *IntegrationTestSuite) TestItWithdrawStablecoin() {
 	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
 	s.Nil(appAddressResult.Err)
 
-	s.tester.DepositERC20(common.HexToAddress("0x0000000000000000000000000000000000000002"), sender, big.NewInt(10000), []byte(""))
+	s.tester.DepositERC20(common.HexToAddress("0x0000000000000000000000000000000000000001"), sender, big.NewInt(10000), []byte(""))
 
 	input, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "withdrawStablecoin",
@@ -285,23 +308,37 @@ func (s *IntegrationTestSuite) TestItWithdrawStablecoin() {
 
 	expectedNoticePayload := `withdrawn USDC and 10000 from 0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc with voucher index: 1`
 
-	expectedVOLTVoucherPayload := make([]byte, 0, 4+32+32)
-	expectedVOLTVoucherPayload = append(expectedVOLTVoucherPayload, 0xa9, 0x05, 0x9c, 0xbb)
-	expectedVOLTVoucherPayload = append(expectedVOLTVoucherPayload, make([]byte, 12)...)
-	expectedVOLTVoucherPayload = append(expectedVOLTVoucherPayload, sender[:]...)
-	expectedVOLTVoucherPayload = append(expectedVOLTVoucherPayload, big.NewInt(10000).FillBytes(make([]byte, 32))...)
+	expectedUSDCVoucherPayload := make([]byte, 0, 4+32+32)
+	expectedUSDCVoucherPayload = append(expectedUSDCVoucherPayload, 0xa9, 0x05, 0x9c, 0xbb)
+	expectedUSDCVoucherPayload = append(expectedUSDCVoucherPayload, make([]byte, 12)...)
+	expectedUSDCVoucherPayload = append(expectedUSDCVoucherPayload, sender[:]...)
+	expectedUSDCVoucherPayload = append(expectedUSDCVoucherPayload, big.NewInt(10000).FillBytes(make([]byte, 32))...)
 	withdrawResult := s.tester.Advance(sender, input)
 	s.Len(withdrawResult.Notices, 1)
 	s.Len(withdrawResult.Vouchers, 1)
 
 	// CHECK VOUCHERS AND NOTICES PAYLOAD
-	s.Equal(expectedVOLTVoucherPayload, withdrawResult.Vouchers[0].Payload)
-	s.Equal(common.HexToAddress("0x0000000000000000000000000000000000000002"), withdrawResult.Vouchers[0].Destination)
+	s.Equal(expectedUSDCVoucherPayload, withdrawResult.Vouchers[0].Payload)
+	s.Equal(common.HexToAddress("0x0000000000000000000000000000000000000001"), withdrawResult.Vouchers[0].Destination)
 	s.Equal(expectedNoticePayload, string(withdrawResult.Notices[0].Payload))
 }
 
 func (s *IntegrationTestSuite) TestItWithdrawStablecoinWithInsuficientBalance() {
+	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	sender := common.HexToAddress("0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc")
+
+	stablecoinPayload := []byte(`{"symbol":"USDC","address":"0x0000000000000000000000000000000000000001"}`)
+	stablecoinInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createContract",
+		Payload: stablecoinPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	stablecoinExpectedOutput := `created contract with symbol: USDC and address: 0x0000000000000000000000000000000000000001`
+	stablecoinResult := s.tester.Advance(admin, stablecoinInput)
+	s.Len(stablecoinResult.Notices, 1)
+	s.Equal(stablecoinExpectedOutput, string(stablecoinResult.Notices[0].Payload))
 
 	// Setup App Address
 	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
@@ -340,7 +377,20 @@ func (s *IntegrationTestSuite) TestItCreateContract() {
 }
 
 func (s *IntegrationTestSuite) TestItDeleteContract() {
-	sender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+	createContractPayload := []byte(`{"symbol":"VOLT","address":"0x0000000000000000000000000000000000000001"}`)
+	createContractInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createContract",
+		Payload: createContractPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	createContractExpectedOutput := `created contract with symbol: VOLT and address: 0x0000000000000000000000000000000000000001`
+	createContractResult := s.tester.Advance(admin, createContractInput)
+	s.Len(createContractResult.Notices, 1)
+	s.Equal(createContractExpectedOutput, string(createContractResult.Notices[0].Payload))
+
 	payload := []byte(`{"symbol":"VOLT"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "deleteContract",
@@ -350,7 +400,7 @@ func (s *IntegrationTestSuite) TestItDeleteContract() {
 		s.T().Fatal(err)
 	}
 	expectedOutput := `deleted contract with symbol: VOLT`
-	result := s.tester.Advance(sender, input)
+	result := s.tester.Advance(admin, input)
 	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 }
@@ -583,4 +633,291 @@ func (s *IntegrationTestSuite) TestItDeleteNonExistentStation() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-// TODO: OffSet Station Consumption
+///////////////// Order ///////////////////
+
+func (s *IntegrationTestSuite) TestItCreateOrder() {
+	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+	
+	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
+	s.Nil(appAddressResult.Err)
+
+	// CREATE USDC CONTRACT
+	stablecoinPayload := []byte(`{"symbol":"USDC","address":"0x0000000000000000000000000000000000000002"}`)
+	stablecoinInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createContract",
+		Payload: stablecoinPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	stablecoinExpectedOutput := `created contract with symbol: USDC and address: 0x0000000000000000000000000000000000000002`
+	stablecoinResult := s.tester.Advance(admin, stablecoinInput)
+	s.Len(stablecoinResult.Notices, 1)
+	s.Equal(stablecoinExpectedOutput, string(stablecoinResult.Notices[0].Payload))
+
+	// CREATE STATION
+	createStationPayload := []byte(`{"id":"station-2", "owner": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "consumption": 100, "price_per_credit": 50, "latitude": 40.7128, "longitude": -74.0060}`)
+	input, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createStation",
+		Payload: createStationPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	createStationExpectedOutput := `created station with id: station-2 and owner: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8`
+	createStationResult := s.tester.Advance(admin, input)
+	s.Len(createStationResult.Notices, 1)
+	s.Equal(createStationExpectedOutput, string(createStationResult.Notices[0].Payload))
+
+	sender := common.HexToAddress("0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65")
+	createOrderPayload, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createOrder",
+		Payload: []byte(`{"station_id":"station-2"}`),
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	createOrderResult := s.tester.DepositERC20(common.HexToAddress("0x0000000000000000000000000000000000000002"), sender, big.NewInt(10000), createOrderPayload)
+	createOrderExpectedOutput := "created order 1 and paid 4000 as station fee and 6000 as application fee"
+	s.Equal(createOrderExpectedOutput, string(createOrderResult.Notices[0].Payload))
+}
+
+func (s *IntegrationTestSuite) TestItCreateOrderWithInvalidData() {	
+	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+
+	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
+	s.Nil(appAddressResult.Err)
+
+	// CREATE USDC CONTRACT
+	stablecoinPayload := []byte(`{"symbol":"USDC","address":"0x0000000000000000000000000000000000000002"}`)
+	stablecoinInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createContract",
+		Payload: stablecoinPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	stablecoinExpectedOutput := `created contract with symbol: USDC and address: 0x0000000000000000000000000000000000000002`
+	stablecoinResult := s.tester.Advance(admin, stablecoinInput)
+	s.Len(stablecoinResult.Notices, 1)
+	s.Equal(stablecoinExpectedOutput, string(stablecoinResult.Notices[0].Payload))
+
+	// CREATE STATION
+	createStationPayload := []byte(`{"id":"station-2", "owner": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "consumption": 100, "price_per_credit": 50, "latitude": 40.7128, "longitude": -74.0060}`)
+	createStationInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createStation",
+		Payload: createStationPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	createStationExpectedOutput := `created station with id: station-2 and owner: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8`
+	createStationResult := s.tester.Advance(admin, createStationInput)
+	s.Len(createStationResult.Notices, 1)
+	s.Equal(createStationExpectedOutput, string(createStationResult.Notices[0].Payload))
+
+	sender := common.HexToAddress("0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65")
+	createOrderPayload, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createOrder",
+		Payload: []byte(`{"station_id":"station-2"}`),
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	createOrderResult := s.tester.DepositERC20(common.HexToAddress("0x0000000000000000000000000000000000000002"), sender, big.NewInt(0), createOrderPayload)
+	createOrderExpectedOutput := "invalid order"
+	s.ErrorContains(createOrderResult.Err, createOrderExpectedOutput)
+}
+
+func (s *IntegrationTestSuite) TestItUpdateOrder() {
+	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+
+	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
+	s.Nil(appAddressResult.Err)
+
+	// CREATE USDC CONTRACT
+	stablecoinPayload := []byte(`{"symbol":"USDC","address":"0x0000000000000000000000000000000000000002"}`)
+	stablecoinInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createContract",
+		Payload: stablecoinPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	stablecoinExpectedOutput := `created contract with symbol: USDC and address: 0x0000000000000000000000000000000000000002`
+	stablecoinResult := s.tester.Advance(admin, stablecoinInput)
+	s.Len(stablecoinResult.Notices, 1)
+	s.Equal(stablecoinExpectedOutput, string(stablecoinResult.Notices[0].Payload))
+
+	// CREATE STATION
+	createStationPayload := []byte(`{"id":"station-2", "owner": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "consumption": 100, "price_per_credit": 50, "latitude": 40.7128, "longitude": -74.0060}`)
+	createStationInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createStation",
+		Payload: createStationPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	createStationExpectedOutput := `created station with id: station-2 and owner: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8`
+	createStationResult := s.tester.Advance(admin, createStationInput)
+	s.Len(createStationResult.Notices, 1)
+	s.Equal(createStationExpectedOutput, string(createStationResult.Notices[0].Payload))
+
+	// CREATE ORDER
+	sender := common.HexToAddress("0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65")
+	createOrderPayload, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createOrder",
+		Payload: []byte(`{"station_id":"station-2"}`),
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	createOrderResult := s.tester.DepositERC20(common.HexToAddress("0x0000000000000000000000000000000000000002"), sender, big.NewInt(10000), createOrderPayload)
+	createOrderExpectedOutput := "created order 1 and paid 4000 as station fee and 6000 as application fee"
+	s.Equal(createOrderExpectedOutput, string(createOrderResult.Notices[0].Payload))
+
+	// UPDATE ORDER
+	updateOrderPayload := []byte(`{"id":1, "station_id":"station-2", "credits": 20000}`)
+	input, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "updateOrder",
+		Payload: updateOrderPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	expectedOutput := `updated order with id: 1 and credits: 20000`
+	updateOrderResult := s.tester.Advance(admin, input)
+	s.Len(updateOrderResult.Notices, 1)
+	s.Equal(expectedOutput, string(updateOrderResult.Notices[0].Payload))
+}
+
+func (s *IntegrationTestSuite) TestItUpdateOrderWithoutPermissions() {
+	sender := common.HexToAddress("0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65")
+
+	// CREATE ORDER
+	createOrderPayload, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createOrder",
+		Payload: []byte(`{"station_id":"station-2"}`),
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	s.tester.DepositERC20(common.HexToAddress("0x0000000000000000000000000000000000000002"), sender, big.NewInt(10000), createOrderPayload)
+
+	// TRY TO UPDATE ORDER WITHOUT PERMISSIONS
+	updateOrderPayload := []byte(`{"id":1, "credits": 20000}`)
+	input, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "updateOrder",
+		Payload: updateOrderPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	expectedOutput := `failed to find user by address 0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65: record not found`
+	updateOrderResult := s.tester.Advance(sender, input)
+	s.ErrorContains(updateOrderResult.Err, expectedOutput)
+}
+
+func (s *IntegrationTestSuite) TestItDeleteOrder() {
+	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+
+	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
+	s.Nil(appAddressResult.Err)
+
+	// CREATE USDC CONTRACT
+	stablecoinPayload := []byte(`{"symbol":"USDC","address":"0x0000000000000000000000000000000000000002"}`)
+	stablecoinInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createContract",
+		Payload: stablecoinPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	stablecoinExpectedOutput := `created contract with symbol: USDC and address: 0x0000000000000000000000000000000000000002`
+	stablecoinResult := s.tester.Advance(admin, stablecoinInput)
+	s.Len(stablecoinResult.Notices, 1)
+	s.Equal(stablecoinExpectedOutput, string(stablecoinResult.Notices[0].Payload))
+
+	// CREATE STATION
+	createStationPayload := []byte(`{"id":"station-2", "owner": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "consumption": 100, "price_per_credit": 50, "latitude": 40.7128, "longitude": -74.0060}`)
+	createStationInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createStation",
+		Payload: createStationPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	createStationExpectedOutput := `created station with id: station-2 and owner: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8`
+	createStationResult := s.tester.Advance(admin, createStationInput)
+	s.Len(createStationResult.Notices, 1)
+	s.Equal(createStationExpectedOutput, string(createStationResult.Notices[0].Payload))
+
+	// CREATE ORDER
+	sender := common.HexToAddress("0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65")
+	createOrderPayload, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createOrder",
+		Payload: []byte(`{"station_id":"station-2"}`),
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	s.tester.DepositERC20(common.HexToAddress("0x0000000000000000000000000000000000000002"), sender, big.NewInt(10000), createOrderPayload)
+
+	// DELETE ORDER
+	deleteOrderPayload := []byte(`{"id":1}`)
+	input, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "deleteOrder",
+		Payload: deleteOrderPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	expectedOutput := `deleted order with id: 1`
+	deleteOrderResult := s.tester.Advance(admin, input)
+	s.Len(deleteOrderResult.Notices, 1)
+	s.Equal(expectedOutput, string(deleteOrderResult.Notices[0].Payload))
+}
+
+func (s *IntegrationTestSuite) TestItDeleteOrderWithoutPermissions() {
+	sender := common.HexToAddress("0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65")
+
+	// CREATE ORDER
+	createOrderPayload, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createOrder",
+		Payload: []byte(`{"station_id":"station-2"}`),
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	s.tester.DepositERC20(common.HexToAddress("0x0000000000000000000000000000000000000002"), sender, big.NewInt(10000), createOrderPayload)
+
+	// TRY TO DELETE ORDER WITHOUT PERMISSIONS
+	deleteOrderPayload := []byte(`{"id":1}`)
+	input, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "deleteOrder",
+		Payload: deleteOrderPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	expectedOutput := `failed to find user by address 0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65: record not found`
+	deleteOrderResult := s.tester.Advance(sender, input)
+	s.ErrorContains(deleteOrderResult.Err, expectedOutput)
+}
+
+func (s *IntegrationTestSuite) TestItDeleteNonExistentOrder() {
+	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+
+	// TRY TO DELETE NON-EXISTENT ORDER
+	deleteOrderPayload := []byte(`{"id":999}`)
+	input, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "deleteOrder",
+		Payload: deleteOrderPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	expectedOutput := `order not found`
+	deleteOrderResult := s.tester.Advance(admin, input)
+	s.ErrorContains(deleteOrderResult.Err, expectedOutput)
+}

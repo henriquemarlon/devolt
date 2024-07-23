@@ -30,13 +30,13 @@ const (
 
 type Auction struct {
 	Id         uint               `json:"id" gorm:"primaryKey"`
-	Credits    custom_type.BigInt `json:"credits" gorm:"type:bigint;not null"`
-	PriceLimit custom_type.BigInt `json:"price_limit" gorm:"type:bigint;not null"`
-	State      AuctionState       `json:"state" gorm:"type:text;not null"`
-	Bids       []*Bid             `json:"bids" gorm:"foreignKey:AuctionId;constraint:OnDelete:CASCADE"`
-	ExpiresAt  int64              `json:"expires_at" gorm:"not null"`
-	CreatedAt  int64              `json:"created_at" gorm:"not null"`
-	UpdatedAt  int64              `json:"updated_at" gorm:"default:0"`
+	Credits    custom_type.BigInt `json:"credits,omitempty" gorm:"type:bigint;not null"`
+	PriceLimit custom_type.BigInt `json:"price_limit,omitempty" gorm:"type:bigint;not null"`
+	State      AuctionState       `json:"state,omitempty" gorm:"type:text;not null"`
+	Bids       []*Bid             `json:"bids,omitempty" gorm:"foreignKey:AuctionId;constraint:OnDelete:CASCADE"`
+	ExpiresAt  int64              `json:"expires_at,omitempty" gorm:"not null"`
+	CreatedAt  int64              `json:"created_at,omitempty" gorm:"not null"`
+	UpdatedAt  int64              `json:"updated_at,omitempty" gorm:"default:0"`
 }
 
 func NewAuction(credits custom_type.BigInt, priceLimit custom_type.BigInt, expiresAt int64, createdAt int64) (*Auction, error) {

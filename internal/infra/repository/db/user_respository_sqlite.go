@@ -54,7 +54,7 @@ func (r *UserRepositorySqlite) FindAllUsers() ([]*entity.User, error) {
 }
 
 func (r *UserRepositorySqlite) UpdateUser(input *entity.User) (*entity.User, error) {
-	res := r.Db.Model(&entity.User{}).Where("address = ?", input.Address).Updates(input)
+	res := r.Db.Model(&entity.User{}).Where("address = ?", input.Address).Omit("created_at").Updates(input)
 	if res.Error != nil {
 		return nil, fmt.Errorf("failed to update user: %w", res.Error)
 	}

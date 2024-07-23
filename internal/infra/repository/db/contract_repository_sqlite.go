@@ -44,7 +44,7 @@ func (r *ContractRepositorySqlite) FindContractBySymbol(symbol string) (*entity.
 }
 
 func (r *ContractRepositorySqlite) UpdateContract(contract *entity.Contract) (*entity.Contract, error) {
-	res := r.Db.Model(&entity.Contract{}).Where("symbol = ?", contract.Symbol).Updates(contract)
+	res := r.Db.Model(&entity.Contract{}).Where("symbol = ?", contract.Symbol).Omit("created_at").Updates(contract)
 	if res.Error != nil {
 		return nil, fmt.Errorf("failed to update contract: %w", res.Error)
 	}

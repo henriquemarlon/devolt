@@ -35,12 +35,12 @@ const (
 type Bid struct {
 	Id        uint                `json:"id" gorm:"primaryKey"`
 	AuctionId uint                `json:"auction_id" gorm:"not null;index"`
-	Bidder    custom_type.Address `json:"bidder" gorm:"not null"`
-	Credits   custom_type.BigInt  `json:"credits" gorm:"type:bigint;not null"`
-	Price     custom_type.BigInt  `json:"price" gorm:"type:bigint;not null"`
-	State     BidState            `json:"state" gorm:"type:text;not null"`
-	CreatedAt int64               `json:"created_at" gorm:"not null"`
-	UpdatedAt int64               `json:"updated_at" gorm:"default:0"`
+	Bidder    custom_type.Address `json:"bidder,omitempty" gorm:"not null"`
+	Credits   custom_type.BigInt  `json:"credits,omitempty" gorm:"type:bigint;not null"`
+	Price     custom_type.BigInt  `json:"price,omitempty" gorm:"type:bigint;not null"`
+	State     BidState            `json:"state,omitempty" gorm:"type:text;not null"`
+	CreatedAt int64               `json:"created_at,omitempty" gorm:"not null"`
+	UpdatedAt int64               `json:"updated_at,omitempty" gorm:"default:0"`
 }
 
 func NewBid(auctionId uint, bidder custom_type.Address, credits custom_type.BigInt, price custom_type.BigInt, createdAt int64) (*Bid, error) {
