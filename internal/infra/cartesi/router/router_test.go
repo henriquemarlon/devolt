@@ -48,7 +48,7 @@ func (s *RouterSuite) TestItCreateUser() {
 }
 
 func (s *RouterSuite) TestItCreateUserWithoutPermissions() {
-	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678") 
+	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678")
 	payload := []byte(`{"address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C9","role":"admin"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "createUser",
@@ -108,7 +108,7 @@ func (s *RouterSuite) TestItUpdateUser() {
 }
 
 func (s *RouterSuite) TestItUpdateUserWithoutPermissions() {
-	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678") 
+	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678")
 	payload := []byte(`{"address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C6","role":"user"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "updateUser",
@@ -169,7 +169,7 @@ func (s *RouterSuite) TestItDeleteUser() {
 }
 
 func (s *RouterSuite) TestItDeleteUserWithoutPermissions() {
-	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678") 
+	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678")
 	payload := []byte(`{"address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "deleteUser",
@@ -432,7 +432,7 @@ func (s *RouterSuite) TestItUpdateContract() {
 }
 
 func (s *RouterSuite) TestItCreateContractWithoutPermissions() {
-	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678") 
+	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678")
 	payload := []byte(`{"symbol":"VOLT","address":"0x0000000000000000000000000000000000000002"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "createContract",
@@ -462,7 +462,7 @@ func (s *RouterSuite) TestItCreateContractWithInvalidData() {
 }
 
 func (s *RouterSuite) TestItUpdateContractWithoutPermissions() {
-	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678") 
+	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678")
 	payload := []byte(`{"symbol":"VOLT","address":"0x0000000000000000000000000000000000000003"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "updateContract",
@@ -492,7 +492,7 @@ func (s *RouterSuite) TestItUpdateNonExistentContract() {
 }
 
 func (s *RouterSuite) TestItDeleteContractWithoutPermissions() {
-	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678") 
+	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678")
 	payload := []byte(`{"symbol":"VOLT"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "deleteContract",

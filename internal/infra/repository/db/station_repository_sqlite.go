@@ -56,7 +56,6 @@ func (r *StationRepositorySqlite) UpdateStation(input *entity.Station) (*entity.
 	return input, nil
 }
 
-
 func (r *StationRepositorySqlite) DeleteStation(id string) error {
 	res := r.Db.Delete(&entity.Station{}, "id = ?", id)
 	if res.Error != nil {

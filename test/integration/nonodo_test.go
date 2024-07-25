@@ -3,16 +3,15 @@ package integration
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 	"syscall"
 	"testing"
 	"time"
-	"github.com/devolthq/devolt/pkg/router"
+
 	"github.com/Khan/genqlient/graphql"
 	devolt "github.com/devolthq/devolt/internal/infra/cartesi/router"
+	"github.com/devolthq/devolt/pkg/router"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 	"github.com/stretchr/testify/suite"
@@ -35,6 +34,11 @@ type NonodoSuite struct {
 // Setup ///////////////////////////////////////////////////////////////////////////////////////////
 
 func (s *NonodoSuite) SetupTest() {
+	// err := DeleteFileIfExists("./devolt.db")
+	// if err != nil {
+	// 	s.T().Fatal(err)
+	// }
+
 	s.ctx, s.cancel = context.WithTimeout(context.Background(), TestTimeout)
 	s.group, s.ctx = errgroup.WithContext(s.ctx)
 
@@ -68,7 +72,7 @@ func (s *NonodoSuite) TearDownTest() {
 
 // Test Cases //////////////////////////////////////////////////////////////////////////////////////
 
-func (s *NonodoSuite) TestAuctionWithParcialSelling() {
+func (s *NonodoSuite) TestSystemFlowAndAuctionWithParcialSelling() {
 	payload := []byte(`{"address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","role":"admin"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "createUser",
@@ -77,11 +81,11 @@ func (s *NonodoSuite) TestAuctionWithParcialSelling() {
 	if err != nil {
 		s.T().Fatal(err)
 	}
-	err = AdvanceInputBox(s.ctx, "http://127.0.0.1:8545", input)
+	err = AdvanceInputBox(s.ctx, "http://127.0.0.1:8545", "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", input)
 	s.Require().Nil(err)
 
 	client := graphql.NewClient("http://127.0.0.1:8080/graphql", nil)
-	err = waitForInput(s.ctx, client)
+	err = WaitForInput(s.ctx, client)
 	s.Require().Nil(err)
 
 	result, err := getNodeState(s.ctx, client)
@@ -93,27 +97,7 @@ func (s *NonodoSuite) TestAuctionWithParcialSelling() {
 	s.Require().Equal(expected, common.Hex2Bytes(output.Notices.Edges[0].Node.Payload[2:]))
 }
 
-func (s *NonodoSuite) TestAuctionWithoutParcialSelling() {
-	// TODO
-}
-
-// Helper functions ////////////////////////////////////////////////////////////////////////////////
-
-func waitForInput(ctx context.Context, client graphql.Client) error {
-	ticker := time.NewTicker(10 * time.Millisecond)
-	defer ticker.Stop()
-	for {
-		result, err := getInputStatus(ctx, client, 0)
-		if err != nil && !strings.Contains(err.Error(), "input not found") {
-			return fmt.Errorf("failed to get input status: %w", err)
-		}
-		if result.Input.Status == CompletionStatusAccepted {
-			return nil
-		}
-		select {
-		case <-ticker.C:
-		case <-ctx.Done():
-			return ctx.Err()
-		}
-	}
+func (s *NonodoSuite) TestSystemFlowAndAuctionWithoutParcialSelling() {
+	err := IncreaseTime("http://127.0.0.1:8545", 10)
+	s.Require().Nil(err)
 }

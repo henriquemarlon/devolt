@@ -8,7 +8,7 @@ import (
 )
 
 type CreateBidInputDTO struct {
-	Price  custom_type.BigInt  `json:"price"`
+	Price custom_type.BigInt `json:"price"`
 }
 
 type CreateBidOutputDTO struct {

@@ -58,7 +58,7 @@ func TestCreateBidUseCase(t *testing.T) {
 	mockBidRepo.On("CreateBid", mock.AnythingOfType("*entity.Bid")).Return(mockBid, nil)
 
 	input := &CreateBidInputDTO{
-		Price:  custom_type.NewBigInt(big.NewInt(500)),
+		Price: custom_type.NewBigInt(big.NewInt(500)),
 	}
 
 	deposit := &rollmelette.ERC20Deposit{

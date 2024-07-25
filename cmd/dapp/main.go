@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/rollmelette/rollmelette"
 	"github.com/devolthq/devolt/internal/infra/cartesi/router"
+	"github.com/rollmelette/rollmelette"
 	"log/slog"
 )
 

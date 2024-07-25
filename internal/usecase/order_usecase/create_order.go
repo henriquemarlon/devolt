@@ -10,7 +10,7 @@ import (
 )
 
 type CreateOrderInputDTO struct {
-	StationId string              `json:"station_id"`
+	StationId string `json:"station_id"`
 }
 
 type CreateOrderOutputDTO struct {

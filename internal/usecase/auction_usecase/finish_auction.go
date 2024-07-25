@@ -13,8 +13,8 @@ type FinishAuctionSubDTO struct {
 	Id        uint                `json:"id"`
 	AuctionId uint                `json:"auction_id"`
 	Bidder    custom_type.Address `json:"bidder"`
-	Credits   custom_type.BigInt        `json:"credits"`
-	Price     custom_type.BigInt        `json:"price"`
+	Credits   custom_type.BigInt  `json:"credits"`
+	Price     custom_type.BigInt  `json:"price"`
 	CreatedAt int64               `json:"created_at"`
 }
 
