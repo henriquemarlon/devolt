@@ -14,7 +14,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-func SetupSQlitePersistent() (*gorm.DB, error) {
+func SetupSQlite() (*gorm.DB, error) {
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{

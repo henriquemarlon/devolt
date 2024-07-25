@@ -1,23 +1,23 @@
-package main
+package router
 
 import (
 	"github.com/devolthq/devolt/pkg/router"
 	"log"
 )
 
-func SetupApplicationPersistent() *router.Router {
+func SetupApplication() *router.Router {
 	//////////////////////// Setup Handlers //////////////////////////
-	ah, err := NewAdvanceHandlersPersistent()
+	ah, err := NewAdvanceHandlers()
 	if err != nil {
 		log.Fatalf("Failed to initialize advance handlers from wire: %v", err)
 	}
 
-	ih, err := NewInspectHandlersPersistent()
+	ih, err := NewInspectHandlers()
 	if err != nil {
 		log.Fatalf("Failed to initialize inspect handlers from wire: %v", err)
 	}
 
-	ms, err := NewMiddlewaresPersistent()
+	ms, err := NewMiddlewares()
 	if err != nil {
 		log.Fatalf("Failed to initialize middlewares from wire: %v", err)
 	}
@@ -78,7 +78,7 @@ func SetupApplicationPersistent() *router.Router {
 	return dapp
 }
 
-func SetupApplicationMemory() *router.Router {
+func SetupTestApplication() *router.Router {
 	//////////////////////// Setup Handlers //////////////////////////
 	ah, err := NewAdvanceHandlersMemory()
 	if err != nil {

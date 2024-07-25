@@ -1,7 +1,7 @@
 //go:build wireinject
 // +build wireinject
 
-package main
+package router
 
 import (
 	"github.com/devolthq/devolt/configs"
@@ -65,9 +65,9 @@ var setMiddleware = wire.NewSet(
 	middleware.NewRBACMiddleware,
 )
 
-func NewMiddlewaresPersistent() (*Middlewares, error) {
+func NewMiddlewares() (*Middlewares, error) {
 	wire.Build(
-		configs.SetupSQlitePersistent,
+		configs.SetupSQlite,
 		setUserRepositoryDependency,
 		setMiddleware,
 		wire.Struct(new(Middlewares), "*"),
@@ -85,9 +85,9 @@ func NewMiddlewaresMemory() (*Middlewares, error) {
 	return nil, nil
 }
 
-func NewAdvanceHandlersPersistent() (*AdvanceHandlers, error) {
+func NewAdvanceHandlers() (*AdvanceHandlers, error) {
 	wire.Build(
-		configs.SetupSQlitePersistent,
+		configs.SetupSQlite,
 		setBidRepositoryDependency,
 		setUserRepositoryDependency,
 		setOrderRepositoryDependency,
@@ -115,9 +115,9 @@ func NewAdvanceHandlersMemory() (*AdvanceHandlers, error) {
 	return nil, nil
 }
 
-func NewInspectHandlersPersistent() (*InspectHandlers, error) {
+func NewInspectHandlers() (*InspectHandlers, error) {
 	wire.Build(
-		configs.SetupSQlitePersistent,
+		configs.SetupSQlite,
 		setBidRepositoryDependency,
 		setUserRepositoryDependency,
 		setOrderRepositoryDependency,

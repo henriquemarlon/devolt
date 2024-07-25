@@ -4,7 +4,7 @@
 //go:build !wireinject
 // +build !wireinject
 
-package main
+package router
 
 import (
 	"github.com/devolthq/devolt/configs"
@@ -18,8 +18,8 @@ import (
 
 // Injectors from wire.go:
 
-func NewMiddlewaresPersistent() (*Middlewares, error) {
-	gormDB, err := configs.SetupSQlitePersistent()
+func NewMiddlewares() (*Middlewares, error) {
+	gormDB, err := configs.SetupSQlite()
 	if err != nil {
 		return nil, err
 	}
@@ -44,8 +44,8 @@ func NewMiddlewaresMemory() (*Middlewares, error) {
 	return middlewares, nil
 }
 
-func NewAdvanceHandlersPersistent() (*AdvanceHandlers, error) {
-	gormDB, err := configs.SetupSQlitePersistent()
+func NewAdvanceHandlers() (*AdvanceHandlers, error) {
+	gormDB, err := configs.SetupSQlite()
 	if err != nil {
 		return nil, err
 	}
@@ -100,8 +100,8 @@ func NewAdvanceHandlersMemory() (*AdvanceHandlers, error) {
 	return advanceHandlers, nil
 }
 
-func NewInspectHandlersPersistent() (*InspectHandlers, error) {
-	gormDB, err := configs.SetupSQlitePersistent()
+func NewInspectHandlers() (*InspectHandlers, error) {
+	gormDB, err := configs.SetupSQlite()
 	if err != nil {
 		return nil, err
 	}
