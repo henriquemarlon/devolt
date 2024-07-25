@@ -9,7 +9,7 @@ import (
 
 func main() {
 	//////////////////////// Setup Application //////////////////////////
-	app := router.SetupApplication()
+	app := router.NewApp()
 
 	///////////////////////// Rollmelette //////////////////////////
 	ctx := context.Background()

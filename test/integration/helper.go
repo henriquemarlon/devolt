@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
 	"github.com/Khan/genqlient/graphql"
 )
 
@@ -40,17 +41,17 @@ func IncreaseTime(url string, seconds int) error {
 
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		return fmt.Errorf("erro ao converter os dados para JSON: %w", err)
+		return fmt.Errorf("error while marshaling JSON: %w", err)
 	}
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		return fmt.Errorf("erro ao fazer a requisição POST: %w", err)
+		return fmt.Errorf("error while making POST: %w", err)
 	}
 	defer resp.Body.Close()
 
 	var result map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return fmt.Errorf("erro ao decodificar a resposta: %w", err)
+		return fmt.Errorf("error while decoding JSON: %w", err)
 	}
 
 	fmt.Println(result)

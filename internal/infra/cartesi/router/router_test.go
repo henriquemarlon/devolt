@@ -23,7 +23,7 @@ type RouterSuite struct {
 }
 
 func (s *RouterSuite) SetupTest() {
-	app := SetupTestApplication()
+	app := NewTestApp()
 	s.tester = rollmelette.NewTester(app)
 }
 
