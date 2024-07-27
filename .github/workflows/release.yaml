@@ -20,22 +20,15 @@ on:
       - 'Makefile'
   workflow_dispatch:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 permissions:
-  actions: write
   contents: write
-  id-token: write
   packages: write
-  pull-requests: write
 
 jobs:
   build-cartesi-machine:
     runs-on: ubuntu-latest
     env:
-      MACHINE_IMAGE_NAME: devolt-machine
+      IMAGE_NAME: machine
     steps:
       - uses: actions/checkout@v4
 
@@ -51,7 +44,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/${{github.repository_owner}}/${{env.MACHINE_IMAGE_NAME}}
+            ghcr.io/${{github.repository_owner}}/${{env.IMAGE_NAME}}
           tags: |
             type=semver,pattern={{version}}
             type=ref,event=branch
@@ -70,7 +63,7 @@ jobs:
           file: build/Dockerfile.dapp
           push: true
           tags: latest
-          labels: ${{ steps.extract_metadata.lables.labels }}
+          labels: ${{ steps.extract_metadata.outputs.labels }}
           cache-from: type=gha,scope=ubuntu
           cache-to: type=gha,mode=max,scope=ubuntu
 
@@ -78,7 +71,7 @@ jobs:
     needs: build-cartesi-machine
     runs-on: ubuntu-latest
     env:
-      VALIDATOR_NODE: devolt-validator
+      IMAGE_NAME: validator
     steps:
       - uses: actions/checkout@v4
 
@@ -105,17 +98,17 @@ jobs:
         run: npm i -g @cartesi/cli
       
       - name: Pull machine image
-        run: docker pull ghcr.io/devolthq/devolt-machine:latest
+        run: docker pull ghcr.io/devolthq/machine:latest
       
       - name: Build machine and create car files
-        run: cartesi build --from-image ghcr.io/devolthq/devolt-machine:latest
+        run: cartesi build --from-image ghcr.io/devolthq/machine:latest
 
       - name: Extract metadata from Git refs and GitHub events
         id: extract_metadata
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/${{github.repository_owner}}/${{env.VALIDATOR_NODE}}
+            ghcr.io/${{github.repository_owner}}/${{env.IMAGE_NAME}}
           tags: |
             type=semver,pattern={{version}}
             type=ref,event=branch
@@ -128,6 +121,6 @@ jobs:
           push: true
           builder: ${{ steps.setup_buildx.outputs.name }}
           tags: latest
-          labels: ${{ steps.extract_metadata.lables.labels }}
+          labels: ${{ steps.extract_metadata.outputs.labels }}
           cache-from: type=gha,scope=ubuntu
           cache-to: type=gha,mode=max,scope=ubuntu
