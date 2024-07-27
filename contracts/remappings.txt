@@ -1,0 +1,11 @@
+@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
+ds-test/=lib/forge-std/lib/ds-test/src/
+forge-std/=lib/forge-std/src/
+@libraries/=src/libraries/
+@contracts/=src/
+@utils/=script/utils/
+@structs/=src/structs/
+@enums/=src/enums/
+@setup/=script/utils/setup
+@mocks/=test/mocks
+@libraries/=libraries/

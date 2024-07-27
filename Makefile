@@ -11,13 +11,6 @@ env: ./.env.develop
 	@echo "Environment file created at ./.env.develop"
 	$(END_LOG)
 
-.PHONY: dev
-dev:
-	$(START_LOG)
-	# @rm -r devolt.db
-	@nonodo -- go run ./cmd/dapp/
-	$(END_LOG)
-
 .PHONY: build
 build:
 	$(START_LOG)
@@ -40,7 +33,17 @@ test:
 .PHONY: deploy
 deploy:
 	$(START_LOG)
-	@cd contracts && forge script $(DEPLOY_NETWORK_ARGS)
+	@flyctl auth docker
+	@docker pull ghcr.io/devolthq/devolt-validator:main
+	@docker tag ghcr.io/devolthq/devolt-validator:main registry.fly.io/devolt:latest
+	@docker push registry.fly.io/devolt:latest
+	@flyctl deploy --app devolt
+	$(END_LOG)
+
+.PHONY: deploy_token
+deploy_token:
+	$(START_LOG)
+	@cd contracts && forge script script/DeployVoltToken.s.sol --rpc-url $(RPC_URL) --broadcast --verify --etherscan-api-key $(API_KEY) -vvv
 	$(END_LOG)
 
 .PHONY: coverage
