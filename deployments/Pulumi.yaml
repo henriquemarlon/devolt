@@ -1,7 +1,0 @@
-name: DeVolt
-runtime: go
-description: DeVolt infrastructure
-config:
-  pulumi:tags:
-    value:
-      pulumi:template: vm-aws-go

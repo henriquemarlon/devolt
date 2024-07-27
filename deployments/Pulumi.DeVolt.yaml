@@ -1,4 +1,0 @@
-config:
-  DeVolt:instanceType: t3.micro
-  DeVolt:vpcNetworkCidr: 10.0.0.0/16
-  aws:region: us-west-2
