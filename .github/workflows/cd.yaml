@@ -3,7 +3,7 @@ name: CD Workflow
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["CI Release Workflow"]
+    workflows: ["Release Workflow"]
     types:
       - completed
 
@@ -46,13 +46,13 @@ jobs:
         run: flyctl auth docker
 
       - name: Pull machine image
-        run: docker pull ghcr.io/devolthq/devolt-validator:main
+        run: docker pull ghcr.io/devolthq/devolt-validator:latest
 
       - name: Tag validator image to Fly.io Container Registry
-        run:  docker tag ghcr.io/devolthq/devolt-validator:main registry.fly.io/devolt:latest
+        run:  docker tag ghcr.io/devolthq/${{ secrets.FLY_IO_APP_NAME }}:latest registry.fly.io/${{ secrets.FLY_IO_APP_NAME }}:latest
 
       - name: Push validator image to Fly.io Container Registry
-        run:  docker push registry.fly.io/devolt:latest
+        run:  docker push registry.fly.io/${{ secrets.FLY_IO_APP_NAME }}:latest
 
       - name: Deploy application
-        run:  flyctl deploy -a devolt
+        run:  flyctl deploy -a ${{ secrets.FLY_IO_APP_NAME }}
