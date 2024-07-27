@@ -1,5 +1,0 @@
-# syntax=docker.io/docker/dockerfile:1
-FROM cartesi/rollups-node:latest
-ENV CARTESI_SNAPSHOT_DIR=/usr/share/rollups-node/snapshot
-ENV CARTESI_HTTP_ADDRESS=0.0.0.0
-COPY --chown=cartesi:cartesi . ${CARTESI_SNAPSHOT_DIR}
