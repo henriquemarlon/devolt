@@ -90,6 +90,6 @@ func (h *StationAdvanceHandlers) OffSetStationConsumptionHandler(env rollmelette
 	if err := env.ERC20Transfer(volt.Address.Address, application, metadata.MsgSender, input.CreditsToBeOffSet.Int); err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("offSetCredits from station: %v by msg_sender: %v", res, metadata.MsgSender)))
+	env.Notice([]byte(fmt.Sprintf("offSet Credits from station: %v by msg_sender: %v", res.Id, metadata.MsgSender)))
 	return nil
 }

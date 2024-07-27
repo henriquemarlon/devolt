@@ -1257,6 +1257,19 @@ func (s *RouterSuite) TestItFinishAuctionWithoutPartialSelling() {
 	finishAuctionExpectedOutput := fmt.Sprintf("finished auction with id: 1 at: %v", time.Now().Unix())
 	s.Len(finishAuctionResult.Notices, 1)
 	s.Equal(finishAuctionExpectedOutput, string(finishAuctionResult.Notices[0].Payload))
+
+	// offSetConsumption as station owner
+	offSetStationConsumptionAsOwnerInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "offSetStationConsumption",
+		Payload: []byte(`{"id":"station-1", "credits_to_be_offSet": 1000}`),
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	offSetStationConsumptionAsOwnerExpectedOutput := `offSet Credits from station: station-1 by msg_sender: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8`
+	offSetStationConsumptionAsOwnerResult := s.tester.Advance(common.HexToAddress("0x70997970C51812dc3A010C7d01b50e0d17dc79C8"), offSetStationConsumptionAsOwnerInput)
+	s.Len(offSetStationConsumptionAsOwnerResult.Notices, 1)
+	s.Equal(offSetStationConsumptionAsOwnerExpectedOutput, string(offSetStationConsumptionAsOwnerResult.Notices[0].Payload))
 }
 
 func (s *RouterSuite) TestItFinishAuctionWithPartialSelling() {}
