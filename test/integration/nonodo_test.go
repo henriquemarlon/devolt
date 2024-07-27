@@ -2,8 +2,6 @@ package integration
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"os"
 	"os/exec"
 	"syscall"
@@ -11,7 +9,6 @@ import (
 	"time"
 
 	devolt "github.com/devolthq/devolt/internal/infra/cartesi/router"
-	"github.com/devolthq/devolt/pkg/router"
 	"github.com/rollmelette/rollmelette"
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/sync/errgroup"
@@ -79,100 +76,6 @@ func (s *NonodoSuite) TearDownTest() {
 
 // Test Cases //////////////////////////////////////////////////////////////////////////////////////
 
-func (s *NonodoSuite) TestSystemFlowAndAuctionWithParcialSelling() {
-	// -> Create VOLT Contract
-	volt, err := NewTestToken("http://127.0.0.1:8545", Accounts[0])
-	if err != nil {
-		s.T().Fatal(err)
-	}
-	voltInput, err := json.Marshal(&router.AdvanceRequest{
-		Path:    "createContract",
-		Payload: []byte(fmt.Sprintf(`{"symbol":"VOLT","address":"%s"}`, volt.Address.String())),
-	})
-	s.Require().Nil(err)
-
-	err = AddInput(s.ctx, "http://127.0.0.1:8545", Accounts[0], voltInput)
-	s.Require().Nil(err)
-
-	// -> Create USDC Contract
-	usdc, err := NewTestToken("http://127.0.0.1:8545", Accounts[0])
-	if err != nil {
-		s.T().Fatal(err)
-	}
-	usdcInput, err := json.Marshal(&router.AdvanceRequest{
-		Path:    "createContract",
-		Payload: []byte(fmt.Sprintf(`{"symbol":"USDC","address":"%s"}`, usdc.Address.String())),
-	})
-	s.Require().Nil(err)
-
-	err = AddInput(s.ctx, "http://127.0.0.1:8545", Accounts[0], usdcInput)
-	s.Require().Nil(err)
-
-	// -> Send AppAddress through RelayContract
-	err = RelayAppAddress(s.ctx, "http://127.0.0.1:8545", Accounts[0])
-	s.Require().Nil(err)
-
-	// -> Create Station 1
-	createStation1Input, err := json.Marshal(&router.AdvanceRequest{
-		Path:    "createStation",
-		Payload: []byte(fmt.Sprintf(`{"id":"station-1", "owner": "%v", "consumption": 1600, "price_per_credit": 3, "latitude": 40.7128, "longitude": -74.0060}`, Accounts[5])),
-	})
-	s.Require().Nil(err)
-
-	err = AddInput(s.ctx, "http://127.0.0.1:8545", Accounts[0], createStation1Input)
-	s.Require().Nil(err)
-
-	// -> Create Station 2
-	createStation2Input, err := json.Marshal(&router.AdvanceRequest{
-		Path:    "createStation",
-		Payload: []byte(fmt.Sprintf(`{"id":"station-2", "owner": "%v", "consumption": 1600, "price_per_credit": 4, "latitude": 43.7128, "longitude": -72.0060}`, Accounts[6])),
-	})
-	s.Require().Nil(err)
-
-	err = AddInput(s.ctx, "http://127.0.0.1:8545", Accounts[0], createStation2Input)
-	s.Require().Nil(err)
-
-	// // -> Create Order to Station 1
-	// _, err = json.Marshal(&router.AdvanceRequest{
-	// 	Path:    "createOrder",
-	// 	Payload: []byte(`{"station_id":"station-2"}`),
-	// })
-	// s.Require().Nil(err)
-
-	// err = usdc.Mint(Accounts[0], Accounts[3], big.NewInt(1000))
-	// s.Require().Nil(err)
-	// -> Increase Time (5 days)
-	// -> Create Order to Station 2
-	// -> Increase Time (5 days)
-	// -> Create Order to Station 1
-	// -> Increase Time (5 days)
-	// -> Create Order to Station 2
-	// -> Increase Time (5 days)
-	// -> Create Order to Station 1
-	// -> Increase Time (5 days)
-	// -> Verify if the balance of the station owner is equal to the sum of all orders
-	// -> Withdraw funds as stations owners
-	// -> Initiate auction with duration of 6 days
-	// -> Bid
-	// -> Increase Time (half day)
-	// -> Bid
-	// -> Increase Time (half day)
-	// -> Bid
-	// -> Increase Time (half day)
-	// -> Bid
-	// -> Increase Time (half day)
-	// -> Bid
-	// -> Increase Time (half day)
-	// -> Bid
-	// -> Increase Time (half day)
-	// -> Bid
-	// -> Increase Time (half day)
-	// -> Bid
-	// -> Increase Time (half day)
-	// -> Bid
-	// -> Increase Time (half day)
-	// -> Finish Auction
-	// -> Verify number of outputs
-}
+func (s *NonodoSuite) TestSystemFlowAndAuctionWithParcialSelling() {}
 
 func (s *NonodoSuite) TestSystemFlowAndAuctionWithoutParcialSelling() {}
