@@ -104,10 +104,10 @@ jobs:
         run: npm i -g @cartesi/cli
       
       - name: Pull machine image
-        run: docker pull ghcr.io/devolthq/devolt-machine:main
+        run: docker pull ghcr.io/devolthq/devolt-machine:latest
       
       - name: Build machine and create car files
-        run: cartesi build --from-image ghcr.io/devolthq/devolt-machine:main
+        run: cartesi build --from-image ghcr.io/devolthq/devolt-machine:latest
 
       - name: Extract metadata from Git refs and GitHub events
         id: extract_metadata
