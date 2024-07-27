@@ -10,9 +10,7 @@ import (
 )
 
 type CreateOrderInputDTO struct {
-	Buyer     custom_type.Address `json:"buyer"`
-	Credits   custom_type.BigInt  `json:"credits"`
-	StationId string              `json:"station_id"`
+	StationId string `json:"station_id"`
 }
 
 type CreateOrderOutputDTO struct {
@@ -58,12 +56,9 @@ func (u *CreateOrderUseCase) Execute(input *CreateOrderInputDTO, deposit rollmel
 		return nil, err
 	}
 
-	paid := new(big.Int).Mul(station.PricePerCredit.Int, input.Credits.Int)
-	if paid.Cmp(orderDeposit.Amount) == -1 {
-		return nil, fmt.Errorf("order payment is less than station price")
-	}
+	orderConsumption := new(big.Int).Div(orderDeposit.Amount, station.PricePerCredit.Int)
 
-	order, err := entity.NewOrder(input.Buyer, input.Credits, input.StationId, station.PricePerCredit.Int, metadata.BlockTimestamp)
+	order, err := entity.NewOrder(custom_type.NewAddress(orderDeposit.Sender), custom_type.NewBigInt(orderConsumption), input.StationId, station.PricePerCredit.Int, metadata.BlockTimestamp)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +68,7 @@ func (u *CreateOrderUseCase) Execute(input *CreateOrderInputDTO, deposit rollmel
 	}
 	return &CreateOrderOutputDTO{
 		Id:             order.Id,
-		Buyer:          order.Buyer,
+		Buyer:          custom_type.NewAddress(orderDeposit.Sender),
 		Credits:        order.Credits,
 		StationId:      order.StationId,
 		StationOwner:   station.Owner,

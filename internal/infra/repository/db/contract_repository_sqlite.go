@@ -44,17 +44,23 @@ func (r *ContractRepositorySqlite) FindContractBySymbol(symbol string) (*entity.
 }
 
 func (r *ContractRepositorySqlite) UpdateContract(contract *entity.Contract) (*entity.Contract, error) {
-	err := r.Db.Model(&entity.Contract{}).Where("symbol = ?", contract.Symbol).Updates(contract).Error
-	if err != nil {
-		return nil, fmt.Errorf("failed to update contract: %w", err)
+	res := r.Db.Model(&entity.Contract{}).Where("symbol = ?", contract.Symbol).Omit("created_at").Updates(contract)
+	if res.Error != nil {
+		return nil, fmt.Errorf("failed to update contract: %w", res.Error)
+	}
+	if res.RowsAffected == 0 {
+		return nil, entity.ErrContractNotFound
 	}
 	return contract, nil
 }
 
 func (r *ContractRepositorySqlite) DeleteContract(symbol string) error {
-	err := r.Db.Where("symbol = ?", symbol).Delete(&entity.Contract{}).Error
-	if err != nil {
-		return fmt.Errorf("failed to delete contract: %w", err)
+	res := r.Db.Where("symbol = ?", symbol).Delete(&entity.Contract{})
+	if res.Error != nil {
+		return fmt.Errorf("failed to delete contract: %w", res.Error)
+	}
+	if res.RowsAffected == 0 {
+		return entity.ErrContractNotFound
 	}
 	return nil
 }

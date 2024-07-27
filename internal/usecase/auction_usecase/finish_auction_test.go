@@ -9,9 +9,9 @@ import (
 	repository "github.com/devolthq/devolt/internal/infra/repository/mock"
 	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/rollmelette/rollmelette"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/rollmelette/rollmelette"
 )
 
 func TestFinishAuctionUseCase(t *testing.T) {

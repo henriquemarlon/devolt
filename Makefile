@@ -35,7 +35,7 @@ generate:
 
 .PHONY: test
 test:
-	@go test ./... -coverprofile=./coverage.md -v
+	@go test -p 1 ./... -coverprofile=./coverage.md -v
 
 .PHONY: deploy
 deploy:

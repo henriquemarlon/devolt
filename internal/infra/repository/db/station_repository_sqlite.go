@@ -27,9 +27,11 @@ func (r *StationRepositorySqlite) CreateStation(input *entity.Station) (*entity.
 
 func (r *StationRepositorySqlite) FindStationById(id string) (*entity.Station, error) {
 	var station entity.Station
-	err := r.Db.Preload("Bids").First(&station, id).Error
-	if err != nil {
-		return nil, fmt.Errorf("failed to find station by ID: %w", err)
+	if err := r.Db.Preload("Orders").First(&station, "id = ?", id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, entity.ErrStationNotFound
+		}
+		return nil, err
 	}
 	return &station, nil
 }
@@ -44,17 +46,23 @@ func (r *StationRepositorySqlite) FindAllStations() ([]*entity.Station, error) {
 }
 
 func (r *StationRepositorySqlite) UpdateStation(input *entity.Station) (*entity.Station, error) {
-	err := r.Db.Save(input).Error
-	if err != nil {
-		return nil, fmt.Errorf("failed to update station: %w", err)
+	res := r.Db.Model(&entity.Station{}).Where("id = ?", input.Id).Omit("created_at").Updates(input)
+	if res.Error != nil {
+		return nil, fmt.Errorf("failed to update station: %w", res.Error)
+	}
+	if res.RowsAffected == 0 {
+		return nil, entity.ErrStationNotFound
 	}
 	return input, nil
 }
 
 func (r *StationRepositorySqlite) DeleteStation(id string) error {
-	err := r.Db.Delete(&entity.Station{}, "id = ?", id).Error
-	if err != nil {
-		return fmt.Errorf("failed to delete station: %w", err)
+	res := r.Db.Delete(&entity.Station{}, "id = ?", id)
+	if res.Error != nil {
+		return fmt.Errorf("failed to delete station: %w", res.Error)
+	}
+	if res.RowsAffected == 0 {
+		return entity.ErrStationNotFound
 	}
 	return nil
 }

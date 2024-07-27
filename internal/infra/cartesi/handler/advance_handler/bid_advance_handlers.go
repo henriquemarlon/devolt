@@ -3,6 +3,7 @@ package advance_handler
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/bid_usecase"
 	"github.com/devolthq/devolt/internal/usecase/contract_usecase"
@@ -44,10 +45,10 @@ func (h *BidAdvanceHandlers) CreateBidHandler(env rollmelette.Env, metadata roll
 
 	application, isDefined := env.AppAddress()
 	if !isDefined {
-		return fmt.Errorf("no application address defined yet")
+		return fmt.Errorf("no application address defined yet, contact the DeVolt support")
 	}
 
-	if err := env.ERC20Transfer(volt.Address.Address, metadata.MsgSender, application, res.Credits.Int); err != nil {
+	if err := env.ERC20Transfer(volt.Address.Address, res.Bidder.Address, application, res.Credits.Int); err != nil {
 		return err
 	}
 	env.Notice([]byte(fmt.Sprintf("created bid with id: %v and amount of credits: %v and price: %v", res.Id, res.Credits, res.Price)))

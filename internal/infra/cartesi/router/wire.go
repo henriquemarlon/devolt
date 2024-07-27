@@ -1,7 +1,7 @@
 //go:build wireinject
 // +build wireinject
 
-package main
+package router
 
 import (
 	"github.com/devolthq/devolt/configs"
@@ -75,6 +75,16 @@ func NewMiddlewares() (*Middlewares, error) {
 	return nil, nil
 }
 
+func NewMiddlewaresMemory() (*Middlewares, error) {
+	wire.Build(
+		configs.SetupSQliteMemory,
+		setUserRepositoryDependency,
+		setMiddleware,
+		wire.Struct(new(Middlewares), "*"),
+	)
+	return nil, nil
+}
+
 func NewAdvanceHandlers() (*AdvanceHandlers, error) {
 	wire.Build(
 		configs.SetupSQlite,
@@ -90,9 +100,39 @@ func NewAdvanceHandlers() (*AdvanceHandlers, error) {
 	return nil, nil
 }
 
+func NewAdvanceHandlersMemory() (*AdvanceHandlers, error) {
+	wire.Build(
+		configs.SetupSQliteMemory,
+		setBidRepositoryDependency,
+		setUserRepositoryDependency,
+		setOrderRepositoryDependency,
+		setStationRepositoryDependency,
+		setAuctionRepositoryDependency,
+		setContractRepositoryDependency,
+		setAdvanceHandlers,
+		wire.Struct(new(AdvanceHandlers), "*"),
+	)
+	return nil, nil
+}
+
 func NewInspectHandlers() (*InspectHandlers, error) {
 	wire.Build(
 		configs.SetupSQlite,
+		setBidRepositoryDependency,
+		setUserRepositoryDependency,
+		setOrderRepositoryDependency,
+		setStationRepositoryDependency,
+		setAuctionRepositoryDependency,
+		setContractRepositoryDependency,
+		setInspectHandlers,
+		wire.Struct(new(InspectHandlers), "*"),
+	)
+	return nil, nil
+}
+
+func NewInspectHandlersMemory() (*InspectHandlers, error) {
+	wire.Build(
+		configs.SetupSQliteMemory,
 		setBidRepositoryDependency,
 		setUserRepositoryDependency,
 		setOrderRepositoryDependency,

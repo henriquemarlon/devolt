@@ -1,6 +1,8 @@
 package db
 
 import (
+	"fmt"
+
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"gorm.io/gorm"
 )
@@ -27,6 +29,9 @@ func (r *AuctionRepositorySqlite) FindActiveAuction() (*entity.Auction, error) {
 	var auction entity.Auction
 	err := r.Db.Preload("Bids").Where("state = ?", "ongoing").First(&auction).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, entity.ErrAuctionNotFound
+		}
 		return nil, err
 	}
 	return &auction, nil
@@ -51,15 +56,21 @@ func (r *AuctionRepositorySqlite) FindAllAuctions() ([]*entity.Auction, error) {
 }
 
 func (r *AuctionRepositorySqlite) UpdateAuction(input *entity.Auction) (*entity.Auction, error) {
-	err := r.Db.Save(&input).Error
-	if err != nil {
-		return nil, err
+	res := r.Db.Model(&entity.Auction{}).Where("id = ?", input.Id).Omit("created_at").Updates(input)
+	if res.Error != nil {
+		if res.Error == gorm.ErrRecordNotFound {
+			return nil, entity.ErrAuctionNotFound
+		}
+		return nil, fmt.Errorf("failed to update auction: %w", res.Error)
+	}
+	if res.RowsAffected == 0 {
+		return nil, entity.ErrAuctionNotFound
 	}
 	return input, nil
 }
 
 func (r *AuctionRepositorySqlite) DeleteAuction(id uint) error {
-	err := r.Db.Delete(&entity.Auction{}, "auction_id = ?", id).Error
+	err := r.Db.Delete(&entity.Auction{}, "id = ?", id).Error
 	if err != nil {
 		return err
 	}

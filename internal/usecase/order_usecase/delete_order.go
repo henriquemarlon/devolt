@@ -5,7 +5,7 @@ import (
 )
 
 type DeleteOrderInputDTO struct {
-	Id uint `json:"order_id"`
+	Id uint `json:"id"`
 }
 
 type DeleteOrderUseCase struct {

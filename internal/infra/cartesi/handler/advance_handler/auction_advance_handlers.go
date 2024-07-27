@@ -42,7 +42,7 @@ func (h *AuctionAdvanceHandlers) CreateAuctionHandler(env rollmelette.Env, metad
 	if err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("created auction with id: %v and expiration: %v", res.Id, res.ExpiresAt)))
+	env.Notice([]byte(fmt.Sprintf("created auction with id: %v", res.Id)))
 	return nil
 }
 
@@ -69,7 +69,7 @@ func (h *AuctionAdvanceHandlers) FinishAuctionHandler(env rollmelette.Env, metad
 
 	application, isDefined := env.AppAddress()
 	if !isDefined {
-		return fmt.Errorf("no application address defined yet")
+		return fmt.Errorf("no application address defined yet, contact the DeVolt support")
 	}
 
 	findContractBySymbol := contract_usecase.NewFindContractBySymbolUseCase(h.ContractRepository)
@@ -132,10 +132,6 @@ func (h *AuctionAdvanceHandlers) FinishAuctionHandler(env rollmelette.Env, metad
 	if err != nil {
 		return fmt.Errorf("failed to find auction: %w", err)
 	}
-	auction, err := json.Marshal(res)
-	if err != nil {
-		return fmt.Errorf("failed to marshal auction: %w", err)
-	}
-	env.Notice([]byte(fmt.Sprintf("finished auction: %v at: %v", auction, metadata.BlockTimestamp)))
+	env.Notice([]byte(fmt.Sprintf("finished auction with id: %v at: %v", res.Id, metadata.BlockTimestamp)))
 	return nil
 }

@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
+	"github.com/devolthq/devolt/internal/infra/cartesi/router"
 	"github.com/rollmelette/rollmelette"
 	"log/slog"
 )
 
 func main() {
 	//////////////////////// Setup Application //////////////////////////
-	app := SetupApplication()
+	app := router.NewApp()
 
 	///////////////////////// Rollmelette //////////////////////////
 	ctx := context.Background()

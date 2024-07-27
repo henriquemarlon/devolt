@@ -23,10 +23,10 @@ type UserRepository interface {
 
 type User struct {
 	Id        uint                `json:"id" gorm:"primaryKey"`
-	Role      string              `json:"role" gorm:"not null"`
-	Address   custom_type.Address `json:"address" gorm:"type:text;uniqueIndex;not null"`
-	CreatedAt int64               `json:"created_at" gorm:"not null"`
-	UpdatedAt int64               `json:"updated_at" gorm:"default:0"`
+	Role      string              `json:"role,omitempty" gorm:"not null"`
+	Address   custom_type.Address `json:"address,omitempty" gorm:"type:text;uniqueIndex;not null"`
+	CreatedAt int64               `json:"created_at,omitempty" gorm:"not null"`
+	UpdatedAt int64               `json:"updated_at,omitempty" gorm:"default:0"`
 }
 
 func NewUser(role string, address custom_type.Address, created_at int64) (*User, error) {
