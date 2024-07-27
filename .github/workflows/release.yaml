@@ -44,7 +44,7 @@ jobs:
       - name: Build machine image and push it to GitHub Container Registry
         uses: docker/build-push-action@v6
         with:
-          context: ./build/Dockerfile.dapp
+          context: build/Dockerfile.dapp
           push: true
           builder: ${{ steps.setup_buildx.outputs.name }}
           tags: ${{ steps.extract_metadata.outputs.tags }}
