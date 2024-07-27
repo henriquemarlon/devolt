@@ -37,7 +37,7 @@ jobs:
   build-cartesi-machine:
     runs-on: ubuntu-latest
     env:
-      MACHINE_IMAGE_NAME: machine
+      IMAGE_NAME: machine
       REGISTRY: ghcr.io/devolthq
     steps:
       - uses: actions/checkout@v4
@@ -53,10 +53,10 @@ jobs:
         id: extract_metadata
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.MACHINE_IMAGE_NAME }}
+          images: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
           tags: |
             type=semver,pattern={{version}}
-            type=ref,event=branch,branch=main,latest=true
+            type=ref,event=branch
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -80,8 +80,7 @@ jobs:
     needs: build-cartesi-machine
     runs-on: ubuntu-latest
     env:
-      VALIDATOR_IMAGE_NAME: validator
-      REGISTRY: ghcr.io/devolthq
+      IMAGE_NAME: validator
     steps:
       - uses: actions/checkout@v4
 
@@ -117,8 +116,7 @@ jobs:
         id: extract_metadata
         uses: docker/metadata-action@v5
         with:
-          images: |
-            ghcr.io/${{github.repository_owner}}/${{env.VALIDATOR_IMAGE_NAME}}
+          images: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
           tags: |
             type=semver,pattern={{version}}
             type=ref,event=branch,branch=main,latest=true
