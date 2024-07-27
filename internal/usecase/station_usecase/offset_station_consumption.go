@@ -45,6 +45,9 @@ func (u *OffSetStationConsumptionUseCase) Execute(input *OffSetStationConsumptio
 	}
 
 	consumption := custom_type.NewBigInt(new(big.Int).Sub(station.Consumption.Int, input.CreditsToBeOffSet.Int))
+	if consumption.Int.Cmp(big.NewInt(0)) < 0 {
+		return nil, fmt.Errorf("you are trying to offSet more credits than the station consumption, expected max: %v, got: %v", station.Consumption.Int, input.CreditsToBeOffSet.Int)
+	}
 
 	res, err := u.StationRepository.UpdateStation(&entity.Station{
 		Id:          input.Id,
