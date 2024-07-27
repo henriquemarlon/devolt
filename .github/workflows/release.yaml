@@ -29,7 +29,6 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
           tags: |
             type=semver,pattern={{version}},value=latest
-            type=ref,event=branch
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -46,7 +45,7 @@ jobs:
           file: build/Dockerfile.dapp
           push: true
           builder: ${{ steps.setup_buildx.outputs.name }}
-          tags: ${{ steps.extract_metadata.outputs.tags }}
-          labels: ${{ steps.extract_metadata.outputs.labels }}
+          tags: ${{ steps.extract_metadata.outputs.tags }}  
+          labels: ${{ steps.extract_metadata.lables.labels }}
           cache-from: type=gha,scope=ubuntu
           cache-to: type=gha,mode=max,scope=ubuntu
