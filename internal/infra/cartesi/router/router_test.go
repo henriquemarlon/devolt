@@ -1077,4 +1077,186 @@ func (s *RouterSuite) TestItUpdateNonExistentAuction() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-////==> E2E Tests <==////
+// func (s *RouterSuite) TestItFinishAuctionWithoutPartialSelling() {
+// 	// -> Create VOLT Contract
+// 	// -> Create USDC Contract
+// 	// -> Send AppAddress through RelayContract
+// 	// -> Create Station 1
+// 	// -> Create Station 2
+// 	// -> Create Order to Station 1
+// 	// -> Increase Time (5 days)
+// 	// -> Create Order to Station 2
+// 	// -> Increase Time (5days)
+// 	// -> Create Order to Station 1
+// 	// -> Increase Time (5 days)
+// 	// -> Create Order to Station 2
+// 	// -> Increase Time (5 days)
+// 	// -> Create Order to Station 1
+// 	// -> Increase Time (5 days)
+// 	// -> Verify if the balance of the station owner is equal to the sum of all orders
+// 	// -> Withdraw funds as stations owners
+// 	// -> Initiate auction with duration of 6 days
+// 	// -> Bid
+// 	// -> Increase Time (half day)
+// 	// -> Bid
+// 	// -> Increase Time (half day)
+// 	// -> Bid
+// 	// -> Increase Time (half day)
+// 	// -> Bid
+// 	// -> Increase Time (half day)
+// 	// -> Bid
+// 	// -> Increase Time (half day)
+// 	// -> Bid
+// 	// -> Increase Time (half day)
+// 	// -> Bid
+// 	// -> Increase Time (half day)
+// 	// -> Bid
+// 	// -> Increase Time (half day)
+// 	// -> Bid
+// 	// -> Increase Time (half day)
+// 	// -> Finish Auction
+// 	// -> Verify number of outputs
+// }
+
+func (s *RouterSuite) TestItFinishAuctionWithoutPartialSelling() {
+	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+
+	// Create VOLT contract
+	voltPayload := []byte(`{"symbol":"VOLT","address":"0x0000000000000000000000000000000000000022"}`)
+	voltInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createContract",
+		Payload: voltPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	voltExpectedOutput := `created contract with symbol: VOLT and address: 0x0000000000000000000000000000000000000022`
+	voltResult := s.tester.Advance(admin, voltInput)
+	s.Len(voltResult.Notices, 1)
+	s.Equal(voltExpectedOutput, string(voltResult.Notices[0].Payload))
+
+	// Create USDC contract
+	usdcPayload := []byte(`{"symbol":"USDC","address":"0x0000000000000000000000000000000000000033"}`)
+	usdcInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createContract",
+		Payload: usdcPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	usdcExpectedOutput := `created contract with symbol: USDC and address: 0x0000000000000000000000000000000000000033`
+	usdcResult := s.tester.Advance(admin, usdcInput)
+	s.Len(usdcResult.Notices, 1)
+	s.Equal(usdcExpectedOutput, string(usdcResult.Notices[0].Payload))
+
+	// Relay app address
+	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
+	s.Nil(appAddressResult.Err)
+
+	// Create Station 1
+	station1Payload := []byte(`{"id":"station-1", "owner": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "consumption": 100, "price_per_credit": 50, "latitude": 40.7128, "longitude": -74.0060}`)
+	station1Input, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createStation",
+		Payload: station1Payload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	station1ExpectedOutput := `created station with id: station-1 and owner: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8`
+	station1Result := s.tester.Advance(admin, station1Input)
+	s.Len(station1Result.Notices, 1)
+	s.Equal(station1ExpectedOutput, string(station1Result.Notices[0].Payload))
+
+	// Create Station 2
+	station2Payload := []byte(`{"id":"station-2", "owner": "0x70997970C51812dc3A010C7d01b50e0d17dc79C9", "consumption": 200, "price_per_credit": 100, "latitude": 34.0522, "longitude": -118.2437}`)
+	station2Input, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createStation",
+		Payload: station2Payload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	station2ExpectedOutput := `created station with id: station-2 and owner: 0x70997970c51812dc3a010c7D01B50E0D17Dc79c9`
+	station2Result := s.tester.Advance(admin, station2Input)
+	s.Len(station2Result.Notices, 1)
+	s.Equal(station2ExpectedOutput, string(station2Result.Notices[0].Payload))
+
+	// Create Orders for Stations
+	orderCounter := 1
+	createOrder := func(sender common.Address, stationID string, credits int64) {
+		orderPayload := []byte(fmt.Sprintf(`{"station_id":"%s"}`, stationID))
+		orderInput, err := json.Marshal(&router.AdvanceRequest{
+			Path:    "createOrder",
+			Payload: orderPayload,
+		})
+		if err != nil {
+			s.T().Fatal(err)
+		}
+		orderResult := s.tester.DepositERC20(common.HexToAddress("0x0000000000000000000000000000000000000033"), sender, big.NewInt(credits), orderInput)
+		expectedOutput := fmt.Sprintf("created order %v and paid %d as station fee and %d as application fee", orderCounter, credits*40/100, credits*60/100)
+		s.Equal(expectedOutput, string(orderResult.Notices[0].Payload))
+		orderCounter++
+	}
+
+	// Simulate orders for stations with incremented time periods
+	createOrder(common.HexToAddress("0x70997970C51812dc3A010C7d01b50e0d17dc79C1"), "station-1", 10000)
+	createOrder(common.HexToAddress("0x70997970C51812dc3A010C7d01b50e0d17dc79C2"), "station-2", 20000)
+	createOrder(common.HexToAddress("0x70997970C51812dc3A010C7d01b50e0d17dc79C3"), "station-1", 15000)
+	createOrder(common.HexToAddress("0x70997970C51812dc3A010C7d01b50e0d17dc79C4"), "station-2", 25000)
+	createOrder(common.HexToAddress("0x70997970C51812dc3A010C7d01b50e0d17dc79C5"), "station-1", 20000)
+
+	// Initiate auction with duration of 6 days
+	auctionPayload := []byte(fmt.Sprintf(`{"credits":"80000", "price_limit":"100", "expires_at": %v}`, time.Now().Add(5*time.Second).Unix()))
+	auctionInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "createAuction",
+		Payload: auctionPayload,
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	auctionExpectedOutput := `created auction with id: 1`
+	auctionResult := s.tester.Advance(admin, auctionInput)
+	s.Len(auctionResult.Notices, 1)
+	s.Equal(auctionExpectedOutput, string(auctionResult.Notices[0].Payload))
+
+	// Simulate bids with a counter for expected bid ID
+	bidCounter := 1
+	placeBid := func(sender common.Address, pricePerToken string, amount *big.Int) {
+		bidPayload := []byte(fmt.Sprintf(`{"price":"%s"}`, pricePerToken))
+		bidInput, err := json.Marshal(&router.AdvanceRequest{
+			Path:    "createBid",
+			Payload: bidPayload,
+		})
+		if err != nil {
+			s.T().Fatal(err)
+		}
+		bidResult := s.tester.DepositERC20(common.HexToAddress("0x0000000000000000000000000000000000000022"), sender, amount, bidInput)
+		expectedBidOutput := fmt.Sprintf("created bid with id: %d and amount of credits: %v and price: %v", bidCounter, amount, pricePerToken)
+		s.Len(bidResult.Notices, 1)
+		s.Equal(expectedBidOutput, string(bidResult.Notices[0].Payload))
+		bidCounter++
+	}
+
+	placeBid(common.HexToAddress("0x0000000000000000000000000000000000000001"), "70", big.NewInt(1000))
+	placeBid(common.HexToAddress("0x0000000000000000000000000000000000000002"), "75", big.NewInt(2000))
+	placeBid(common.HexToAddress("0x0000000000000000000000000000000000000003"), "86", big.NewInt(3000))
+	placeBid(common.HexToAddress("0x0000000000000000000000000000000000000004"), "32", big.NewInt(4000))
+	placeBid(common.HexToAddress("0x0000000000000000000000000000000000000005"), "33", big.NewInt(5000))
+	placeBid(common.HexToAddress("0x0000000000000000000000000000000000000006"), "67", big.NewInt(6000))
+
+	// Finish auction and verify results
+	finishAuctionInput, err := json.Marshal(&router.AdvanceRequest{
+		Path:    "finishAuction",
+		Payload: []byte(`{"id":1}`),
+	})
+	if err != nil {
+		s.T().Fatal(err)
+	}
+	time.Sleep(5 * time.Second)
+	finishAuctionResult := s.tester.Advance(admin, finishAuctionInput)
+	finishAuctionExpectedOutput := fmt.Sprintf("finished auction with id: 1 at: %v", time.Now().Unix())
+	s.Len(finishAuctionResult.Notices, 1)
+	s.Equal(finishAuctionExpectedOutput, string(finishAuctionResult.Notices[0].Payload))
+}
+
+func (s *RouterSuite) TestItFinishAuctionWithPartialSelling() {}

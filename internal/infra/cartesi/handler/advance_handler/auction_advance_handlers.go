@@ -132,10 +132,6 @@ func (h *AuctionAdvanceHandlers) FinishAuctionHandler(env rollmelette.Env, metad
 	if err != nil {
 		return fmt.Errorf("failed to find auction: %w", err)
 	}
-	auction, err := json.Marshal(res)
-	if err != nil {
-		return fmt.Errorf("failed to marshal auction: %w", err)
-	}
-	env.Notice([]byte(fmt.Sprintf("finished auction: %v at: %v", auction, metadata.BlockTimestamp)))
+	env.Notice([]byte(fmt.Sprintf("finished auction with id: %v at: %v", res.Id, metadata.BlockTimestamp)))
 	return nil
 }

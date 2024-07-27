@@ -3,13 +3,13 @@ package integration
 import (
 	"context"
 	"fmt"
-	"os/exec"
-	"strconv"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/rollmelette/rollmelette"
+	"os/exec"
 )
+
+const TestMnemonic = "test test test test test test test test test test test junk"
 
 var AddressToPrivateKey = map[common.Address]string{
 	common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"): "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
@@ -27,7 +27,7 @@ var AddressToPrivateKey = map[common.Address]string{
 const ApplicationAddress = "0x70ac08179605AF2D9e75782b8DEcDD3c22aA4D0C"
 
 // Advance sends an input using the devnet contract addresses.
-func AdvanceInputBox(ctx context.Context, url string, sender string, payload []byte) error {
+func AddInput(ctx context.Context, url string, sender string, payload []byte) error {
 	if len(payload) == 0 {
 		return fmt.Errorf("cannot send empty payload")
 	}
@@ -48,37 +48,19 @@ func AdvanceInputBox(ctx context.Context, url string, sender string, payload []b
 	return nil
 }
 
-func AdvanceDepositERC20Tokens(ctx context.Context, url string, sender string, tokenAddress string, value uint64, payload []byte) error {
-	if len(payload) == 0 {
-		return fmt.Errorf("cannot send empty payload")
-	}
+func RelayAppAddress(ctx context.Context, url string, sender string) error {
 	book := rollmelette.NewAddressBook()
-	input := hexutil.Encode(payload)
-
-	approve := exec.CommandContext(ctx,
+	cmd := exec.CommandContext(ctx,
 		"cast", "send",
 		"--private-key", AddressToPrivateKey[common.HexToAddress(sender)],
 		"--rpc-url", url,
-		common.HexToAddress(tokenAddress).String(),               // TO
-		"approve(address,uint256)",                               // SIG
-		book.ERC20Portal.String(), strconv.FormatUint(value, 10), // ARGS
+		book.AppAddressRelay.String(), // TO
+		"relayDAppAddress(address)",   // SIG
+		ApplicationAddress,            // ARGS
 	)
-	approveOutput, err := approve.CombinedOutput()
+	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("cast: %w: %v", err, string(approveOutput))
-	}
-
-	deposit := exec.CommandContext(ctx,
-		"cast", "send",
-		"--private-key", AddressToPrivateKey[common.HexToAddress(sender)],
-		"--rpc-url", url,
-		book.ERC20Portal.String(),                                                                            // TO
-		"depositERC20Tokens(IERC20,address,uint256,bytes)",                                                   // SIG
-		common.HexToAddress(tokenAddress).String(), ApplicationAddress, strconv.FormatUint(value, 10), input, // ARGS
-	)
-	depositOutput, err := deposit.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("cast: %w: %v", err, string(depositOutput))
+		return fmt.Errorf("cast: %w: %v", err, string(output))
 	}
 	return nil
 }
