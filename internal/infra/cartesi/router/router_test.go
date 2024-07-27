@@ -1261,7 +1261,7 @@ func (s *RouterSuite) TestItFinishAuctionWithoutPartialSelling() {
 	// offSetConsumption as station owner
 	offSetStationConsumptionAsOwnerInput, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "offSetStationConsumption",
-		Payload: []byte(`{"id":"station-1", "credits_to_be_offSet": 1000}`),
+		Payload: []byte(`{"id":"station-1", "credits_to_be_offSet": 100}`),
 	})
 	if err != nil {
 		s.T().Fatal(err)

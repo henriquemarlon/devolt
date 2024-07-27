@@ -1858,9 +1858,11 @@ github.com/devolthq/devolt/internal/usecase/station_usecase/offset_station_consu
 github.com/devolthq/devolt/internal/usecase/station_usecase/offset_station_consumption.go:40.16,42.3 1 0
 github.com/devolthq/devolt/internal/usecase/station_usecase/offset_station_consumption.go:43.2,43.49 1 1
 github.com/devolthq/devolt/internal/usecase/station_usecase/offset_station_consumption.go:43.49,45.3 1 1
-github.com/devolthq/devolt/internal/usecase/station_usecase/offset_station_consumption.go:47.2,54.16 3 1
-github.com/devolthq/devolt/internal/usecase/station_usecase/offset_station_consumption.go:54.16,56.3 1 0
-github.com/devolthq/devolt/internal/usecase/station_usecase/offset_station_consumption.go:57.2,66.8 1 1
+github.com/devolthq/devolt/internal/usecase/station_usecase/offset_station_consumption.go:47.2,48.44 2 1
+github.com/devolthq/devolt/internal/usecase/station_usecase/offset_station_consumption.go:48.44,50.3 1 0
+github.com/devolthq/devolt/internal/usecase/station_usecase/offset_station_consumption.go:52.2,57.16 2 1
+github.com/devolthq/devolt/internal/usecase/station_usecase/offset_station_consumption.go:57.16,59.3 1 0
+github.com/devolthq/devolt/internal/usecase/station_usecase/offset_station_consumption.go:60.2,69.8 1 1
 github.com/devolthq/devolt/internal/usecase/station_usecase/update_station.go:37.96,41.2 1 1
 github.com/devolthq/devolt/internal/usecase/station_usecase/update_station.go:43.134,54.16 2 1
 github.com/devolthq/devolt/internal/usecase/station_usecase/update_station.go:54.16,56.3 1 0
