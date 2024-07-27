@@ -1,7 +1,7 @@
 app = "devolt"
 
 [build]
-image = "registry.fly.io/devolt:bump"
+image = "registry.fly.io/devolt:latest"
 
 [http_service]
 internal_port = 10000
