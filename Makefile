@@ -50,3 +50,8 @@ coverage: test
 .PHONY: docs
 docs:
 	@cd docs && npm run dev
+
+
+.PHONY: volt
+volt:
+	@cd contracts && forge script script/DeployVoltToken.s.sol --rpc-url $(RPC_URL) --broadcast --verify --etherscan-api-key $(API_KEY) -vvv
