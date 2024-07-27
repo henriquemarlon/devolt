@@ -46,7 +46,7 @@ jobs:
         run: flyctl auth docker
 
       - name: Pull machine image
-        run: docker pull ghcr.io/devolthq/devolt-validator:main
+        run: docker pull ghcr.io/devolthq/devolt-validator:latest
 
       - name: Tag validator image to Fly.io Container Registry
         run:  docker tag ghcr.io/devolthq/${{ secrets.FLY_IO_APP_NAME }}:latest registry.fly.io/${{ secrets.FLY_IO_APP_NAME }}:latest
