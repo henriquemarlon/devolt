@@ -6,6 +6,7 @@ on:
     tags:
       - 'v*'
     paths:
+      - '.github/workflows/**'
       - 'build/**'
       - 'cmd/**'
       - 'configs/**'
