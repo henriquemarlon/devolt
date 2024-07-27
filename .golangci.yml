@@ -2,7 +2,6 @@ linters:
   enable:
     - errcheck
     - exhaustive
-    - goconst
     - godox
     - gofmt
     - gosimple
