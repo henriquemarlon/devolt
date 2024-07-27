@@ -45,7 +45,7 @@ jobs:
           file: build/Dockerfile.validator
           push: true
           builder: ${{ steps.setup_buildx.outputs.name }}
-          tags: ${{ steps.extract_metadata.outputs.tags }}
+          tags: devolt/machine:latest
           labels: ${{ steps.extract_metadata.outputs.labels }}
           cache-from: type=gha,scope=ubuntu
           cache-to: type=gha,mode=max,scope=ubuntu
