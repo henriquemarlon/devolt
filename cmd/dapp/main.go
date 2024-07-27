@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
+	"log/slog"
 	"github.com/devolthq/devolt/internal/infra/cartesi/router"
 	"github.com/rollmelette/rollmelette"
-	"log/slog"
 )
 
 func main() {
