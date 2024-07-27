@@ -43,7 +43,7 @@ func (u *CreateOrderUseCase) Execute(input *CreateOrderInputDTO, deposit rollmel
 		return nil, fmt.Errorf("unsupported deposit type for bid creation: %T", deposit)
 	}
 
-	stablecoin, err := u.ContractRepository.FindContractBySymbol("USDC")
+	stablecoin, err := u.ContractRepository.FindContractBySymbol("STABLECOIN")
 	if err != nil {
 		return nil, err
 	}

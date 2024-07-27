@@ -46,7 +46,7 @@ func (h *OrderAdvanceHandlers) CreateOrderHandler(env rollmelette.Env, metadata 
 	}
 
 	findContractBySymbol := contract_usecase.NewFindContractBySymbolUseCase(h.ContractRepository)
-	stablecoin, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "USDC"})
+	stablecoin, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "STABLECOIN"})
 	if err != nil {
 		return err
 	}

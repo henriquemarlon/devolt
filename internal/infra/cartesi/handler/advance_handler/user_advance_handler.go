@@ -74,7 +74,7 @@ func (h *UserAdvanceHandlers) WithdrawAppHandler(env rollmelette.Env, metadata r
 	if err != nil {
 		return err
 	}
-	stablecoin, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "USDC"})
+	stablecoin, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "STABLECOIN"})
 	if err != nil {
 		return err
 	}
@@ -94,13 +94,13 @@ func (h *UserAdvanceHandlers) WithdrawAppHandler(env rollmelette.Env, metadata r
 	if err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("withdrawn %v %v and %v %v from %v with voucher index of $VOLT: %v and $USDC: %v", volt.Symbol, voltBalance, stablecoin.Symbol, stablecoinBalance, metadata.MsgSender, voltVoucherIndex, stablecoinVoucherIndex)))
+	env.Notice([]byte(fmt.Sprintf("withdrawn %v %v and %v %v from %v with voucher index of $VOLT: %v and $STABLECOIN: %v", volt.Symbol, voltBalance, stablecoin.Symbol, stablecoinBalance, metadata.MsgSender, voltVoucherIndex, stablecoinVoucherIndex)))
 	return nil
 }
 
 func (h *UserAdvanceHandlers) WithdrawStablecoinHandler(env rollmelette.Env, metadata rollmelette.Metadata, deposit rollmelette.Deposit, payload []byte) error {
 	findContractBySymbol := contract_usecase.NewFindContractBySymbolUseCase(h.ContractRepository)
-	stablecoin, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "USDC"})
+	stablecoin, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "STABLECOIN"})
 	if err != nil {
 		return err
 	}

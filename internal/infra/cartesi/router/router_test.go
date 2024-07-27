@@ -279,7 +279,7 @@ func (s *RouterSuite) TestItWithdrawStablecoin() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	sender := common.HexToAddress("0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc")
 
-	stablecoinPayload := []byte(`{"symbol":"USDC","address":"0x0000000000000000000000000000000000000001"}`)
+	stablecoinPayload := []byte(`{"symbol":"STABLECOIN","address":"0x0000000000000000000000000000000000000001"}`)
 	stablecoinInput, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "createContract",
 		Payload: stablecoinPayload,
@@ -287,7 +287,7 @@ func (s *RouterSuite) TestItWithdrawStablecoin() {
 	if err != nil {
 		s.T().Fatal(err)
 	}
-	stablecoinExpectedOutput := `created contract with symbol: USDC and address: 0x0000000000000000000000000000000000000001`
+	stablecoinExpectedOutput := `created contract with symbol: STABLECOIN and address: 0x0000000000000000000000000000000000000001`
 	stablecoinResult := s.tester.Advance(admin, stablecoinInput)
 	s.Len(stablecoinResult.Notices, 1)
 	s.Equal(stablecoinExpectedOutput, string(stablecoinResult.Notices[0].Payload))
@@ -305,18 +305,18 @@ func (s *RouterSuite) TestItWithdrawStablecoin() {
 		s.T().Fatal(err)
 	}
 
-	expectedNoticePayload := `withdrawn USDC and 10000 from 0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc with voucher index: 1`
+	expectedNoticePayload := `withdrawn STABLECOIN and 10000 from 0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc with voucher index: 1`
 
-	expectedUSDCVoucherPayload := make([]byte, 0, 4+32+32)
-	expectedUSDCVoucherPayload = append(expectedUSDCVoucherPayload, 0xa9, 0x05, 0x9c, 0xbb)
-	expectedUSDCVoucherPayload = append(expectedUSDCVoucherPayload, make([]byte, 12)...)
-	expectedUSDCVoucherPayload = append(expectedUSDCVoucherPayload, sender[:]...)
-	expectedUSDCVoucherPayload = append(expectedUSDCVoucherPayload, big.NewInt(10000).FillBytes(make([]byte, 32))...)
+	expectedSTABLECOINVoucherPayload := make([]byte, 0, 4+32+32)
+	expectedSTABLECOINVoucherPayload = append(expectedSTABLECOINVoucherPayload, 0xa9, 0x05, 0x9c, 0xbb)
+	expectedSTABLECOINVoucherPayload = append(expectedSTABLECOINVoucherPayload, make([]byte, 12)...)
+	expectedSTABLECOINVoucherPayload = append(expectedSTABLECOINVoucherPayload, sender[:]...)
+	expectedSTABLECOINVoucherPayload = append(expectedSTABLECOINVoucherPayload, big.NewInt(10000).FillBytes(make([]byte, 32))...)
 	withdrawResult := s.tester.Advance(sender, input)
 	s.Len(withdrawResult.Notices, 1)
 	s.Len(withdrawResult.Vouchers, 1)
 
-	s.Equal(expectedUSDCVoucherPayload, withdrawResult.Vouchers[0].Payload)
+	s.Equal(expectedSTABLECOINVoucherPayload, withdrawResult.Vouchers[0].Payload)
 	s.Equal(common.HexToAddress("0x0000000000000000000000000000000000000001"), withdrawResult.Vouchers[0].Destination)
 	s.Equal(expectedNoticePayload, string(withdrawResult.Notices[0].Payload))
 }
@@ -325,7 +325,7 @@ func (s *RouterSuite) TestItWithdrawStablecoinWithInsuficientBalance() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	sender := common.HexToAddress("0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc")
 
-	stablecoinPayload := []byte(`{"symbol":"USDC","address":"0x0000000000000000000000000000000000000001"}`)
+	stablecoinPayload := []byte(`{"symbol":"STABLECOIN","address":"0x0000000000000000000000000000000000000001"}`)
 	stablecoinInput, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "createContract",
 		Payload: stablecoinPayload,
@@ -333,7 +333,7 @@ func (s *RouterSuite) TestItWithdrawStablecoinWithInsuficientBalance() {
 	if err != nil {
 		s.T().Fatal(err)
 	}
-	stablecoinExpectedOutput := `created contract with symbol: USDC and address: 0x0000000000000000000000000000000000000001`
+	stablecoinExpectedOutput := `created contract with symbol: STABLECOIN and address: 0x0000000000000000000000000000000000000001`
 	stablecoinResult := s.tester.Advance(admin, stablecoinInput)
 	s.Len(stablecoinResult.Notices, 1)
 	s.Equal(stablecoinExpectedOutput, string(stablecoinResult.Notices[0].Payload))
@@ -349,7 +349,7 @@ func (s *RouterSuite) TestItWithdrawStablecoinWithInsuficientBalance() {
 		s.T().Fatal(err)
 	}
 
-	expectedOutput := `no balance of USDC to withdraw`
+	expectedOutput := `no balance of STABLECOIN to withdraw`
 	withdrawResult := s.tester.Advance(sender, input)
 	s.ErrorContains(withdrawResult.Err, expectedOutput)
 }
@@ -637,7 +637,7 @@ func (s *RouterSuite) TestItCreateOrder() {
 	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
 	s.Nil(appAddressResult.Err)
 
-	stablecoinPayload := []byte(`{"symbol":"USDC","address":"0x0000000000000000000000000000000000000002"}`)
+	stablecoinPayload := []byte(`{"symbol":"STABLECOIN","address":"0x0000000000000000000000000000000000000002"}`)
 	stablecoinInput, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "createContract",
 		Payload: stablecoinPayload,
@@ -645,7 +645,7 @@ func (s *RouterSuite) TestItCreateOrder() {
 	if err != nil {
 		s.T().Fatal(err)
 	}
-	stablecoinExpectedOutput := `created contract with symbol: USDC and address: 0x0000000000000000000000000000000000000002`
+	stablecoinExpectedOutput := `created contract with symbol: STABLECOIN and address: 0x0000000000000000000000000000000000000002`
 	stablecoinResult := s.tester.Advance(admin, stablecoinInput)
 	s.Len(stablecoinResult.Notices, 1)
 	s.Equal(stablecoinExpectedOutput, string(stablecoinResult.Notices[0].Payload))
@@ -682,7 +682,7 @@ func (s *RouterSuite) TestItCreateOrderWithInvalidData() {
 	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
 	s.Nil(appAddressResult.Err)
 
-	stablecoinPayload := []byte(`{"symbol":"USDC","address":"0x0000000000000000000000000000000000000002"}`)
+	stablecoinPayload := []byte(`{"symbol":"STABLECOIN","address":"0x0000000000000000000000000000000000000002"}`)
 	stablecoinInput, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "createContract",
 		Payload: stablecoinPayload,
@@ -690,7 +690,7 @@ func (s *RouterSuite) TestItCreateOrderWithInvalidData() {
 	if err != nil {
 		s.T().Fatal(err)
 	}
-	stablecoinExpectedOutput := `created contract with symbol: USDC and address: 0x0000000000000000000000000000000000000002`
+	stablecoinExpectedOutput := `created contract with symbol: STABLECOIN and address: 0x0000000000000000000000000000000000000002`
 	stablecoinResult := s.tester.Advance(admin, stablecoinInput)
 	s.Len(stablecoinResult.Notices, 1)
 	s.Equal(stablecoinExpectedOutput, string(stablecoinResult.Notices[0].Payload))
@@ -727,7 +727,7 @@ func (s *RouterSuite) TestItUpdateOrder() {
 	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
 	s.Nil(appAddressResult.Err)
 
-	stablecoinPayload := []byte(`{"symbol":"USDC","address":"0x0000000000000000000000000000000000000002"}`)
+	stablecoinPayload := []byte(`{"symbol":"STABLECOIN","address":"0x0000000000000000000000000000000000000002"}`)
 	stablecoinInput, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "createContract",
 		Payload: stablecoinPayload,
@@ -735,7 +735,7 @@ func (s *RouterSuite) TestItUpdateOrder() {
 	if err != nil {
 		s.T().Fatal(err)
 	}
-	stablecoinExpectedOutput := `created contract with symbol: USDC and address: 0x0000000000000000000000000000000000000002`
+	stablecoinExpectedOutput := `created contract with symbol: STABLECOIN and address: 0x0000000000000000000000000000000000000002`
 	stablecoinResult := s.tester.Advance(admin, stablecoinInput)
 	s.Len(stablecoinResult.Notices, 1)
 	s.Equal(stablecoinExpectedOutput, string(stablecoinResult.Notices[0].Payload))
@@ -810,7 +810,7 @@ func (s *RouterSuite) TestItDeleteOrder() {
 	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
 	s.Nil(appAddressResult.Err)
 
-	stablecoinPayload := []byte(`{"symbol":"USDC","address":"0x0000000000000000000000000000000000000002"}`)
+	stablecoinPayload := []byte(`{"symbol":"STABLECOIN","address":"0x0000000000000000000000000000000000000002"}`)
 	stablecoinInput, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "createContract",
 		Payload: stablecoinPayload,
@@ -818,7 +818,7 @@ func (s *RouterSuite) TestItDeleteOrder() {
 	if err != nil {
 		s.T().Fatal(err)
 	}
-	stablecoinExpectedOutput := `created contract with symbol: USDC and address: 0x0000000000000000000000000000000000000002`
+	stablecoinExpectedOutput := `created contract with symbol: STABLECOIN and address: 0x0000000000000000000000000000000000000002`
 	stablecoinResult := s.tester.Advance(admin, stablecoinInput)
 	s.Len(stablecoinResult.Notices, 1)
 	s.Equal(stablecoinExpectedOutput, string(stablecoinResult.Notices[0].Payload))
@@ -1079,7 +1079,7 @@ func (s *RouterSuite) TestItUpdateNonExistentAuction() {
 
 // func (s *RouterSuite) TestItFinishAuctionWithoutPartialSelling() {
 // 	// -> Create VOLT Contract
-// 	// -> Create USDC Contract
+// 	// -> Create STABLECOIN Contract
 // 	// -> Send AppAddress through RelayContract
 // 	// -> Create Station 1
 // 	// -> Create Station 2
@@ -1135,8 +1135,8 @@ func (s *RouterSuite) TestItFinishAuctionWithoutPartialSelling() {
 	s.Len(voltResult.Notices, 1)
 	s.Equal(voltExpectedOutput, string(voltResult.Notices[0].Payload))
 
-	// Create USDC contract
-	usdcPayload := []byte(`{"symbol":"USDC","address":"0x0000000000000000000000000000000000000033"}`)
+	// Create STABLECOIN contract
+	usdcPayload := []byte(`{"symbol":"STABLECOIN","address":"0x0000000000000000000000000000000000000033"}`)
 	usdcInput, err := json.Marshal(&router.AdvanceRequest{
 		Path:    "createContract",
 		Payload: usdcPayload,
@@ -1144,7 +1144,7 @@ func (s *RouterSuite) TestItFinishAuctionWithoutPartialSelling() {
 	if err != nil {
 		s.T().Fatal(err)
 	}
-	usdcExpectedOutput := `created contract with symbol: USDC and address: 0x0000000000000000000000000000000000000033`
+	usdcExpectedOutput := `created contract with symbol: STABLECOIN and address: 0x0000000000000000000000000000000000000033`
 	usdcResult := s.tester.Advance(admin, usdcInput)
 	s.Len(usdcResult.Notices, 1)
 	s.Equal(usdcExpectedOutput, string(usdcResult.Notices[0].Payload))

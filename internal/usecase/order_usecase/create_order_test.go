@@ -34,7 +34,7 @@ func TestCreateOrderUseCase(t *testing.T) {
 
 	mockContract := &entity.Contract{
 		Id:      1,
-		Symbol:  "USDC",
+		Symbol:  "STABLECOIN",
 		Address: custom_type.NewAddress(common.HexToAddress("0x789")),
 	}
 
@@ -58,7 +58,7 @@ func TestCreateOrderUseCase(t *testing.T) {
 	}
 
 	mockStationRepo.On("FindStationById", "station_1").Return(mockStation, nil)
-	mockContractRepo.On("FindContractBySymbol", "USDC").Return(mockContract, nil)
+	mockContractRepo.On("FindContractBySymbol", "STABLECOIN").Return(mockContract, nil)
 	mockOrderRepo.On("CreateOrder", mock.AnythingOfType("*entity.Order")).Return(mockOrder, nil)
 
 	output, err := createOrderUseCase.Execute(input, deposit, metadata)

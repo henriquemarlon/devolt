@@ -80,7 +80,7 @@ func (h *AuctionAdvanceHandlers) FinishAuctionHandler(env rollmelette.Env, metad
 	}
 
 	// Find Stablecoin contract address
-	stablecoin, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "USDC"})
+	stablecoin, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "STABLECOIN"})
 	if err != nil {
 		return err
 	}
