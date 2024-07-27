@@ -3,14 +3,12 @@ module github.com/devolthq/devolt
 go 1.22.1
 
 require (
-	github.com/Khan/genqlient v0.6.0
 	github.com/ethereum/go-ethereum v1.13.14
 	github.com/google/wire v0.6.0
 	github.com/pulumi/pulumi-aws/sdk/v6 v6.45.0
 	github.com/pulumi/pulumi/sdk/v3 v3.124.0
 	github.com/rollmelette/rollmelette v0.1.1
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/sync v0.7.0
 	gorm.io/driver/sqlite v1.5.6
 	gorm.io/gorm v1.25.10
 )
@@ -107,7 +105,6 @@ require (
 	github.com/tweekmonster/luser v0.0.0-20161003172636-3fa38070dbd7 // indirect
 	github.com/uber/jaeger-client-go v2.30.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
-	github.com/vektah/gqlparser/v2 v2.5.1 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	github.com/zclconf/go-cty v1.13.2 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
@@ -115,6 +112,7 @@ require (
 	golang.org/x/exp v0.0.0-20240604190554-fc45aab8b7f8 // indirect
 	golang.org/x/mod v0.18.0 // indirect
 	golang.org/x/net v0.26.0 // indirect
+	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/term v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
