@@ -19,7 +19,7 @@
   <a href="https://book.getfoundry.sh/getting-started/installation">![Static Badge](https://img.shields.io/badge/foundry-0.2.0-red)</a>
 </div>
 
-## Technical analysis:
+## Technical Analysis:
 ## Running:
 - A validator node:
 - Test:
