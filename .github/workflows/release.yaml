@@ -47,6 +47,6 @@ jobs:
           builder: ${{ steps.setup_buildx.outputs.name }}
           tags: |
            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
-          labels: ${{ steps.extract_metadata.lables.labels }}
+          labels: ${{ steps.extract_metadata.outcome.labels }}
           cache-from: type=gha,scope=ubuntu
           cache-to: type=gha,mode=max,scope=ubuntu
