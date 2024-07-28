@@ -14,8 +14,8 @@ type AdvanceHandlerFunc func(env rollmelette.Env, metadata rollmelette.Metadata,
 type InspectHandlerFunc func(env rollmelette.EnvInspector, ctx context.Context) error
 
 type AdvanceRequest struct {
-	Path    string `json:"path"`
-	Payload []byte `json:"payload"`
+	Path    string          `json:"path"`
+	Payload json.RawMessage `json:"payload"`
 }
 
 type Router struct {

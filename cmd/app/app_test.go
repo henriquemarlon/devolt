@@ -1,4 +1,4 @@
-package router
+package main
 
 import (
 	"encoding/json"
@@ -13,16 +13,16 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-func TestRouterSuite(t *testing.T) {
-	suite.Run(t, new(RouterSuite))
+func TestAppSuite(t *testing.T) {
+	suite.Run(t, new(AppSuite))
 }
 
-type RouterSuite struct {
+type AppSuite struct {
 	suite.Suite
 	tester *rollmelette.Tester
 }
 
-func (s *RouterSuite) SetupTest() {
+func (s *AppSuite) SetupTest() {
 	app := NewTestApp()
 	s.tester = rollmelette.NewTester(app)
 }
@@ -31,7 +31,7 @@ func (s *RouterSuite) SetupTest() {
 
 ////////////////// User ///////////////////
 
-func (s *RouterSuite) TestItCreateUser() {
+func (s *AppSuite) TestItCreateUser() {
 	sender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	payload := []byte(`{"address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","role":"admin"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -47,7 +47,7 @@ func (s *RouterSuite) TestItCreateUser() {
 	s.Equal(expectedAdvanceOutput, string(advanceResult.Notices[0].Payload))
 }
 
-func (s *RouterSuite) TestItCreateUserWithoutPermissions() {
+func (s *AppSuite) TestItCreateUserWithoutPermissions() {
 	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678")
 	payload := []byte(`{"address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C9","role":"admin"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -62,7 +62,7 @@ func (s *RouterSuite) TestItCreateUserWithoutPermissions() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItCreateUserWithInvalidData() {
+func (s *AppSuite) TestItCreateUserWithInvalidData() {
 	sender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	payload := []byte(`{"address":"","role":""}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -77,7 +77,7 @@ func (s *RouterSuite) TestItCreateUserWithInvalidData() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItUpdateUser() {
+func (s *AppSuite) TestItUpdateUser() {
 	createUserSender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	createUserPayload := []byte(`{"address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C6","role":"admin"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -107,7 +107,7 @@ func (s *RouterSuite) TestItUpdateUser() {
 	s.Equal(expectedOutput, string(updateUserResult.Notices[0].Payload))
 }
 
-func (s *RouterSuite) TestItUpdateUserWithoutPermissions() {
+func (s *AppSuite) TestItUpdateUserWithoutPermissions() {
 	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678")
 	payload := []byte(`{"address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C6","role":"user"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -122,7 +122,7 @@ func (s *RouterSuite) TestItUpdateUserWithoutPermissions() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItUpdateNonExistentUser() {
+func (s *AppSuite) TestItUpdateNonExistentUser() {
 	sender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	payload := []byte(`{"address":"0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65","role":"admin"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -137,7 +137,7 @@ func (s *RouterSuite) TestItUpdateNonExistentUser() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItDeleteUser() {
+func (s *AppSuite) TestItDeleteUser() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	createUserPayload := []byte(`{"address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","role":"admin"}`)
 	createUserInput, err := json.Marshal(&router.AdvanceRequest{
@@ -168,7 +168,7 @@ func (s *RouterSuite) TestItDeleteUser() {
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 }
 
-func (s *RouterSuite) TestItDeleteUserWithoutPermissions() {
+func (s *AppSuite) TestItDeleteUserWithoutPermissions() {
 	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678")
 	payload := []byte(`{"address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -183,7 +183,7 @@ func (s *RouterSuite) TestItDeleteUserWithoutPermissions() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItDeleteNonExistentUser() {
+func (s *AppSuite) TestItDeleteNonExistentUser() {
 	sender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	address := common.HexToAddress("0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65").String()
 	payload := []byte(`{"address":"` + address + `"}`)
@@ -199,7 +199,7 @@ func (s *RouterSuite) TestItDeleteNonExistentUser() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItWithdrawVolt() {
+func (s *AppSuite) TestItWithdrawVolt() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	sender := common.HexToAddress("0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc")
 
@@ -218,10 +218,7 @@ func (s *RouterSuite) TestItWithdrawVolt() {
 
 	s.tester.DepositERC20(common.HexToAddress("0x0000000000000000000000000000000000000001"), sender, big.NewInt(10000), []byte(""))
 
-	input, err := json.Marshal(&router.AdvanceRequest{
-		Path:    "withdrawVolt",
-		Payload: []byte(``),
-	})
+	input := []byte(`{"path":"withdrawVolt","payload":{}}`) 
 	if err != nil {
 		s.T().Fatal(err)
 	}
@@ -242,7 +239,7 @@ func (s *RouterSuite) TestItWithdrawVolt() {
 	s.Equal(expectedNoticePayload, string(withdrawResult.Notices[0].Payload))
 }
 
-func (s *RouterSuite) TestItWithdrawVoltWithInsuficientBalance() {
+func (s *AppSuite) TestItWithdrawVoltWithInsuficientBalance() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	sender := common.HexToAddress("0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc")
 
@@ -262,20 +259,14 @@ func (s *RouterSuite) TestItWithdrawVoltWithInsuficientBalance() {
 	s.Len(voltResult.Notices, 1)
 	s.Equal(voltExpectedOutput, string(voltResult.Notices[0].Payload))
 
-	input, err := json.Marshal(&router.AdvanceRequest{
-		Path:    "withdrawVolt",
-		Payload: []byte(``),
-	})
-	if err != nil {
-		s.T().Fatal(err)
-	}
+	input := []byte(`{"path":"withdrawVolt","payload":{}}`)
 
 	expectedOutput := `no balance of VOLT to withdraw`
 	withdrawResult := s.tester.Advance(sender, input)
 	s.ErrorContains(withdrawResult.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItWithdrawStablecoin() {
+func (s *AppSuite) TestItWithdrawStablecoin() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	sender := common.HexToAddress("0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc")
 
@@ -297,13 +288,14 @@ func (s *RouterSuite) TestItWithdrawStablecoin() {
 
 	s.tester.DepositERC20(common.HexToAddress("0x0000000000000000000000000000000000000001"), sender, big.NewInt(10000), []byte(""))
 
-	input, err := json.Marshal(&router.AdvanceRequest{
-		Path:    "withdrawStablecoin",
-		Payload: []byte(``),
-	})
-	if err != nil {
-		s.T().Fatal(err)
-	}
+	input := []byte(`{"path":"withdrawStablecoin","payload":{}}`)
+	// input, err := json.Marshal(&router.AdvanceRequest{
+	// 	Path:    "withdrawStablecoin",
+	// 	Payload: []byte(`{}`),
+	// })
+	// if err != nil {
+	// 	s.T().Fatal(err)
+	// }
 
 	expectedNoticePayload := `withdrawn STABLECOIN and 10000 from 0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc with voucher index: 1`
 
@@ -321,7 +313,7 @@ func (s *RouterSuite) TestItWithdrawStablecoin() {
 	s.Equal(expectedNoticePayload, string(withdrawResult.Notices[0].Payload))
 }
 
-func (s *RouterSuite) TestItWithdrawStablecoinWithInsuficientBalance() {
+func (s *AppSuite) TestItWithdrawStablecoinWithInsuficientBalance() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	sender := common.HexToAddress("0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc")
 
@@ -341,13 +333,7 @@ func (s *RouterSuite) TestItWithdrawStablecoinWithInsuficientBalance() {
 	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
 	s.Nil(appAddressResult.Err)
 
-	input, err := json.Marshal(&router.AdvanceRequest{
-		Path:    "withdrawStablecoin",
-		Payload: []byte(``),
-	})
-	if err != nil {
-		s.T().Fatal(err)
-	}
+	input := []byte(`{"path":"withdrawStablecoin","payload":{}}`)
 
 	expectedOutput := `no balance of STABLECOIN to withdraw`
 	withdrawResult := s.tester.Advance(sender, input)
@@ -356,7 +342,7 @@ func (s *RouterSuite) TestItWithdrawStablecoinWithInsuficientBalance() {
 
 ///////////////// Contract ///////////////////
 
-func (s *RouterSuite) TestItCreateContract() {
+func (s *AppSuite) TestItCreateContract() {
 	sender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	payload := []byte(`{"symbol":"VOLT","address":"0x0000000000000000000000000000000000000001"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -372,7 +358,7 @@ func (s *RouterSuite) TestItCreateContract() {
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 }
 
-func (s *RouterSuite) TestItDeleteContract() {
+func (s *AppSuite) TestItDeleteContract() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	createContractPayload := []byte(`{"symbol":"VOLT","address":"0x0000000000000000000000000000000000000001"}`)
 	createContractInput, err := json.Marshal(&router.AdvanceRequest{
@@ -401,7 +387,7 @@ func (s *RouterSuite) TestItDeleteContract() {
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 }
 
-func (s *RouterSuite) TestItUpdateContract() {
+func (s *AppSuite) TestItUpdateContract() {
 	createContractSender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	createContractPayload := []byte(`{"symbol":"TEST","address":"0x0000000000000000000000000000000000000005"}`)
 	createContractInput, err := json.Marshal(&router.AdvanceRequest{
@@ -431,7 +417,7 @@ func (s *RouterSuite) TestItUpdateContract() {
 	s.Equal(expectedOutputUpdateContract, string(resultUpdateContract.Notices[0].Payload))
 }
 
-func (s *RouterSuite) TestItCreateContractWithoutPermissions() {
+func (s *AppSuite) TestItCreateContractWithoutPermissions() {
 	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678")
 	payload := []byte(`{"symbol":"VOLT","address":"0x0000000000000000000000000000000000000002"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -446,7 +432,7 @@ func (s *RouterSuite) TestItCreateContractWithoutPermissions() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItCreateContractWithInvalidData() {
+func (s *AppSuite) TestItCreateContractWithInvalidData() {
 	sender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	payload := []byte(`{"symbol":"","address":""}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -461,7 +447,7 @@ func (s *RouterSuite) TestItCreateContractWithInvalidData() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItUpdateContractWithoutPermissions() {
+func (s *AppSuite) TestItUpdateContractWithoutPermissions() {
 	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678")
 	payload := []byte(`{"symbol":"VOLT","address":"0x0000000000000000000000000000000000000003"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -476,7 +462,7 @@ func (s *RouterSuite) TestItUpdateContractWithoutPermissions() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItUpdateNonExistentContract() {
+func (s *AppSuite) TestItUpdateNonExistentContract() {
 	sender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	payload := []byte(`{"symbol":"NONEXISTENT","address":"0x0000000000000000000000000000000000000003"}`) // Contrato que não existe
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -491,7 +477,7 @@ func (s *RouterSuite) TestItUpdateNonExistentContract() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItDeleteContractWithoutPermissions() {
+func (s *AppSuite) TestItDeleteContractWithoutPermissions() {
 	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678")
 	payload := []byte(`{"symbol":"VOLT"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -506,7 +492,7 @@ func (s *RouterSuite) TestItDeleteContractWithoutPermissions() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItDeleteNonExistentContract() {
+func (s *AppSuite) TestItDeleteNonExistentContract() {
 	sender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	payload := []byte(`{"symbol":"NONEXISTENT"}`) // Contrato que não existe
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -523,7 +509,7 @@ func (s *RouterSuite) TestItDeleteNonExistentContract() {
 
 ///////////////// Station ///////////////////
 
-func (s *RouterSuite) TestItCreateStation() {
+func (s *AppSuite) TestItCreateStation() {
 	sender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	payload := []byte(`{"id":"station-1", "owner": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "consumption": 100, "price_per_credit": 50, "latitude": 40.7128, "longitude": -74.0060}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -539,7 +525,7 @@ func (s *RouterSuite) TestItCreateStation() {
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 }
 
-func (s *RouterSuite) TestItCreateStationWithoutPermissions() {
+func (s *AppSuite) TestItCreateStationWithoutPermissions() {
 	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678") // Not an admin
 	payload := []byte(`{"id":"station-2", "owner": "0x1234567890abcdef1234567890abcdef12345678", "consumption": 200, "price_per_credit": 100, "latitude": 34.0522, "longitude": -118.2437}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -554,7 +540,7 @@ func (s *RouterSuite) TestItCreateStationWithoutPermissions() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItCreateStationWithInvalidData() {
+func (s *AppSuite) TestItCreateStationWithInvalidData() {
 	sender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	payload := []byte(`{"id":"", "owner": "", "consumption": -100, "price_per_credit": -50, "latitude": 91.0000, "longitude": 181.0000}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -569,7 +555,7 @@ func (s *RouterSuite) TestItCreateStationWithInvalidData() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItUpdateStationWithoutPermissions() {
+func (s *AppSuite) TestItUpdateStationWithoutPermissions() {
 	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678") // Not an admin
 	payload := []byte(`{"id":"station-1", "owner": "0x1234567890abcdef1234567890abcdef12345678", "consumption": 150, "price_per_credit": 75, "latitude": 34.0522, "longitude": -118.2437}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -584,7 +570,7 @@ func (s *RouterSuite) TestItUpdateStationWithoutPermissions() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItUpdateNonExistentStation() {
+func (s *AppSuite) TestItUpdateNonExistentStation() {
 	sender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	payload := []byte(`{"id":"non-existent-station", "owner": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "consumption": 150, "price_per_credit": 75, "latitude": 34.0522, "longitude": -118.2437}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -599,7 +585,7 @@ func (s *RouterSuite) TestItUpdateNonExistentStation() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItDeleteStationWithoutPermissions() {
+func (s *AppSuite) TestItDeleteStationWithoutPermissions() {
 	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678") // Not an admin
 	payload := []byte(`{"id":"station-1"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -614,7 +600,7 @@ func (s *RouterSuite) TestItDeleteStationWithoutPermissions() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItDeleteNonExistentStation() {
+func (s *AppSuite) TestItDeleteNonExistentStation() {
 	sender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	payload := []byte(`{"id":"non-existent-station"}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -631,7 +617,7 @@ func (s *RouterSuite) TestItDeleteNonExistentStation() {
 
 ///////////////// Order ///////////////////
 
-func (s *RouterSuite) TestItCreateOrder() {
+func (s *AppSuite) TestItCreateOrder() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 
 	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
@@ -676,7 +662,7 @@ func (s *RouterSuite) TestItCreateOrder() {
 	s.Equal(createOrderExpectedOutput, string(createOrderResult.Notices[0].Payload))
 }
 
-func (s *RouterSuite) TestItCreateOrderWithInvalidData() {
+func (s *AppSuite) TestItCreateOrderWithInvalidData() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 
 	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
@@ -721,7 +707,7 @@ func (s *RouterSuite) TestItCreateOrderWithInvalidData() {
 	s.ErrorContains(createOrderResult.Err, createOrderExpectedOutput)
 }
 
-func (s *RouterSuite) TestItUpdateOrder() {
+func (s *AppSuite) TestItUpdateOrder() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 
 	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
@@ -779,7 +765,7 @@ func (s *RouterSuite) TestItUpdateOrder() {
 	s.Equal(expectedOutput, string(updateOrderResult.Notices[0].Payload))
 }
 
-func (s *RouterSuite) TestItUpdateOrderWithoutPermissions() {
+func (s *AppSuite) TestItUpdateOrderWithoutPermissions() {
 	sender := common.HexToAddress("0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65")
 
 	createOrderPayload, err := json.Marshal(&router.AdvanceRequest{
@@ -804,7 +790,7 @@ func (s *RouterSuite) TestItUpdateOrderWithoutPermissions() {
 	s.ErrorContains(updateOrderResult.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItDeleteOrder() {
+func (s *AppSuite) TestItDeleteOrder() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 
 	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
@@ -860,7 +846,7 @@ func (s *RouterSuite) TestItDeleteOrder() {
 	s.Equal(expectedOutput, string(deleteOrderResult.Notices[0].Payload))
 }
 
-func (s *RouterSuite) TestItDeleteOrderWithoutPermissions() {
+func (s *AppSuite) TestItDeleteOrderWithoutPermissions() {
 	sender := common.HexToAddress("0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65")
 
 	// CREATE ORDER
@@ -886,7 +872,7 @@ func (s *RouterSuite) TestItDeleteOrderWithoutPermissions() {
 	s.ErrorContains(deleteOrderResult.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItDeleteNonExistentOrder() {
+func (s *AppSuite) TestItDeleteNonExistentOrder() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 
 	deleteOrderPayload := []byte(`{"id":999}`)
@@ -904,7 +890,7 @@ func (s *RouterSuite) TestItDeleteNonExistentOrder() {
 
 /////////////////// Bids //////////////////
 
-func (s *RouterSuite) TestItCreateBid() {
+func (s *AppSuite) TestItCreateBid() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 
 	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
@@ -951,7 +937,7 @@ func (s *RouterSuite) TestItCreateBid() {
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 }
 
-func (s *RouterSuite) TestItCreateBidWhenAuctionIsNotOngoing() {
+func (s *AppSuite) TestItCreateBidWhenAuctionIsNotOngoing() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 
 	appAddressResult := s.tester.RelayAppAddress(common.HexToAddress("0xdadadadadadadadadadadadadadadadadadadada"))
@@ -1001,7 +987,7 @@ func (s *RouterSuite) TestItCreateBidWhenAuctionIsNotOngoing() {
 
 //////////////// Auction //////////////////
 
-func (s *RouterSuite) TestItCreateAuction() {
+func (s *AppSuite) TestItCreateAuction() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	payload := []byte(fmt.Sprintf(`{"credits":"100000", "price_limit":"1000", "expires_at": %v}`, time.Now().Add(time.Hour).Unix()))
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -1017,7 +1003,7 @@ func (s *RouterSuite) TestItCreateAuction() {
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 }
 
-func (s *RouterSuite) TestItCreateAuctionWithoutPermissions() {
+func (s *AppSuite) TestItCreateAuctionWithoutPermissions() {
 	sender := common.HexToAddress("0x0000000000000000000000000000000000000001")
 	payload := []byte(fmt.Sprintf(`{"credits":"100000", "price_limit":"1000", "expires_at": %v}`, time.Now().Add(time.Hour).Unix()))
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -1032,7 +1018,7 @@ func (s *RouterSuite) TestItCreateAuctionWithoutPermissions() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItCreateAuctionWithInvalidData() {
+func (s *AppSuite) TestItCreateAuctionWithInvalidData() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	payload := []byte(`{"credits":"0", "price_limit":"1000", "expires_at": 500}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -1047,7 +1033,7 @@ func (s *RouterSuite) TestItCreateAuctionWithInvalidData() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItUpdateAuctionWithoutPermissions() {
+func (s *AppSuite) TestItUpdateAuctionWithoutPermissions() {
 	user := common.HexToAddress("0x0000000000000000000000000000000000000001")
 	payload := []byte(fmt.Sprintf(`{"credits":"100000", "price_limit":"1000", "expires_at": %v}`, time.Now().Add(time.Hour).Unix()))
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -1062,7 +1048,7 @@ func (s *RouterSuite) TestItUpdateAuctionWithoutPermissions() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *RouterSuite) TestItUpdateNonExistentAuction() {
+func (s *AppSuite) TestItUpdateNonExistentAuction() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 	payload := []byte(`{"id":999, "credits":"150000", "price_limit":"1200", "expires_at": 1625097600}`)
 	input, err := json.Marshal(&router.AdvanceRequest{
@@ -1077,7 +1063,7 @@ func (s *RouterSuite) TestItUpdateNonExistentAuction() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-// func (s *RouterSuite) TestItFinishAuctionWithoutPartialSelling() {
+// func (s *AppSuite) TestItFinishAuctionWithoutPartialSelling() {
 // 	// -> Create VOLT Contract
 // 	// -> Create STABLECOIN Contract
 // 	// -> Send AppAddress through RelayContract
@@ -1118,7 +1104,7 @@ func (s *RouterSuite) TestItUpdateNonExistentAuction() {
 // 	// -> Verify number of outputs
 // }
 
-func (s *RouterSuite) TestItFinishAuctionWithoutPartialSelling() {
+func (s *AppSuite) TestItFinishAuctionWithoutPartialSelling() {
 	admin := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
 
 	// Create VOLT contract
@@ -1272,4 +1258,4 @@ func (s *RouterSuite) TestItFinishAuctionWithoutPartialSelling() {
 	s.Equal(offSetStationConsumptionAsOwnerExpectedOutput, string(offSetStationConsumptionAsOwnerResult.Notices[0].Payload))
 }
 
-func (s *RouterSuite) TestItFinishAuctionWithPartialSelling() {}
+func (s *AppSuite) TestItFinishAuctionWithPartialSelling() {}

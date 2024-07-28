@@ -15,13 +15,16 @@ env: ./.env.develop
 build:
 	$(START_LOG)
 	@docker build \
-		-t dapp:latest \
-		-f ./build/Dockerfile.dapp .
-	@cartesi build --from-image dapp:latest
+		-t machine:latest \
+		-f ./build/Dockerfile.app .
+	@cartesi build --from-image machine:latest
+	@docker build \
+		-t validator:latest \
+		-f ./build/Dockerfile.validator .
 	$(END_LOG)
 	
-.PHONY: generate
-generate:
+.PHONY: bidings
+bidings:
 	$(START_LOG)
 	@go run ./pkg/rollups_contracts/generate
 	$(END_LOG)
@@ -29,16 +32,6 @@ generate:
 .PHONY: test
 test:
 	@go test -p 1 ./... -coverprofile=./coverage.md -v
-
-.PHONY: deploy
-deploy:
-	$(START_LOG)
-	@flyctl auth docker
-	@docker pull ghcr.io/devolthq/devolt-validator:main
-	@docker tag ghcr.io/devolthq/devolt-validator:main registry.fly.io/devolt:latest
-	@docker push registry.fly.io/devolt:latest
-	@flyctl deploy --app devolt
-	$(END_LOG)
 
 .PHONY: deploy_token
 deploy_token:
