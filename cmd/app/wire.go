@@ -1,7 +1,7 @@
 //go:build wireinject
 // +build wireinject
 
-package router
+package main
 
 import (
 	"github.com/devolthq/devolt/configs"

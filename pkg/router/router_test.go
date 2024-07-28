@@ -9,8 +9,9 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-var validJSONPayload = []byte(`{"path":"/advance-test","payload":"dGVzdA=="}`)
-var inspectPayload = []byte("/inspect/123")
+var validJSONPayload = []byte(`{"path":"advance-test","payload":{"test":"true"}}`)
+var expectedPayload = `{"test":"true"}`
+var inspectPayload = []byte("inspect/123")
 var msgSender = common.HexToAddress("0xfafafafafafafafafafafafafafafafafafafa")
 
 type RouterSuite struct {
@@ -25,17 +26,18 @@ func (s *RouterSuite) SetupTest() {
 }
 
 func (s *RouterSuite) TestAdvance() {
-	s.router.HandleAdvance("/advance-test", func(env rollmelette.Env, metadata rollmelette.Metadata, deposit rollmelette.Deposit, payload []byte) error {
-		s.Equal([]byte("test"), payload)
+	s.router.HandleAdvance("advance-test", func(env rollmelette.Env, metadata rollmelette.Metadata, deposit rollmelette.Deposit, payload []byte) error {
+		env.Notice(payload)
 		return nil
 	})
 
 	result := s.tester.Advance(msgSender, validJSONPayload)
+	s.Equal(expectedPayload, string(result.Notices[0].Payload))
 	s.Nil(result.Err)
 }
 
 func (s *RouterSuite) TestInspect() {
-	s.router.HandleInspect("/inspect/{id}", func(env rollmelette.EnvInspector, ctx context.Context) error {
+	s.router.HandleInspect("inspect/{id}", func(env rollmelette.EnvInspector, ctx context.Context) error {
 		id := PathValue(ctx, "id")
 		s.Equal("123", id)
 		return nil

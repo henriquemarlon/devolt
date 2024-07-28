@@ -15,9 +15,9 @@ env: ./.env.develop
 build:
 	$(START_LOG)
 	@docker build \
-		-t dapp:latest \
+		-t machine:latest \
 		-f ./build/Dockerfile.dapp .
-	@cartesi build --from-image dapp:latest
+	@cartesi build --from-image machine:latest
 	$(END_LOG)
 	
 .PHONY: generate
@@ -29,16 +29,6 @@ generate:
 .PHONY: test
 test:
 	@go test -p 1 ./... -coverprofile=./coverage.md -v
-
-.PHONY: deploy
-deploy:
-	$(START_LOG)
-	@flyctl auth docker
-	@docker pull ghcr.io/devolthq/devolt-validator:main
-	@docker tag ghcr.io/devolthq/devolt-validator:main registry.fly.io/devolt:latest
-	@docker push registry.fly.io/devolt:latest
-	@flyctl deploy --app devolt
-	$(END_LOG)
 
 .PHONY: deploy_token
 deploy_token:
