@@ -16,12 +16,15 @@ build:
 	$(START_LOG)
 	@docker build \
 		-t machine:latest \
-		-f ./build/Dockerfile.dapp .
+		-f ./build/Dockerfile.app .
 	@cartesi build --from-image machine:latest
+	@docker build \
+		-t validator:latest \
+		-f ./build/Dockerfile.validator .
 	$(END_LOG)
 	
-.PHONY: generate
-generate:
+.PHONY: bidings
+bidings:
 	$(START_LOG)
 	@go run ./pkg/rollups_contracts/generate
 	$(END_LOG)
