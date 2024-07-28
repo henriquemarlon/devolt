@@ -1,54 +1,58 @@
-name: Deploy to GitHub Pages
+name: CD Workflow
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'docs/**'
   workflow_dispatch:
-    
+  workflow_run:
+    workflows: ["Release Workflow"]
+    types:
+      - completed
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
+  actions: write
   contents: write
+  id-token: write
+  packages: write
+  pull-requests: write
 
 jobs:
-  build:
-    name: Build and upload artifact
+  deploy-application:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./docs
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
 
-      - name: Install dependencies
-        run: npm ci
-      - name: Build website
-        run: npm run build
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs/build
+      - uses: superfly/flyctl-actions/setup-flyctl@master
 
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: build
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Set up Docker Buildx
+        id:   setup_buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to Fly.io Container Registry
+        run: flyctl auth docker
+
+      - name: Pull machine image
+        run: docker pull ghcr.io/devolthq/devolt-validator:latest
+
+      - name: Tag validator image to Fly.io Container Registry
+        run:  docker tag ghcr.io/devolthq/${{ secrets.FLY_IO_APP_NAME }}:latest registry.fly.io/${{ secrets.FLY_IO_APP_NAME }}:latest
+
+      - name: Push validator image to Fly.io Container Registry
+        run:  docker push registry.fly.io/${{ secrets.FLY_IO_APP_NAME }}:latest
+
+      - name: Deploy application
+        run:  flyctl deploy -a ${{ secrets.FLY_IO_APP_NAME }}
