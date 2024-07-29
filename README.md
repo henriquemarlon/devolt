@@ -27,6 +27,7 @@
 <a href="https://pkg.go.dev/gorm.io/gorm@v1.25.10">![Static Badge](https://img.shields.io/badge/gorm-1.25.10-blue)</a>
 <a href="https://pkg.go.dev/github.com/google/wire@v0.6.0">![Static Badge](https://img.shields.io/badge/wire-0.6.0-blue)</a>
 </div>
+
 ## 📚 Technical Vision:
 This project was built using Golang as the main language and [SQLite](https://www.sqlite.org/) to store the application state, along with the ORM [Gorm](https://gorm.io/). Additionally, this project was built following the [golang-standards](https://github.com/golang-standards/project-layout) [^1], and from an architectural perspective, principles of [hexagonal architecture](https://netflixtechblog.com/ready-for-changes-with-hexagonal-architecture-b315ec967749) [^2] were implemented, such as dependency injection, using the [Wire](https://github.com/google/wire) package for automatic initialization. From a technical standpoint, this choice of architecture and technologies was made possible because we are building this application using the Cartesi infrastructure.
 
