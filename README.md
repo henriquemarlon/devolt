@@ -49,7 +49,7 @@ $ make build
 $ cartesi run
 ```
 
-### validator node:
+### Validator node:
 - Build the validator node image
 ```bash
 $ make build
