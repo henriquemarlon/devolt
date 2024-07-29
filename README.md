@@ -49,12 +49,12 @@ $ make build
 $ cartesi run
 ```
 
-### A validator node on Fly.io:
+### validator node:
 - Build the validator node image
 ```bash
 $ make build
 ```
-- After that, you can follow the [tutorial](https://docs.cartesi.io/cartesi-rollups/1.3/deployment/self-hosted/#hosting-on-flyio) and after creating the necessary infrastructure to host your node, you can use the Docker image generated in the previous step called `validator:latest`
+- After that, you can follow the [tutorial](https://docs.cartesi.io/cartesi-rollups/1.3/deployment/self-hosted/#hosting-the-node) and after creating the necessary infrastructure to host your node, you can use the Docker image generated in the previous step called `validator:latest`
 
 ### Application Tests:
 - To run the complete test suite, run the command below:
