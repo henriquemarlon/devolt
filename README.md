@@ -29,7 +29,6 @@
 </div>
 
 # 🔋 Introduction:
-
 The automotive market's eagerness for the widespread adoption of electric cars is a common trend among countries with ESG agendas. It's also a desire shared by drivers who want more powerful cars with low maintenance and lower monthly costs. Among the promises, expectations, and advancements, one of the current obstacles to expanding the electric vehicle fleet is the lack of physical infrastructure, specifically charging stations. Alongside this scenario, there is a growing movement towards distributed energy generation in countries like Brazil. Why not connect these two points and offer a solution that provides liquidity for electricity producers while delivering cheaper energy to the aforementioned stations? We present DeVolt, a solution with a decentralized market engine for buying and selling energy based on the monthly consumption recorded by partner stations. To learn more, visit our [whitepaper](https://mugen-builders.github.io/devolt/).
 
 # 📚 Technical Vision:
