@@ -49,12 +49,12 @@ $ make build
 $ cartesi run
 ```
 
-### Validator node:
+### A validator node on Fly.io:
 - Build the validator node image
 ```bash
 $ make build
 ```
-- After that, you can follow the [tutorial](https://docs.cartesi.io/cartesi-rollups/1.3/deployment/self-hosted/#hosting-the-node) and after creating the necessary infrastructure to host your node, you can use the Docker image generated in the previous step called `validator:latest`
+- After that, you can follow the [tutorial](https://docs.cartesi.io/cartesi-rollups/1.3/deployment/self-hosted/#hosting-on-flyio) and after creating the necessary infrastructure to host your node, you can use the Docker image generated in the previous step called `validator:latest`
 
 ### Application Tests:
 - To run the complete test suite, run the command below:
@@ -70,7 +70,7 @@ $ make coverage
 
 ## 🌐 Deployed Application:
 - Node Public URL: https://devolt.fly.dev/
-- Application contract address: [0xdDa19ea9b093Ad3a4A4DBA861EDFc20c1e1aC601](https://sepolia.arbiscan.io/address/0xdda19ea9b093ad3a4a4dba861edfc20c1e1ac601)
+- Application contract address (Arbitrum Sepolia Network): [0xdDa19ea9b093Ad3a4A4DBA861EDFc20c1e1aC601](https://sepolia.arbiscan.io/address/0xdda19ea9b093ad3a4a4dba861edfc20c1e1ac601)
 
 [^1]: The folder structure chosen for this project is in line with the conventions and standards used by the Golang developer community.
 
