@@ -25,7 +25,7 @@ func (r *StationRepositorySqlite) CreateStation(input *entity.Station) (*entity.
 	return input, nil
 }
 
-func (r *StationRepositorySqlite) FindStationById(id string) (*entity.Station, error) {
+func (r *StationRepositorySqlite) FindStationById(id uint) (*entity.Station, error) {
 	var station entity.Station
 	if err := r.Db.Preload("Orders").First(&station, "id = ?", id).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -56,7 +56,7 @@ func (r *StationRepositorySqlite) UpdateStation(input *entity.Station) (*entity.
 	return input, nil
 }
 
-func (r *StationRepositorySqlite) DeleteStation(id string) error {
+func (r *StationRepositorySqlite) DeleteStation(id uint) error {
 	res := r.Db.Delete(&entity.Station{}, "id = ?", id)
 	if res.Error != nil {
 		return fmt.Errorf("failed to delete station: %w", res.Error)

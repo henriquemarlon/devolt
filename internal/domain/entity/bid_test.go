@@ -23,7 +23,7 @@ func TestNewBid(t *testing.T) {
 	assert.Equal(t, auctionId, bid.AuctionId)
 	assert.Equal(t, bidder, bid.Bidder)
 	assert.Equal(t, credits, bid.Credits)
-	assert.Equal(t, price, bid.Price)
+	assert.Equal(t, price, bid.PricePerCredit)
 	assert.Equal(t, BidStatePending, bid.State)
 	assert.NotZero(t, bid.CreatedAt)
 }
@@ -35,12 +35,12 @@ func TestBid_Validate(t *testing.T) {
 
 	// Invalid credits
 	bid := &Bid{
-		AuctionId: auctionId,
-		Bidder:    custom_type.NewAddress(bidder),
-		Credits:   custom_type.NewBigInt(big.NewInt(-1)),
-		Price:     custom_type.NewBigInt(big.NewInt(500)),
-		State:     BidStatePending,
-		CreatedAt: createdAt,
+		AuctionId:      auctionId,
+		Bidder:         custom_type.NewAddress(bidder),
+		Credits:        custom_type.NewBigInt(big.NewInt(-1)),
+		PricePerCredit: custom_type.NewBigInt(big.NewInt(500)),
+		State:          BidStatePending,
+		CreatedAt:      createdAt,
 	}
 	err := bid.Validate()
 	assert.NotNil(t, err)
@@ -48,13 +48,13 @@ func TestBid_Validate(t *testing.T) {
 
 	// Invalid price
 	bid.Credits = custom_type.NewBigInt(big.NewInt(1000))
-	bid.Price = custom_type.NewBigInt(big.NewInt(-1))
+	bid.PricePerCredit = custom_type.NewBigInt(big.NewInt(-1))
 	err = bid.Validate()
 	assert.NotNil(t, err)
 	assert.Equal(t, ErrInvalidBid, err)
 
 	// Invalid bidder
-	bid.Price = custom_type.NewBigInt(big.NewInt(500))
+	bid.PricePerCredit = custom_type.NewBigInt(big.NewInt(500))
 	bid.Bidder = custom_type.NewAddress(common.Address{})
 	err = bid.Validate()
 	assert.NotNil(t, err)

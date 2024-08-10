@@ -2,6 +2,8 @@ package entity
 
 import (
 	"errors"
+	"math/big"
+
 	"github.com/devolthq/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -13,10 +15,10 @@ var (
 
 type StationRepository interface {
 	CreateStation(station *Station) (*Station, error)
-	FindStationById(id string) (*Station, error)
+	FindStationById(id uint) (*Station, error)
 	FindAllStations() ([]*Station, error)
 	UpdateStation(station *Station) (*Station, error)
-	DeleteStation(id string) error
+	DeleteStation(id uint) error
 }
 
 type StationState string
@@ -27,7 +29,7 @@ const (
 )
 
 type Station struct {
-	Id             string              `json:"id" gorm:"primaryKey"`
+	Id             uint                `json:"id" gorm:"primaryKey"`
 	Consumption    custom_type.BigInt  `json:"consumption,omitempty" gorm:"type:bigint;not null"`
 	Owner          custom_type.Address `json:"owner,omitempty" gorm:"not null"`
 	State          StationState        `json:"state,omitempty" gorm:"type:text;not null"`
@@ -39,11 +41,10 @@ type Station struct {
 	UpdatedAt      int64               `json:"updated_at,omitempty" gorm:"default:0"`
 }
 
-func NewStation(id string, owner custom_type.Address, consumption custom_type.BigInt, pricePerCredit custom_type.BigInt, latitude float64, longitude float64, createdAt int64) (*Station, error) {
+func NewStation(owner custom_type.Address, pricePerCredit custom_type.BigInt, latitude float64, longitude float64, createdAt int64) (*Station, error) {
 	station := &Station{
-		Id:             id,
+		Consumption:    custom_type.NewBigInt(big.NewInt(0)),
 		Owner:          owner,
-		Consumption:    consumption,
 		PricePerCredit: pricePerCredit,
 		State:          StationStateActive,
 		Latitude:       latitude,
@@ -57,7 +58,7 @@ func NewStation(id string, owner custom_type.Address, consumption custom_type.Bi
 }
 
 func (s *Station) Validate() error {
-	if s.Id == "" || s.Owner.Address == (common.Address{}) || s.PricePerCredit.Int == nil || s.Latitude == 0 || s.Longitude == 0 || s.CreatedAt == 0 {
+	if s.Owner.Address == (common.Address{}) || s.PricePerCredit.Int == nil || s.Latitude == 0 || s.Longitude == 0 || s.CreatedAt == 0 {
 		return ErrInvalidStation
 	}
 	return nil

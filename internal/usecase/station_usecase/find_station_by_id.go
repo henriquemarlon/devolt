@@ -5,7 +5,7 @@ import (
 )
 
 type FindStationByIdInputDTO struct {
-	Id string `json:"id"`
+	Id uint `json:"id"`
 }
 
 type FindStationByIdUseCase struct {

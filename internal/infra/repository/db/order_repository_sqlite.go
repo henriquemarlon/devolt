@@ -26,6 +26,15 @@ func (r *OrderRepositorySqlite) CreateOrder(input *entity.Order) (*entity.Order,
 	return input, nil
 }
 
+func (r *OrderRepositorySqlite) FindOrdersByTimeRange(from int64, to int64) ([]*entity.Order, error) {
+	var orders []*entity.Order
+	err := r.db.Where("created_at BETWEEN ? AND ?", from, to).Find(&orders).Error
+	if err != nil {
+		return nil, err
+	}
+	return orders, nil
+}
+
 func (r *OrderRepositorySqlite) FindAllOrders() ([]*entity.Order, error) {
 	var orders []*entity.Order
 	err := r.db.Find(&orders).Error

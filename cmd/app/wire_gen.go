@@ -59,7 +59,7 @@ func NewAdvanceHandlers() (*AdvanceHandlers, error) {
 	stationRepositorySqlite := db.NewStationRepositorySqlite(gormDB)
 	orderAdvanceHandlers := advance_handler.NewOrderAdvanceHandlers(orderRepositorySqlite, stationRepositorySqlite, contractRepositorySqlite)
 	stationAdvanceHandlers := advance_handler.NewStationAdvanceHandlers(stationRepositorySqlite, contractRepositorySqlite)
-	auctionAdvanceHandlers := advance_handler.NewAuctionAdvanceHandlers(bidRepositorySqlite, userRepositorySqlite, auctionRepositorySqlite, contractRepositorySqlite)
+	auctionAdvanceHandlers := advance_handler.NewAuctionAdvanceHandlers(bidRepositorySqlite, userRepositorySqlite, orderRepositorySqlite, auctionRepositorySqlite, contractRepositorySqlite)
 	contractAdvanceHandlers := advance_handler.NewContractAdvanceHandlers(contractRepositorySqlite)
 	advanceHandlers := &AdvanceHandlers{
 		BidAdvanceHandlers:      bidAdvanceHandlers,
@@ -87,7 +87,7 @@ func NewAdvanceHandlersMemory() (*AdvanceHandlers, error) {
 	stationRepositorySqlite := db.NewStationRepositorySqlite(gormDB)
 	orderAdvanceHandlers := advance_handler.NewOrderAdvanceHandlers(orderRepositorySqlite, stationRepositorySqlite, contractRepositorySqlite)
 	stationAdvanceHandlers := advance_handler.NewStationAdvanceHandlers(stationRepositorySqlite, contractRepositorySqlite)
-	auctionAdvanceHandlers := advance_handler.NewAuctionAdvanceHandlers(bidRepositorySqlite, userRepositorySqlite, auctionRepositorySqlite, contractRepositorySqlite)
+	auctionAdvanceHandlers := advance_handler.NewAuctionAdvanceHandlers(bidRepositorySqlite, userRepositorySqlite, orderRepositorySqlite, auctionRepositorySqlite, contractRepositorySqlite)
 	contractAdvanceHandlers := advance_handler.NewContractAdvanceHandlers(contractRepositorySqlite)
 	advanceHandlers := &AdvanceHandlers{
 		BidAdvanceHandlers:      bidAdvanceHandlers,

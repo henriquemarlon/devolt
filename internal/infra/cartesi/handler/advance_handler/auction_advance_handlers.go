@@ -8,12 +8,16 @@ import (
 	"github.com/devolthq/devolt/internal/usecase/auction_usecase"
 	"github.com/devolthq/devolt/internal/usecase/bid_usecase"
 	"github.com/devolthq/devolt/internal/usecase/contract_usecase"
+
+	// "github.com/devolthq/devolt/internal/usecase/bid_usecase"
+	// "github.com/devolthq/devolt/internal/usecase/contract_usecase"
 	"github.com/rollmelette/rollmelette"
 )
 
 type AuctionAdvanceHandlers struct {
 	BidRepository      entity.BidRepository
 	UserRepository     entity.UserRepository
+	OrderRepository    entity.OrderRepository
 	AuctionRepository  entity.AuctionRepository
 	ContractRepository entity.ContractRepository
 }
@@ -21,12 +25,14 @@ type AuctionAdvanceHandlers struct {
 func NewAuctionAdvanceHandlers(
 	bidRepository entity.BidRepository,
 	userRepository entity.UserRepository,
+	OrderRepository entity.OrderRepository,
 	auctionRepository entity.AuctionRepository,
 	contractRepository entity.ContractRepository,
 ) *AuctionAdvanceHandlers {
 	return &AuctionAdvanceHandlers{
 		BidRepository:      bidRepository,
 		UserRepository:     userRepository,
+		OrderRepository:    OrderRepository,
 		AuctionRepository:  auctionRepository,
 		ContractRepository: contractRepository,
 	}
@@ -37,7 +43,7 @@ func (h *AuctionAdvanceHandlers) CreateAuctionHandler(env rollmelette.Env, metad
 	if err := json.Unmarshal(payload, &input); err != nil {
 		return err
 	}
-	createAuction := auction_usecase.NewCreateAuctionUseCase(h.AuctionRepository)
+	createAuction := auction_usecase.NewCreateAuctionUseCase(h.OrderRepository, h.AuctionRepository)
 	res, err := createAuction.Execute(input, metadata)
 	if err != nil {
 		return err
@@ -94,7 +100,7 @@ func (h *AuctionAdvanceHandlers) FinishAuctionHandler(env rollmelette.Env, metad
 		return err
 	}
 	for _, bid := range acceptedBids {
-		if err := env.ERC20Transfer(stablecoin.Address.Address, application, bid.Bidder.Address, bid.Price.Int); err != nil {
+		if err := env.ERC20Transfer(stablecoin.Address.Address, application, bid.Bidder.Address, bid.PricePerCredit.Int); err != nil {
 			env.Report([]byte(err.Error()))
 		}
 	}
@@ -107,7 +113,7 @@ func (h *AuctionAdvanceHandlers) FinishAuctionHandler(env rollmelette.Env, metad
 		return err
 	}
 	for _, bid := range partialAcceptedBids {
-		if err := env.ERC20Transfer(stablecoin.Address.Address, application, bid.Bidder.Address, bid.Price.Int); err != nil {
+		if err := env.ERC20Transfer(stablecoin.Address.Address, application, bid.Bidder.Address, bid.PricePerCredit.Int); err != nil {
 			env.Report([]byte(err.Error()))
 		}
 	}

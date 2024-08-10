@@ -28,14 +28,14 @@ func (c *FindBidsByAuctionIdUseCase) Execute(input *FindBidsByAuctionIdInputDTO)
 	output := make(FindBidsByAuctionIdOutputDTO, len(res))
 	for i, bid := range res {
 		output[i] = &FindBidOutputDTO{
-			Id:        bid.Id,
-			AuctionId: bid.AuctionId,
-			Bidder:    bid.Bidder,
-			Credits:   bid.Credits,
-			Price:     bid.Price,
-			State:     string(bid.State),
-			CreatedAt: bid.CreatedAt,
-			UpdatedAt: bid.UpdatedAt,
+			Id:             bid.Id,
+			AuctionId:      bid.AuctionId,
+			Bidder:         bid.Bidder,
+			Credits:        bid.Credits,
+			PricePerCredit: bid.PricePerCredit,
+			State:          string(bid.State),
+			CreatedAt:      bid.CreatedAt,
+			UpdatedAt:      bid.UpdatedAt,
 		}
 	}
 	return &output, nil

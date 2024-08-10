@@ -13,7 +13,7 @@ import (
 func TestNewOrder(t *testing.T) {
 	buyer := common.HexToAddress("0x123")
 	credits := big.NewInt(1000)
-	stationId := "station-1"
+	stationId := uint(1)
 	pricePerCredit := big.NewInt(50)
 	createdAt := time.Now().Unix()
 
@@ -35,7 +35,7 @@ func TestOrder_Validate(t *testing.T) {
 	order := &Order{
 		Buyer:          custom_type.NewAddress(buyer),
 		Credits:        custom_type.NewBigInt(big.NewInt(-1)),
-		StationId:      "station-2",
+		StationId:      2,
 		PricePerCredit: custom_type.NewBigInt(big.NewInt(50)),
 		CreatedAt:      createdAt,
 	}
@@ -59,13 +59,13 @@ func TestOrder_Validate(t *testing.T) {
 
 	// Invalid station id
 	order.Buyer = custom_type.NewAddress(common.HexToAddress("0x123"))
-	order.StationId = ""
+	order.StationId = 0
 	err = order.Validate()
 	assert.NotNil(t, err)
 	assert.Equal(t, ErrInvalidOrder, err)
 
 	// Valid order
-	order.StationId = "station-3"
+	order.StationId = 1
 	err = order.Validate()
 	assert.Nil(t, err)
 }
