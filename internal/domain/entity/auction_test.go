@@ -11,15 +11,15 @@ import (
 
 func TestNewAuction(t *testing.T) {
 	credits := custom_type.NewBigInt(big.NewInt(1000))
-	priceLimit := custom_type.NewBigInt(big.NewInt(500))
+	priceLimitPerCredit := custom_type.NewBigInt(big.NewInt(500))
 	expiresAt := time.Now().Add(24 * time.Hour).Unix()
 	createdAt := time.Now().Unix()
 
-	auction, err := NewAuction(credits, priceLimit, expiresAt, createdAt)
+	auction, err := NewAuction(credits, priceLimitPerCredit, expiresAt, createdAt)
 	assert.Nil(t, err)
 	assert.NotNil(t, auction)
 	assert.Equal(t, credits, auction.Credits)
-	assert.Equal(t, priceLimit, auction.PriceLimit)
+	assert.Equal(t, priceLimitPerCredit, auction.PriceLimitPerCredit)
 	assert.Equal(t, AuctionOngoing, auction.State)
 	assert.NotZero(t, auction.ExpiresAt)
 	assert.NotZero(t, auction.CreatedAt)
@@ -29,10 +29,10 @@ func TestAuction_Validate(t *testing.T) {
 	createdAt := time.Now().Unix()
 	expiresAt := time.Now().Add(-24 * time.Hour).Unix() // Past time
 	auction := &Auction{
-		Credits:    custom_type.NewBigInt(big.NewInt(1000)),
-		PriceLimit: custom_type.NewBigInt(big.NewInt(0)), // Invalid price limit
-		ExpiresAt:  expiresAt,
-		CreatedAt:  createdAt,
+		Credits:             custom_type.NewBigInt(big.NewInt(1000)),
+		PriceLimitPerCredit: custom_type.NewBigInt(big.NewInt(0)), // Invalid price limit
+		ExpiresAt:           expiresAt,
+		CreatedAt:           createdAt,
 	}
 
 	err := auction.Validate()
@@ -40,7 +40,7 @@ func TestAuction_Validate(t *testing.T) {
 	assert.Equal(t, ErrInvalidAuction, err)
 
 	// Correct the validation errors
-	auction.PriceLimit = custom_type.NewBigInt(big.NewInt(500))
+	auction.PriceLimitPerCredit = custom_type.NewBigInt(big.NewInt(500))
 	auction.ExpiresAt = time.Now().Add(24 * time.Hour).Unix()
 	err = auction.Validate()
 	assert.Nil(t, err)
@@ -67,13 +67,13 @@ func TestAuctionExpiration(t *testing.T) {
 	expiresAt := createdAt + 3600 // 1 hour later
 
 	auction := &Auction{
-		Id:         1,
-		Credits:    custom_type.NewBigInt(big.NewInt(1000)),
-		PriceLimit: custom_type.NewBigInt(big.NewInt(500)),
-		State:      AuctionOngoing,
-		ExpiresAt:  expiresAt,
-		CreatedAt:  createdAt,
-		UpdatedAt:  createdAt,
+		Id:                  1,
+		Credits:             custom_type.NewBigInt(big.NewInt(1000)),
+		PriceLimitPerCredit: custom_type.NewBigInt(big.NewInt(500)),
+		State:               AuctionOngoing,
+		ExpiresAt:           expiresAt,
+		CreatedAt:           createdAt,
+		UpdatedAt:           createdAt,
 	}
 
 	err := auction.Validate()

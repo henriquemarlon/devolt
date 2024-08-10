@@ -10,12 +10,12 @@ import (
 )
 
 type OffSetStationConsumptionInputDTO struct {
-	Id                string             `json:"id"`
+	Id                uint               `json:"id"`
 	CreditsToBeOffSet custom_type.BigInt `json:"credits_to_be_offSet"`
 }
 
 type OffSetStationConsumptionOutputDTO struct {
-	Id             string              `json:"id"`
+	Id             uint                `json:"id"`
 	Consumption    custom_type.BigInt  `json:"consumption"`
 	Owner          custom_type.Address `json:"owner"`
 	PricePerCredit custom_type.BigInt  `json:"price_per_credit"`

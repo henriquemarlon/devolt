@@ -5,7 +5,7 @@ import (
 )
 
 type DeleteStationInputDTO struct {
-	Id string `json:"id"`
+	Id uint `json:"id"`
 }
 
 type DeleteStationUseCase struct {

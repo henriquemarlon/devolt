@@ -24,24 +24,24 @@ func (f *FindAuctionByIdUseCase) Execute(input *FindAuctionByIdInputDTO) (*FindA
 	var bids []*FindAuctionOutputSubDTO
 	for _, bid := range res.Bids {
 		bids = append(bids, &FindAuctionOutputSubDTO{
-			Id:        bid.Id,
-			AuctionId: bid.AuctionId,
-			Bidder:    bid.Bidder,
-			Credits:   bid.Credits,
-			Price:     bid.Price,
-			State:     string(bid.State),
-			CreatedAt: bid.CreatedAt,
-			UpdatedAt: bid.UpdatedAt,
+			Id:             bid.Id,
+			AuctionId:      bid.AuctionId,
+			Bidder:         bid.Bidder,
+			Credits:        bid.Credits,
+			PricePerCredit: bid.PricePerCredit,
+			State:          string(bid.State),
+			CreatedAt:      bid.CreatedAt,
+			UpdatedAt:      bid.UpdatedAt,
 		})
 	}
 	return &FindAuctionOutputDTO{
-		Id:         res.Id,
-		Credits:    res.Credits,
-		PriceLimit: res.PriceLimit,
-		State:      string(res.State),
-		Bids:       bids,
-		ExpiresAt:  res.ExpiresAt,
-		CreatedAt:  res.CreatedAt,
-		UpdatedAt:  res.UpdatedAt,
+		Id:                  res.Id,
+		Credits:             res.Credits,
+		PriceLimitPerCredit: res.PriceLimitPerCredit,
+		State:               string(res.State),
+		Bids:                bids,
+		ExpiresAt:           res.ExpiresAt,
+		CreatedAt:           res.CreatedAt,
+		UpdatedAt:           res.UpdatedAt,
 	}, nil
 }

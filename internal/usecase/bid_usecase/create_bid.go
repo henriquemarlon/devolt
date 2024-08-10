@@ -8,17 +8,17 @@ import (
 )
 
 type CreateBidInputDTO struct {
-	Price custom_type.BigInt `json:"price"`
+	Price custom_type.BigInt `json:"price_per_credit"`
 }
 
 type CreateBidOutputDTO struct {
-	Id        uint                `json:"id"`
-	AuctionId uint                `json:"auction_id"`
-	Bidder    custom_type.Address `json:"bidder"`
-	Credits   custom_type.BigInt  `json:"credits"`
-	Price     custom_type.BigInt  `json:"price"`
-	State     string              `json:"state"`
-	CreatedAt int64               `json:"created_at"`
+	Id             uint                `json:"id"`
+	AuctionId      uint                `json:"auction_id"`
+	Bidder         custom_type.Address `json:"bidder"`
+	Credits        custom_type.BigInt  `json:"credits"`
+	PricePerCredit custom_type.BigInt  `json:"price_per_credit"`
+	State          string              `json:"state"`
+	CreatedAt      int64               `json:"created_at"`
 }
 
 type CreateBidUseCase struct {
@@ -47,25 +47,19 @@ func (c *CreateBidUseCase) Execute(input *CreateBidInputDTO, deposit rollmelette
 	if metadata.BlockTimestamp > activeAuction.ExpiresAt {
 		return nil, fmt.Errorf("active auction expired, cannot create bid")
 	}
-
-	bidDeposit, ok := deposit.(*rollmelette.ERC20Deposit)
-	if bidDeposit == nil || !ok {
-		return nil, fmt.Errorf("unsupported deposit type for bid creation: %T", deposit)
-	}
-
 	volt, err := c.ContractRepository.FindContractBySymbol("VOLT")
 	if err != nil {
 		return nil, err
 	}
-	if bidDeposit.Token != volt.Address.Address {
-		return nil, fmt.Errorf("invalid contract address provided for bid creation: %v", bidDeposit.Token)
+	if deposit.(*rollmelette.ERC20Deposit).Token != volt.Address.Address {
+		return nil, fmt.Errorf("invalid contract address provided for bid creation: %v", deposit.(*rollmelette.ERC20Deposit).Token)
 	}
 
-	if input.Price.Cmp(activeAuction.PriceLimit.Int) == 1 {
+	if input.Price.Cmp(activeAuction.PriceLimitPerCredit.Int) == 1 {
 		return nil, fmt.Errorf("bid price exceeds active auction price limit")
 	}
 
-	bid, err := entity.NewBid(activeAuction.Id, custom_type.NewAddress(bidDeposit.Sender), custom_type.NewBigInt(bidDeposit.Amount), input.Price, metadata.BlockTimestamp)
+	bid, err := entity.NewBid(activeAuction.Id, custom_type.NewAddress(deposit.(*rollmelette.ERC20Deposit).Sender), custom_type.NewBigInt(deposit.(*rollmelette.ERC20Deposit).Amount), input.Price, metadata.BlockTimestamp)
 	if err != nil {
 		return nil, err
 	}
@@ -75,12 +69,12 @@ func (c *CreateBidUseCase) Execute(input *CreateBidInputDTO, deposit rollmelette
 	}
 
 	return &CreateBidOutputDTO{
-		Id:        res.Id,
-		AuctionId: res.AuctionId,
-		Bidder:    res.Bidder,
-		Credits:   res.Credits,
-		Price:     res.Price,
-		State:     string(res.State),
-		CreatedAt: res.CreatedAt,
+		Id:             res.Id,
+		AuctionId:      res.AuctionId,
+		Bidder:         res.Bidder,
+		Credits:        res.Credits,
+		PricePerCredit: res.PricePerCredit,
+		State:          string(res.State),
+		CreatedAt:      res.CreatedAt,
 	}, nil
 }

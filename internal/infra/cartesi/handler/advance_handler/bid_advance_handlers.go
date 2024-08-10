@@ -27,30 +27,35 @@ func NewBidAdvanceHandlers(bidRepository entity.BidRepository, userRepository en
 }
 
 func (h *BidAdvanceHandlers) CreateBidHandler(env rollmelette.Env, metadata rollmelette.Metadata, deposit rollmelette.Deposit, payload []byte) error {
-	var input bid_usecase.CreateBidInputDTO
-	if err := json.Unmarshal(payload, &input); err != nil {
-		return err
-	}
-	createBid := bid_usecase.NewCreateBidUseCase(h.BidRepository, h.ContractRepository, h.AuctionRepository)
-	res, err := createBid.Execute(&input, deposit, metadata)
-	if err != nil {
-		return err
-	}
+	switch deposit := deposit.(type) {
+	case *rollmelette.ERC20Deposit:
+		var input bid_usecase.CreateBidInputDTO
+		if err := json.Unmarshal(payload, &input); err != nil {
+			return err
+		}
+		createBid := bid_usecase.NewCreateBidUseCase(h.BidRepository, h.ContractRepository, h.AuctionRepository)
+		res, err := createBid.Execute(&input, deposit, metadata)
+		if err != nil {
+			return err
+		}
 
-	findContractBySymbol := contract_usecase.NewFindContractBySymbolUseCase(h.ContractRepository)
-	volt, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "VOLT"})
-	if err != nil {
-		return err
-	}
+		findContractBySymbol := contract_usecase.NewFindContractBySymbolUseCase(h.ContractRepository)
+		volt, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "VOLT"})
+		if err != nil {
+			return err
+		}
 
-	application, isDefined := env.AppAddress()
-	if !isDefined {
-		return fmt.Errorf("no application address defined yet, contact the DeVolt support")
-	}
+		application, isDefined := env.AppAddress()
+		if !isDefined {
+			return fmt.Errorf("no application address defined yet, contact the DeVolt support")
+		}
 
-	if err := env.ERC20Transfer(volt.Address.Address, res.Bidder.Address, application, res.Credits.Int); err != nil {
-		return err
+		if err := env.ERC20Transfer(volt.Address.Address, res.Bidder.Address, application, res.Credits.Int); err != nil {
+			return err
+		}
+		env.Notice([]byte(fmt.Sprintf("created bid with id: %v and amount of credits: %v and price per credit: %v", res.Id, res.Credits, res.PricePerCredit)))
+		return nil
+	default:
+		return fmt.Errorf("unsupported deposit type")
 	}
-	env.Notice([]byte(fmt.Sprintf("created bid with id: %v and amount of credits: %v and price: %v", res.Id, res.Credits, res.Price)))
-	return nil
 }

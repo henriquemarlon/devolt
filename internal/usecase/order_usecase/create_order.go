@@ -10,14 +10,14 @@ import (
 )
 
 type CreateOrderInputDTO struct {
-	StationId string `json:"station_id"`
+	StationId uint `json:"station_id"`
 }
 
 type CreateOrderOutputDTO struct {
 	Id             uint                `json:"id"`
 	Buyer          custom_type.Address `json:"buyer"`
 	Credits        custom_type.BigInt  `json:"credits"`
-	StationId      string              `json:"station_id"`
+	StationId      uint                `json:"station_id"`
 	StationOwner   custom_type.Address `json:"station_address"`
 	PricePerCredit custom_type.BigInt  `json:"price_per_credit"`
 	CreatedAt      int64               `json:"created_at"`
@@ -38,17 +38,12 @@ func NewCreateOrderUseCase(orderRepository entity.OrderRepository, stationReposi
 }
 
 func (u *CreateOrderUseCase) Execute(input *CreateOrderInputDTO, deposit rollmelette.Deposit, metadata rollmelette.Metadata) (*CreateOrderOutputDTO, error) {
-	orderDeposit, ok := deposit.(*rollmelette.ERC20Deposit)
-	if orderDeposit == nil || !ok {
-		return nil, fmt.Errorf("unsupported deposit type for bid creation: %T", deposit)
-	}
-
 	stablecoin, err := u.ContractRepository.FindContractBySymbol("STABLECOIN")
 	if err != nil {
 		return nil, err
 	}
-	if stablecoin.Address.Address != orderDeposit.Token {
-		return nil, fmt.Errorf("invalid contract address provided for order creation: %v", orderDeposit.Token)
+	if stablecoin.Address.Address != deposit.(*rollmelette.ERC20Deposit).Token {
+		return nil, fmt.Errorf("invalid contract address provided for order creation: %v", deposit.(*rollmelette.ERC20Deposit).Token)
 	}
 
 	station, err := u.StationRepository.FindStationById(input.StationId)
@@ -56,9 +51,9 @@ func (u *CreateOrderUseCase) Execute(input *CreateOrderInputDTO, deposit rollmel
 		return nil, err
 	}
 
-	orderConsumption := new(big.Int).Div(orderDeposit.Amount, station.PricePerCredit.Int)
+	orderConsumption := new(big.Int).Div(deposit.(*rollmelette.ERC20Deposit).Amount, station.PricePerCredit.Int)
 
-	order, err := entity.NewOrder(custom_type.NewAddress(orderDeposit.Sender), custom_type.NewBigInt(orderConsumption), input.StationId, station.PricePerCredit.Int, metadata.BlockTimestamp)
+	order, err := entity.NewOrder(custom_type.NewAddress(deposit.(*rollmelette.ERC20Deposit).Sender), custom_type.NewBigInt(orderConsumption), input.StationId, station.PricePerCredit.Int, metadata.BlockTimestamp)
 	if err != nil {
 		return nil, err
 	}
@@ -66,9 +61,25 @@ func (u *CreateOrderUseCase) Execute(input *CreateOrderInputDTO, deposit rollmel
 	if err != nil {
 		return nil, err
 	}
+
+	station, err = u.StationRepository.FindStationById(input.StationId)
+	if err != nil {
+		return nil, err
+	}
+
+	consumption := custom_type.NewBigInt(new(big.Int).Add(station.Consumption.Int, orderConsumption))
+	_, err = u.StationRepository.UpdateStation(&entity.Station{
+		Id:          input.StationId,
+		Consumption: consumption,
+		UpdatedAt:   metadata.BlockTimestamp,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	return &CreateOrderOutputDTO{
 		Id:             order.Id,
-		Buyer:          custom_type.NewAddress(orderDeposit.Sender),
+		Buyer:          custom_type.NewAddress(deposit.(*rollmelette.ERC20Deposit).Sender),
 		Credits:        order.Credits,
 		StationId:      order.StationId,
 		StationOwner:   station.Owner,

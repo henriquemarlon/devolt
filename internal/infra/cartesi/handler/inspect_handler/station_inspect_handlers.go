@@ -4,12 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
-
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/internal/usecase/station_usecase"
 	"github.com/devolthq/devolt/pkg/router"
 	"github.com/rollmelette/rollmelette"
+	"strconv"
 )
 
 type StationInspectHandlers struct {
@@ -23,12 +22,16 @@ func NewStationInspectHandlers(stationRepository entity.StationRepository) *Stat
 }
 
 func (h *StationInspectHandlers) FindStationByIdHandler(env rollmelette.EnvInspector, ctx context.Context) error {
+	id, err := strconv.Atoi(router.PathValue(ctx, "id"))
+	if err != nil {
+		return fmt.Errorf("failed to parse id into int: %v", router.PathValue(ctx, "id"))
+	}
 	findStationById := station_usecase.NewFindStationByIdUseCase(h.StationRepository)
 	res, err := findStationById.Execute(&station_usecase.FindStationByIdInputDTO{
-		Id: strings.ToLower(router.PathValue(ctx, "id")),
+		Id: uint(id),
 	})
 	if err != nil {
-		return fmt.Errorf("failed to find station by id: %w from id: %s", err, strings.ToLower(router.PathValue(ctx, "id")))
+		return err
 	}
 	station, err := json.Marshal(res)
 	if err != nil {

@@ -10,7 +10,7 @@ import (
 )
 
 type UpdateStationInputDTO struct {
-	Id             string         `json:"id"`
+	Id             uint           `json:"id"`
 	Consumption    *big.Int       `json:"consumption"`
 	Owner          common.Address `json:"owner"`
 	PricePerCredit *big.Int       `json:"price_per_credit"`
@@ -20,7 +20,7 @@ type UpdateStationInputDTO struct {
 }
 
 type UpdateStationOutputDTO struct {
-	Id             string              `json:"id"`
+	Id             uint                `json:"id"`
 	Consumption    custom_type.BigInt  `json:"consumption"`
 	Owner          custom_type.Address `json:"owner"`
 	PricePerCredit custom_type.BigInt  `json:"price_per_credit"`

@@ -15,7 +15,7 @@ import (
 )
 
 func SetupSQlite() (*gorm.DB, error) {
-	newLogger := logger.New(
+	logger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
 			SlowThreshold: time.Second, // Slow SQL threshold
@@ -25,7 +25,7 @@ func SetupSQlite() (*gorm.DB, error) {
 	)
 
 	db, err := gorm.Open(sqlite.Open("devolt.db"), &gorm.Config{
-		Logger: newLogger,
+		Logger: logger,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %v", err)
@@ -41,7 +41,7 @@ func SetupSQlite() (*gorm.DB, error) {
 
 	db.Create(&entity.User{
 		Role:      "admin",
-		Address:   custom_type.NewAddress(common.HexToAddress("0x0142f501EE21f4446009C3505c51d0043feC5c68")),
+		Address:   custom_type.NewAddress(common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")),
 		CreatedAt: 0,
 	})
 
@@ -52,7 +52,7 @@ func SetupSQlite() (*gorm.DB, error) {
 }
 
 func SetupSQliteMemory() (*gorm.DB, error) {
-	newLogger := logger.New(
+	logger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
 			SlowThreshold: time.Second, // Slow SQL threshold
@@ -62,7 +62,7 @@ func SetupSQliteMemory() (*gorm.DB, error) {
 	)
 
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{
-		Logger: newLogger,
+		Logger: logger,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %v", err)

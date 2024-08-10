@@ -24,13 +24,13 @@ func (c *FindBidByIdUseCase) Execute(input *FindBidByIdInputDTO) (*FindBidOutput
 		return nil, err
 	}
 	return &FindBidOutputDTO{
-		Id:        res.Id,
-		AuctionId: res.AuctionId,
-		Bidder:    res.Bidder,
-		Credits:   res.Credits,
-		Price:     res.Price,
-		State:     string(res.State),
-		CreatedAt: res.CreatedAt,
-		UpdatedAt: res.UpdatedAt,
+		Id:             res.Id,
+		AuctionId:      res.AuctionId,
+		Bidder:         res.Bidder,
+		Credits:        res.Credits,
+		PricePerCredit: res.PricePerCredit,
+		State:          string(res.State),
+		CreatedAt:      res.CreatedAt,
+		UpdatedAt:      res.UpdatedAt,
 	}, nil
 }

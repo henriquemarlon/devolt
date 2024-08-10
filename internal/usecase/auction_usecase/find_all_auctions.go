@@ -24,25 +24,25 @@ func (f *FindAllAuctionsUseCase) Execute() (*FindAllAuctionsOutputDTO, error) {
 		bids := make([]*FindAuctionOutputSubDTO, len(auction.Bids))
 		for j, bid := range auction.Bids {
 			bids[j] = &FindAuctionOutputSubDTO{
-				Id:        bid.Id,
-				AuctionId: bid.AuctionId,
-				Bidder:    bid.Bidder,
-				Credits:   bid.Credits,
-				Price:     bid.Price,
-				State:     string(bid.State),
-				CreatedAt: bid.CreatedAt,
-				UpdatedAt: bid.UpdatedAt,
+				Id:             bid.Id,
+				AuctionId:      bid.AuctionId,
+				Bidder:         bid.Bidder,
+				Credits:        bid.Credits,
+				PricePerCredit: bid.PricePerCredit,
+				State:          string(bid.State),
+				CreatedAt:      bid.CreatedAt,
+				UpdatedAt:      bid.UpdatedAt,
 			}
 		}
 		output[i] = &FindAuctionOutputDTO{
-			Id:         auction.Id,
-			Credits:    auction.Credits,
-			PriceLimit: auction.PriceLimit,
-			State:      string(auction.State),
-			Bids:       bids,
-			ExpiresAt:  auction.ExpiresAt,
-			CreatedAt:  auction.CreatedAt,
-			UpdatedAt:  auction.UpdatedAt,
+			Id:                  auction.Id,
+			Credits:             auction.Credits,
+			PriceLimitPerCredit: auction.PriceLimitPerCredit,
+			State:               string(auction.State),
+			Bids:                bids,
+			ExpiresAt:           auction.ExpiresAt,
+			CreatedAt:           auction.CreatedAt,
+			UpdatedAt:           auction.UpdatedAt,
 		}
 	}
 	return &output, nil
