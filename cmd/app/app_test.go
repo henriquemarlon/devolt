@@ -24,13 +24,13 @@ type AppSuite struct {
 }
 
 func (s *AppSuite) SetupTest() {
-	app := newTestApp()
+	app := NewApp()
 	s.tester = rollmelette.NewTester(app)
 }
 
 //==> Unit Tests <==////
 
-//////////////// User ///////////////////
+////////////// User ///////////////////
 
 func (s *AppSuite) TestItCreateUser() {
 	sender := common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
@@ -1557,9 +1557,9 @@ func (s *AppSuite) TestItFinishAuctionWithPartialSelling() {
 		bidCounter++
 	}
 
-	placeBid(common.HexToAddress("0x0000000000000000000000000000000000000002"), "9", big.NewInt(2000))
-	placeBid(common.HexToAddress("0x0000000000000000000000000000000000000003"), "6", big.NewInt(3000))
-	placeBid(common.HexToAddress("0x0000000000000000000000000000000000000004"), "7", big.NewInt(2000))
+	placeBid(common.HexToAddress("0x0000000000000000000000000000000000000002"), "9", big.NewInt(200))
+	placeBid(common.HexToAddress("0x0000000000000000000000000000000000000003"), "6", big.NewInt(500))
+	placeBid(common.HexToAddress("0x0000000000000000000000000000000000000004"), "7", big.NewInt(200))
 
 	time.Sleep(5 * time.Second)
 
