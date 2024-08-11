@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/devolthq/devolt/pkg/router"
+	"github.com/Mugen-Builders/devolt/pkg/router"
 	"log"
 )
 

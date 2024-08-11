@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"github.com/devolthq/devolt/pkg/custom_type"
+	"github.com/Mugen-Builders/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 	"math/big"

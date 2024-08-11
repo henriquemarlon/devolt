@@ -71,7 +71,7 @@ const config = {
       },
       items: [
         {
-          to: "https://github.com/devolthq/devolt",
+          to: "https://github.com/Mugen-Builders/devolt",
           position: "right",
           className: "header-github-link",
           "aria-label": "GitHub repository",

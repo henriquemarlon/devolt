@@ -1,7 +1,7 @@
 package auction_usecase
 
 import (
-	"github.com/devolthq/devolt/pkg/custom_type"
+	"github.com/Mugen-Builders/devolt/pkg/custom_type"
 )
 
 type FindAuctionOutputDTO struct {

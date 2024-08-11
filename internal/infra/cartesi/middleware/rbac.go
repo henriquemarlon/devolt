@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/devolthq/devolt/internal/usecase/user_usecase"
-	"github.com/devolthq/devolt/pkg/custom_type"
-	"github.com/devolthq/devolt/pkg/router"
+	"github.com/Mugen-Builders/devolt/internal/domain/entity"
+	"github.com/Mugen-Builders/devolt/internal/usecase/user_usecase"
+	"github.com/Mugen-Builders/devolt/pkg/custom_type"
+	"github.com/Mugen-Builders/devolt/pkg/router"
 	"github.com/rollmelette/rollmelette"
 )
 

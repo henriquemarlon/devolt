@@ -1,6 +1,6 @@
 package contract_usecase
 
-import "github.com/devolthq/devolt/internal/domain/entity"
+import "github.com/Mugen-Builders/devolt/internal/domain/entity"
 
 type DeleteContractInputDTO struct {
 	Symbol string

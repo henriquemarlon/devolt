@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/devolthq/devolt/internal/usecase/bid_usecase"
-	"github.com/devolthq/devolt/pkg/router"
+	"github.com/Mugen-Builders/devolt/internal/domain/entity"
+	"github.com/Mugen-Builders/devolt/internal/usecase/bid_usecase"
+	"github.com/Mugen-Builders/devolt/pkg/router"
 	"github.com/rollmelette/rollmelette"
 )
 

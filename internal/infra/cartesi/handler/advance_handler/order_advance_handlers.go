@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/devolthq/devolt/internal/usecase/contract_usecase"
-	"github.com/devolthq/devolt/internal/usecase/order_usecase"
+	"github.com/Mugen-Builders/devolt/internal/domain/entity"
+	"github.com/Mugen-Builders/devolt/internal/usecase/contract_usecase"
+	"github.com/Mugen-Builders/devolt/internal/usecase/order_usecase"
 	"github.com/rollmelette/rollmelette"
 )
 

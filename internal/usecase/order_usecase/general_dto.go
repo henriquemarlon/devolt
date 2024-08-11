@@ -1,6 +1,6 @@
 package order_usecase
 
-import "github.com/devolthq/devolt/pkg/custom_type"
+import "github.com/Mugen-Builders/devolt/pkg/custom_type"
 
 type FindOrderOutputDTO struct {
 	Id             uint                `json:"id"`

@@ -3,7 +3,7 @@ package db
 import (
 	"fmt"
 
-	"github.com/devolthq/devolt/internal/domain/entity"
+	"github.com/Mugen-Builders/devolt/internal/domain/entity"
 	"gorm.io/gorm"
 )
 

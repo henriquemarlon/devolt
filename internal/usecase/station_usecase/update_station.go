@@ -3,8 +3,8 @@ package station_usecase
 import (
 	"math/big"
 
-	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/devolthq/devolt/pkg/custom_type"
+	"github.com/Mugen-Builders/devolt/internal/domain/entity"
+	"github.com/Mugen-Builders/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 )

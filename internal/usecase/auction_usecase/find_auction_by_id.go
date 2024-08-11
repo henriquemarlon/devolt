@@ -1,7 +1,7 @@
 package auction_usecase
 
 import (
-	"github.com/devolthq/devolt/internal/domain/entity"
+	"github.com/Mugen-Builders/devolt/internal/domain/entity"
 )
 
 type FindAuctionByIdInputDTO struct {

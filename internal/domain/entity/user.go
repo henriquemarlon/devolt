@@ -3,7 +3,7 @@ package entity
 import (
 	"errors"
 
-	"github.com/devolthq/devolt/pkg/custom_type"
+	"github.com/Mugen-Builders/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
 )
 

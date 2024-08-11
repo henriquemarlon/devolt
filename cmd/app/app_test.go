@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/devolthq/devolt/pkg/router"
+	"github.com/Mugen-Builders/devolt/pkg/router"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 	"github.com/stretchr/testify/suite"

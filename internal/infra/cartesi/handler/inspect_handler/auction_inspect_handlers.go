@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/devolthq/devolt/internal/usecase/auction_usecase"
-	"github.com/devolthq/devolt/pkg/router"
+	"github.com/Mugen-Builders/devolt/internal/domain/entity"
+	"github.com/Mugen-Builders/devolt/internal/usecase/auction_usecase"
+	"github.com/Mugen-Builders/devolt/pkg/router"
 	"github.com/rollmelette/rollmelette"
 	"strconv"
 )

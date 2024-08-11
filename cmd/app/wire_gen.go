@@ -7,12 +7,12 @@
 package main
 
 import (
-	"github.com/devolthq/devolt/configs"
-	"github.com/devolthq/devolt/internal/domain/entity"
-	"github.com/devolthq/devolt/internal/infra/cartesi/handler/advance_handler"
-	"github.com/devolthq/devolt/internal/infra/cartesi/handler/inspect_handler"
-	"github.com/devolthq/devolt/internal/infra/cartesi/middleware"
-	"github.com/devolthq/devolt/internal/infra/repository"
+	"github.com/Mugen-Builders/devolt/configs"
+	"github.com/Mugen-Builders/devolt/internal/domain/entity"
+	"github.com/Mugen-Builders/devolt/internal/infra/cartesi/handler/advance_handler"
+	"github.com/Mugen-Builders/devolt/internal/infra/cartesi/handler/inspect_handler"
+	"github.com/Mugen-Builders/devolt/internal/infra/cartesi/middleware"
+	"github.com/Mugen-Builders/devolt/internal/infra/repository"
 	"github.com/google/wire"
 )
 
