@@ -12,7 +12,7 @@ import (
 	"github.com/devolthq/devolt/internal/infra/cartesi/handler/advance_handler"
 	"github.com/devolthq/devolt/internal/infra/cartesi/handler/inspect_handler"
 	"github.com/devolthq/devolt/internal/infra/cartesi/middleware"
-	"github.com/devolthq/devolt/internal/infra/db"
+	"github.com/devolthq/devolt/internal/infra/repository"
 	"github.com/google/wire"
 )
 
