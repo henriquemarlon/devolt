@@ -3,10 +3,9 @@ package order_usecase
 import (
 	"fmt"
 	"math/big"
-
+	"github.com/rollmelette/rollmelette"
 	"github.com/devolthq/devolt/internal/domain/entity"
 	"github.com/devolthq/devolt/pkg/custom_type"
-	"github.com/rollmelette/rollmelette"
 )
 
 type CreateOrderInputDTO struct {
