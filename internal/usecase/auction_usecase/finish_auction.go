@@ -63,7 +63,12 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 		if requireCreditsRemaining.Cmp(big.NewInt(0)) == 0 {
 			_, err := u.BidRepository.UpdateBid(&entity.Bid{
 				Id:        bid.Id,
+				AuctionId: bid.AuctionId,
+				Bidder:    bid.Bidder,
+				Credits:   bid.Credits,
+				PricePerCredit: bid.PricePerCredit,
 				State:     "rejected",
+				CreatedAt: bid.CreatedAt,
 				UpdatedAt: metadata.BlockTimestamp,
 			})
 			if err != nil {
@@ -75,7 +80,12 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 		if requireCreditsRemaining.Cmp(bid.Credits.Int) >= 0 {
 			_, err := u.BidRepository.UpdateBid(&entity.Bid{
 				Id:        bid.Id,
+				AuctionId: bid.AuctionId,
+				Bidder:    bid.Bidder,
+				Credits:   bid.Credits,
+				PricePerCredit: bid.PricePerCredit,
 				State:     "accepted",
+				CreatedAt: bid.CreatedAt,
 				UpdatedAt: metadata.BlockTimestamp,
 			})
 			if err != nil {
