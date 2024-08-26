@@ -50,26 +50,20 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 	}
 
 	if len(bids) == 0 {
-		log.Println("no bids placed for active auction, finishing auction without bids")
+		log.Println("No bids placed for active auction, finishing auction without bids")
 	}
 
 	sort.Slice(bids, func(i, j int) bool {
 		return bids[i].PricePerCredit.Cmp(bids[j].PricePerCredit.Int) < 0
 	})
 
-	requiredCreditsRemaining := activeAuction.RequiredCredits
+	requiredCreditsRemaining := new(big.Int).Set(activeAuction.RequiredCredits.Int)
 
 	for _, bid := range bids {
-		if requiredCreditsRemaining.Cmp(big.NewInt(0)) == 0 {
-			_, err := u.BidRepository.UpdateBid(&entity.Bid{
-				Id:             bid.Id,
-				AuctionId:      bid.AuctionId,
-				Bidder:         bid.Bidder,
-				Credits:        bid.Credits,
-				PricePerCredit: bid.PricePerCredit,
-				State:          "rejected",
-				UpdatedAt:      metadata.BlockTimestamp,
-			})
+		if requiredCreditsRemaining.Sign() == 0 {
+			bid.State = "rejected"
+			bid.UpdatedAt = metadata.BlockTimestamp
+			_, err := u.BidRepository.UpdateBid(bid)
 			if err != nil {
 				return nil, err
 			}
@@ -77,30 +71,20 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 		}
 
 		if requiredCreditsRemaining.Cmp(bid.Credits.Int) >= 0 {
-			_, err := u.BidRepository.UpdateBid(&entity.Bid{
-				Id:             bid.Id,
-				AuctionId:      bid.AuctionId,
-				Bidder:         bid.Bidder,
-				Credits:        bid.Credits,
-				PricePerCredit: bid.PricePerCredit,
-				State:          "accepted",
-				UpdatedAt:      metadata.BlockTimestamp,
-			})
+			bid.State = "accepted"
+			bid.UpdatedAt = metadata.BlockTimestamp
+			_, err := u.BidRepository.UpdateBid(bid)
 			if err != nil {
 				return nil, err
 			}
-			requiredCreditsRemaining.Sub(requiredCreditsRemaining.Int, bid.Credits.Int)
-			continue
-		}
-
-		if bid.Credits.Int.Cmp(requiredCreditsRemaining.Int) == 1 {
-			remainingCredits := new(big.Int).Set(requiredCreditsRemaining.Int)
-
-			// Create the partially accepted bid
-			res, err := u.BidRepository.CreateBid(&entity.Bid{
+			requiredCreditsRemaining.Sub(requiredCreditsRemaining, bid.Credits.Int)
+		} else {
+			// Partially accept the bid
+			partiallyAcceptedCredits := new(big.Int).Set(requiredCreditsRemaining)
+			_, err := u.BidRepository.CreateBid(&entity.Bid{
 				AuctionId:      bid.AuctionId,
 				Bidder:         bid.Bidder,
-				Credits:        custom_type.NewBigInt(remainingCredits),
+				Credits:        custom_type.NewBigInt(partiallyAcceptedCredits),
 				PricePerCredit: bid.PricePerCredit,
 				State:          "partially_accepted",
 				CreatedAt:      metadata.BlockTimestamp,
@@ -109,11 +93,12 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 				return nil, err
 			}
 
-			// Create the rejected part of the bid
+			// Reject the remaining credits
+			rejectedCredits := new(big.Int).Sub(bid.Credits.Int, partiallyAcceptedCredits)
 			_, err = u.BidRepository.CreateBid(&entity.Bid{
 				AuctionId:      bid.AuctionId,
 				Bidder:         bid.Bidder,
-				Credits:        custom_type.NewBigInt(new(big.Int).Sub(bid.Credits.Int, remainingCredits)),
+				Credits:        custom_type.NewBigInt(rejectedCredits),
 				PricePerCredit: bid.PricePerCredit,
 				State:          "rejected",
 				CreatedAt:      metadata.BlockTimestamp,
@@ -122,50 +107,28 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 				return nil, err
 			}
 
-			requiredCreditsRemaining.Sub(requiredCreditsRemaining.Int, res.Credits.Int)
-
-			// Delete the original bid
+			// Delete original bid
 			err = u.BidRepository.DeleteBid(bid.Id)
 			if err != nil {
 				return nil, err
 			}
-			continue
+
+			requiredCreditsRemaining.SetInt64(0)
 		}
 	}
 
-	if requiredCreditsRemaining.Cmp(big.NewInt(0)) > 0 {
-		res, err := u.AuctionRepository.UpdateAuction(&entity.Auction{
-			Id:                  activeAuction.Id,
-			PriceLimitPerCredit: activeAuction.PriceLimitPerCredit,
-			State:               "partially_awarded",
-			ExpiresAt:           activeAuction.ExpiresAt,
-			UpdatedAt:           metadata.BlockTimestamp,
-		})
-		if err != nil {
-			return nil, err
-		}
-		return &FinishAuctionOutputDTO{
-			Id:                  res.Id,
-			RequiredCredits:     res.RequiredCredits,
-			PriceLimitPerCredit: res.PriceLimitPerCredit,
-			State:               string(res.State),
-			Bids:                bids,
-			ExpiresAt:           res.ExpiresAt,
-			CreatedAt:           res.CreatedAt,
-			UpdatedAt:           res.UpdatedAt,
-		}, nil
+	state := "finished"
+	if requiredCreditsRemaining.Sign() > 0 {
+		state = "partially_awarded"
 	}
 
-	res, err := u.AuctionRepository.UpdateAuction(&entity.Auction{
-		Id:                  activeAuction.Id,
-		PriceLimitPerCredit: activeAuction.PriceLimitPerCredit,
-		State:               "finished",
-		ExpiresAt:           activeAuction.ExpiresAt,
-		UpdatedAt:           metadata.BlockTimestamp,
-	})
+	activeAuction.State = entity.AuctionState(state)
+	activeAuction.UpdatedAt = metadata.BlockTimestamp
+	res, err := u.AuctionRepository.UpdateAuction(activeAuction)
 	if err != nil {
 		return nil, err
 	}
+
 	return &FinishAuctionOutputDTO{
 		Id:                  res.Id,
 		RequiredCredits:     res.RequiredCredits,
