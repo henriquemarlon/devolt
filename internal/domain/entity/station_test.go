@@ -76,8 +76,15 @@ func TestStation_Validate(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.Equal(t, ErrInvalidStation, err)
 
-	// Valid station
+	// Invalid Consumption
 	station.CreatedAt = createdAt
+	station.Consumption.Int = nil
+	err = station.Validate()
+	assert.NotNil(t, err)
+	assert.Equal(t, ErrInvalidStation, err)
+
+	// Valid station
+	station.Consumption = custom_type.NewBigInt(big.NewInt(100))
 	err = station.Validate()
 	assert.Nil(t, err)
 }

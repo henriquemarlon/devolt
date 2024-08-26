@@ -47,6 +47,7 @@ func (u *CreateStationUseCase) Execute(input *CreateStationInputDTO, metadata ro
 	return &CreateStationOutputDTO{
 		Id:             res.Id,
 		Owner:          res.Owner,
+		Consumption:    res.Consumption,
 		PricePerCredit: res.PricePerCredit,
 		State:          string(res.State),
 		Latitude:       res.Latitude,

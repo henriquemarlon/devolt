@@ -27,7 +27,7 @@ type AppSuite struct {
 }
 
 func (s *AppSuite) SetupTest() {
-	app := NewApp()
+	app := NewAppMemory()
 	s.tester = rollmelette.NewTester(app)
 }
 
@@ -342,7 +342,7 @@ func (s *AppSuite) TestItUpdateNonExistentContract() {
 func (s *AppSuite) TestItCreateStation() {
 	admin := common.HexToAddress("0x0142f501EE21f4446009C3505c51d0043feC5c68")
 	input := []byte(`{"path":"createStation","payload":{"owner":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","consumption":100,"price_per_credit":50,"latitude":40.7128,"longitude":-74.0060}}`)
-	expectedOutput := fmt.Sprintf(`created station - {"id":1,"owner":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","state":"active","price_per_credit":"50","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, time.Now().Unix())
+	expectedOutput := fmt.Sprintf(`created station - {"id":1,"owner":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","state":"active","consumption":"100","price_per_credit":"50","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, time.Now().Unix())
 	result := s.tester.Advance(admin, input)
 	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
@@ -368,7 +368,7 @@ func (s *AppSuite) TestItUpdateStation() {
 	admin := common.HexToAddress("0x0142f501EE21f4446009C3505c51d0043feC5c68")
 
 	createStationInput := []byte(`{"path":"createStation","payload":{"owner":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","consumption":100,"price_per_credit":50,"latitude":40.7128,"longitude":-74.0060}}`)
-	expectedOutput := fmt.Sprintf(`created station - {"id":1,"owner":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","state":"active","price_per_credit":"50","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, time.Now().Unix())
+	expectedOutput := fmt.Sprintf(`created station - {"id":1,"owner":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","state":"active","consumption":"100","price_per_credit":"50","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, time.Now().Unix())
 	result := s.tester.Advance(admin, createStationInput)
 	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
@@ -400,7 +400,7 @@ func (s *AppSuite) TestItDeleteStation() {
 	admin := common.HexToAddress("0x0142f501EE21f4446009C3505c51d0043feC5c68")
 
 	createStationInput := []byte(`{"path":"createStation","payload":{"owner":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","consumption":100,"price_per_credit":50,"latitude":40.7128,"longitude":-74.0060}}`)
-	expectedOutput := fmt.Sprintf(`created station - {"id":1,"owner":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","state":"active","price_per_credit":"50","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, time.Now().Unix())
+	expectedOutput := fmt.Sprintf(`created station - {"id":1,"owner":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","state":"active","consumption":"100","price_per_credit":"50","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, time.Now().Unix())
 	result := s.tester.Advance(admin, createStationInput)
 	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
@@ -444,7 +444,7 @@ func (s *AppSuite) TestItCreateOrder() {
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 
 	createStationInput := []byte(`{"path":"createStation","payload":{"owner":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","consumption":100,"price_per_credit":50,"latitude":40.7128,"longitude":-74.0060}}`)
-	expectedOutput = fmt.Sprintf(`created station - {"id":1,"owner":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","state":"active","price_per_credit":"50","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, time.Now().Unix())
+	expectedOutput = fmt.Sprintf(`created station - {"id":1,"owner":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","state":"active","consumption":"100","price_per_credit":"50","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, time.Now().Unix())
 	result = s.tester.Advance(admin, createStationInput)
 	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
@@ -469,7 +469,7 @@ func (s *AppSuite) TestItCreateOrderWithInvalidData() {
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 
 	createStationInput := []byte(`{"path":"createStation","payload":{"owner":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","consumption":100,"price_per_credit":50,"latitude":40.7128,"longitude":-74.0060}}`)
-	expectedOutput = fmt.Sprintf(`created station - {"id":1,"owner":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","state":"active","price_per_credit":"50","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, time.Now().Unix())
+	expectedOutput = fmt.Sprintf(`created station - {"id":1,"owner":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","state":"active","consumption":"100","price_per_credit":"50","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, time.Now().Unix())
 	result = s.tester.Advance(admin, createStationInput)
 	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
@@ -508,13 +508,13 @@ func (s *AppSuite) TestItCreateAuctionAndFinishAuctionWithoutPartialSelling() {
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 
 	createStationInput := []byte(fmt.Sprintf(`{"path":"createStation","payload":{"owner":"%v","consumption":100,"price_per_credit":50,"latitude":40.7128,"longitude":-74.0060}}`, stationOwner01))
-	expectedOutput = fmt.Sprintf(`created station - {"id":1,"owner":"%v","state":"active","price_per_credit":"50","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, stationOwner01, time.Now().Unix())
+	expectedOutput = fmt.Sprintf(`created station - {"id":1,"owner":"%v","state":"active","consumption":"100","price_per_credit":"50","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, stationOwner01, time.Now().Unix())
 	result = s.tester.Advance(admin, createStationInput)
 	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 
 	createStationInput = []byte(fmt.Sprintf(`{"path":"createStation","payload":{"owner":"%v","consumption":100,"price_per_credit":10,"latitude":40.7128,"longitude":-74.0060}}`, stationOwner02))
-	expectedOutput = fmt.Sprintf(`created station - {"id":2,"owner":"%v","state":"active","price_per_credit":"10","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, stationOwner02, time.Now().Unix())
+	expectedOutput = fmt.Sprintf(`created station - {"id":2,"owner":"%v","state":"active","consumption":"100","price_per_credit":"10","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, stationOwner02, time.Now().Unix())
 	result = s.tester.Advance(admin, createStationInput)
 	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
@@ -627,13 +627,13 @@ func (s *AppSuite) TestItCreateAuctionAndFinishAuctionWithPartialSelling() {
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 
 	createStationInput := []byte(fmt.Sprintf(`{"path":"createStation","payload":{"owner":"%v","consumption":100,"price_per_credit":50,"latitude":40.7128,"longitude":-74.0060}}`, stationOwner01))
-	expectedOutput = fmt.Sprintf(`created station - {"id":1,"owner":"%v","state":"active","price_per_credit":"50","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, stationOwner01, time.Now().Unix())
+	expectedOutput = fmt.Sprintf(`created station - {"id":1,"owner":"%v","state":"active","consumption":"100","price_per_credit":"50","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, stationOwner01, time.Now().Unix())
 	result = s.tester.Advance(admin, createStationInput)
 	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))
 
 	createStationInput = []byte(fmt.Sprintf(`{"path":"createStation","payload":{"owner":"%v","consumption":100,"price_per_credit":10,"latitude":40.7128,"longitude":-74.0060}}`, stationOwner02))
-	expectedOutput = fmt.Sprintf(`created station - {"id":2,"owner":"%v","state":"active","price_per_credit":"10","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, stationOwner02, time.Now().Unix())
+	expectedOutput = fmt.Sprintf(`created station - {"id":2,"owner":"%v","state":"active","consumption":"100","price_per_credit":"10","latitude":40.7128,"longitude":-74.006,"created_at":%d}`, stationOwner02, time.Now().Unix())
 	result = s.tester.Advance(admin, createStationInput)
 	s.Len(result.Notices, 1)
 	s.Equal(expectedOutput, string(result.Notices[0].Payload))

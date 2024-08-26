@@ -46,11 +46,6 @@ func (h *OrderAdvanceHandlers) CreateOrderHandler(env rollmelette.Env, metadata 
 			return err
 		}
 
-		// application, isDefined := env.AppAddress()
-		// if !isDefined {
-		// 	return fmt.Errorf("no application address defined yet, contact the DeVolt support")
-		// }
-
 		findUserByRole := user_usecase.NewFindUserByRoleUseCase(h.UserRepository)
 		auctioneer, err := findUserByRole.Execute(&user_usecase.FindUserByRoleInputDTO{Role: "auctioneer"})
 		if err != nil {
