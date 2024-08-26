@@ -6,7 +6,7 @@ import (
 
 type FindAuctionOutputDTO struct {
 	Id                  uint                       `json:"id"`
-	RequiredCredits             custom_type.BigInt         `json:"required_credits"`
+	RequiredCredits     custom_type.BigInt         `json:"required_credits"`
 	PriceLimitPerCredit custom_type.BigInt         `json:"price_limit_per_credit"`
 	State               string                     `json:"state"`
 	Bids                []*FindAuctionOutputSubDTO `json:"bids"`

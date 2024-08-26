@@ -36,7 +36,7 @@ func (f *FindAuctionByIdUseCase) Execute(input *FindAuctionByIdInputDTO) (*FindA
 	}
 	return &FindAuctionOutputDTO{
 		Id:                  res.Id,
-		RequiredCredits:             res.RequiredCredits,
+		RequiredCredits:     res.RequiredCredits,
 		PriceLimitPerCredit: res.PriceLimitPerCredit,
 		State:               string(res.State),
 		Bids:                bids,

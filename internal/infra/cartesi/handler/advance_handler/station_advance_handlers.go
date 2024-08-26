@@ -12,7 +12,7 @@ import (
 )
 
 type StationAdvanceHandlers struct {
-	UserRepository entity.UserRepository
+	UserRepository     entity.UserRepository
 	StationRepository  entity.StationRepository
 	ContractRepository entity.ContractRepository
 }
@@ -23,7 +23,7 @@ func NewStationAdvanceHandlers(
 	contractRepository entity.ContractRepository,
 ) *StationAdvanceHandlers {
 	return &StationAdvanceHandlers{
-		UserRepository: userRepository,
+		UserRepository:     userRepository,
 		StationRepository:  stationRepository,
 		ContractRepository: contractRepository,
 	}
