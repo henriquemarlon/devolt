@@ -7,6 +7,7 @@ import (
 	"github.com/Mugen-Builders/devolt/internal/domain/entity"
 	"github.com/Mugen-Builders/devolt/internal/usecase/bid_usecase"
 	"github.com/Mugen-Builders/devolt/internal/usecase/contract_usecase"
+	"github.com/Mugen-Builders/devolt/internal/usecase/user_usecase"
 	"github.com/rollmelette/rollmelette"
 )
 
@@ -45,15 +46,25 @@ func (h *BidAdvanceHandlers) CreateBidHandler(env rollmelette.Env, metadata roll
 			return err
 		}
 
-		application, isDefined := env.AppAddress()
-		if !isDefined {
-			return fmt.Errorf("no application address defined yet, contact the DeVolt support")
-		}
+		// application, isDefined := env.AppAddress()
+		// if !isDefined {
+		// 	return fmt.Errorf("no application address defined yet, contact the DeVolt support")
+		// }
 
-		if err := env.ERC20Transfer(volt.Address.Address, res.Bidder.Address, application, res.Credits.Int); err != nil {
+		findUserByRole := user_usecase.NewFindUserByRoleUseCase(h.UserRepository)
+		auctioneer, err := findUserByRole.Execute(&user_usecase.FindUserByRoleInputDTO{Role: "auctioneer"})
+		if err != nil {
 			return err
 		}
-		env.Notice([]byte(fmt.Sprintf("created bid with id: %v and amount of credits: %v and price per credit: %v", res.Id, res.Credits, res.PricePerCredit)))
+
+		if err := env.ERC20Transfer(volt.Address.Address, res.Bidder.Address, auctioneer.Address.Address, res.Credits.Int); err != nil {
+			return err
+		}
+		bid, err := json.Marshal(res)
+		if err != nil {
+			return err
+		}
+		env.Notice(append([]byte("created bid - "), bid...))
 		return nil
 	default:
 		return fmt.Errorf("unsupported deposit type")

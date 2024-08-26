@@ -44,8 +44,8 @@ func NewAdvanceHandlers() (*AdvanceHandlers, error) {
 	userAdvanceHandlers := advance_handler.NewUserAdvanceHandlers(userRepositorySqlite, contractRepositorySqlite)
 	orderRepositorySqlite := db.NewOrderRepositorySqlite(gormDB)
 	stationRepositorySqlite := db.NewStationRepositorySqlite(gormDB)
-	orderAdvanceHandlers := advance_handler.NewOrderAdvanceHandlers(orderRepositorySqlite, stationRepositorySqlite, contractRepositorySqlite)
-	stationAdvanceHandlers := advance_handler.NewStationAdvanceHandlers(stationRepositorySqlite, contractRepositorySqlite)
+	orderAdvanceHandlers := advance_handler.NewOrderAdvanceHandlers(userRepositorySqlite, orderRepositorySqlite, stationRepositorySqlite, contractRepositorySqlite)
+	stationAdvanceHandlers := advance_handler.NewStationAdvanceHandlers(userRepositorySqlite, stationRepositorySqlite, contractRepositorySqlite)
 	auctionAdvanceHandlers := advance_handler.NewAuctionAdvanceHandlers(bidRepositorySqlite, userRepositorySqlite, orderRepositorySqlite, auctionRepositorySqlite, contractRepositorySqlite)
 	contractAdvanceHandlers := advance_handler.NewContractAdvanceHandlers(contractRepositorySqlite)
 	advanceHandlers := &AdvanceHandlers{

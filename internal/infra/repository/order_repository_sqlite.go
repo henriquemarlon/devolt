@@ -62,17 +62,6 @@ func (r *OrderRepositorySqlite) FindOrdersByUser(buyer custom_type.Address) ([]*
 	return orders, nil
 }
 
-func (r *OrderRepositorySqlite) UpdateOrder(order *entity.Order) (*entity.Order, error) {
-	res := r.db.Model(&entity.Order{}).Where("id = ?", order.Id).Omit("created_at").Updates(order)
-	if res.Error != nil {
-		return nil, fmt.Errorf("failed to update order: %w", res.Error)
-	}
-	if res.RowsAffected == 0 {
-		return nil, entity.ErrOrderNotFound
-	}
-	return order, nil
-}
-
 func (r *OrderRepositorySqlite) DeleteOrder(id uint) error {
 	res := r.db.Delete(&entity.Order{}, "id = ?", id)
 	if res.Error != nil {

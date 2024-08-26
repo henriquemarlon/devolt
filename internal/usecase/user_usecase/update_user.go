@@ -17,6 +17,7 @@ type UpdateUserOutputDTO struct {
 	Id        uint                `json:"id"`
 	Role      string              `json:"role"`
 	Address   custom_type.Address `json:"address"`
+	CreatedAt int64               `json:"created_at"`
 	UpdatedAt int64               `json:"update_at"`
 }
 
@@ -44,6 +45,7 @@ func (u *UpdateUserUseCase) Execute(input *UpdateUserInputDTO, metadata rollmele
 		Id:        res.Id,
 		Role:      res.Role,
 		Address:   res.Address,
+		CreatedAt: res.CreatedAt,
 		UpdatedAt: res.UpdatedAt,
 	}, nil
 }

@@ -11,7 +11,7 @@ import (
 
 type OffSetStationConsumptionInputDTO struct {
 	Id                uint               `json:"id"`
-	CreditsToBeOffSet custom_type.BigInt `json:"credits_to_be_offSet"`
+	CreditsToBeOffSet custom_type.BigInt `json:"credits_to_be_offset"`
 }
 
 type OffSetStationConsumptionOutputDTO struct {

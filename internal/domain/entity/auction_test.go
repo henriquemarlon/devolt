@@ -18,7 +18,7 @@ func TestNewAuction(t *testing.T) {
 	auction, err := NewAuction(credits, priceLimitPerCredit, expiresAt, createdAt)
 	assert.Nil(t, err)
 	assert.NotNil(t, auction)
-	assert.Equal(t, credits, auction.Credits)
+	assert.Equal(t, credits, auction.RequiredCredits)
 	assert.Equal(t, priceLimitPerCredit, auction.PriceLimitPerCredit)
 	assert.Equal(t, AuctionOngoing, auction.State)
 	assert.NotZero(t, auction.ExpiresAt)
@@ -29,7 +29,7 @@ func TestAuction_Validate(t *testing.T) {
 	createdAt := time.Now().Unix()
 	expiresAt := time.Now().Add(-24 * time.Hour).Unix() // Past time
 	auction := &Auction{
-		Credits:             custom_type.NewBigInt(big.NewInt(1000)),
+		RequiredCredits:     custom_type.NewBigInt(big.NewInt(1000)),
 		PriceLimitPerCredit: custom_type.NewBigInt(big.NewInt(0)), // Invalid price limit
 		ExpiresAt:           expiresAt,
 		CreatedAt:           createdAt,
@@ -68,7 +68,7 @@ func TestAuctionExpiration(t *testing.T) {
 
 	auction := &Auction{
 		Id:                  1,
-		Credits:             custom_type.NewBigInt(big.NewInt(1000)),
+		RequiredCredits:     custom_type.NewBigInt(big.NewInt(1000)),
 		PriceLimitPerCredit: custom_type.NewBigInt(big.NewInt(500)),
 		State:               AuctionOngoing,
 		ExpiresAt:           expiresAt,

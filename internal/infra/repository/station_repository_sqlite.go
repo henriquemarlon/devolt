@@ -38,7 +38,7 @@ func (r *StationRepositorySqlite) FindStationById(id uint) (*entity.Station, err
 
 func (r *StationRepositorySqlite) FindAllStations() ([]*entity.Station, error) {
 	var stations []*entity.Station
-	err := r.Db.Preload("Bids").Find(&stations).Error
+	err := r.Db.Preload("Orders").Find(&stations).Error
 	if err != nil {
 		return nil, fmt.Errorf("failed to find all stations: %w", err)
 	}
@@ -46,14 +46,28 @@ func (r *StationRepositorySqlite) FindAllStations() ([]*entity.Station, error) {
 }
 
 func (r *StationRepositorySqlite) UpdateStation(input *entity.Station) (*entity.Station, error) {
-	res := r.Db.Model(&entity.Station{}).Where("id = ?", input.Id).Omit("created_at").Updates(input)
+	var station entity.Station
+	err := r.Db.First(&station, "id = ?", input.Id).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, entity.ErrStationNotFound
+		}
+		return nil, fmt.Errorf("failed to find station by ID: %w", err)
+	}
+
+	station.Consumption = input.Consumption
+	station.Owner = input.Owner
+	station.State = input.State
+	station.PricePerCredit = input.PricePerCredit
+	station.Latitude = input.Latitude
+	station.Longitude = input.Longitude
+	station.UpdatedAt = input.UpdatedAt
+
+	res := r.Db.Save(&station)
 	if res.Error != nil {
 		return nil, fmt.Errorf("failed to update station: %w", res.Error)
 	}
-	if res.RowsAffected == 0 {
-		return nil, entity.ErrStationNotFound
-	}
-	return input, nil
+	return &station, nil
 }
 
 func (r *StationRepositorySqlite) DeleteStation(id uint) error {

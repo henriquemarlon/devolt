@@ -32,7 +32,11 @@ func (h *UserAdvanceHandlers) CreateUserHandler(env rollmelette.Env, metadata ro
 	if err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("created user with address: %v and role: %v", res.Address.Address, res.Role)))
+	user, err := json.Marshal(res)
+	if err != nil {
+		return err
+	}
+	env.Notice(append([]byte("created user - "), user...))
 	return nil
 }
 
@@ -46,7 +50,11 @@ func (h *UserAdvanceHandlers) UpdateUserHandler(env rollmelette.Env, metadata ro
 	if err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("updated user with address: %v and role: %v", res.Address.Address, res.Role)))
+	user, err := json.Marshal(res)
+	if err != nil {
+		return err
+	}
+	env.Notice(append([]byte("updated user - "), user...))
 	return nil
 }
 
@@ -60,41 +68,11 @@ func (h *UserAdvanceHandlers) DeleteUserByAddressHandler(env rollmelette.Env, me
 	if err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("deleted user with address: %v", input.Address.Address)))
-	return nil
-}
-
-func (h *UserAdvanceHandlers) WithdrawAppHandler(env rollmelette.Env, metadata rollmelette.Metadata, deposit rollmelette.Deposit, payload []byte) error {
-	application, isDefined := env.AppAddress()
-	if !isDefined {
-		return fmt.Errorf("no application address defined yet, contact the DeVolt support")
-	}
-	findContractBySymbol := contract_usecase.NewFindContractBySymbolUseCase(h.ContractRepository)
-	volt, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "VOLT"})
+	user, err := json.Marshal(input)
 	if err != nil {
 		return err
 	}
-	stablecoin, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "STABLECOIN"})
-	if err != nil {
-		return err
-	}
-	voltBalance := env.ERC20BalanceOf(volt.Address.Address, application)
-	if voltBalance.Sign() == 0 {
-		return fmt.Errorf("no balance of %v to withdraw", volt.Symbol)
-	}
-	stablecoinBalance := env.ERC20BalanceOf(stablecoin.Address.Address, application)
-	if stablecoinBalance.Sign() == 0 {
-		return fmt.Errorf("no balance of %v to withdraw", stablecoin.Symbol)
-	}
-	voltVoucherIndex, err := env.ERC20Withdraw(volt.Address.Address, application, voltBalance)
-	if err != nil {
-		return err
-	}
-	stablecoinVoucherIndex, err := env.ERC20Withdraw(stablecoin.Address.Address, application, stablecoinBalance)
-	if err != nil {
-		return err
-	}
-	env.Notice([]byte(fmt.Sprintf("withdrawn %v %v and %v %v from %v with voucher index of $VOLT: %v and $STABLECOIN: %v", volt.Symbol, voltBalance, stablecoin.Symbol, stablecoinBalance, metadata.MsgSender, voltVoucherIndex, stablecoinVoucherIndex)))
+	env.Notice(append([]byte("deleted user with - "), user...))
 	return nil
 }
 

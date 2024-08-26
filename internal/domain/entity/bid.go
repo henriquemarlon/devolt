@@ -28,7 +28,7 @@ type BidState string
 const (
 	BidStatePending  BidState = "pending"
 	BidStateAccepted BidState = "accepted"
-	BidStateExpired  BidState = "partial_accepted"
+	BidStateExpired  BidState = "partially_accepted"
 	BidStateRejected BidState = "rejected"
 )
 

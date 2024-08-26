@@ -2,7 +2,6 @@ package advance_handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/Mugen-Builders/devolt/internal/domain/entity"
 	"github.com/Mugen-Builders/devolt/internal/usecase/contract_usecase"
 	"github.com/rollmelette/rollmelette"
@@ -28,7 +27,11 @@ func (h *ContractAdvanceHandlers) CreateContractHandler(env rollmelette.Env, met
 	if err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("created contract with symbol: %v and address: %v", res.Symbol, res.Address.Address)))
+	contract, err := json.Marshal(res)
+	if err != nil {
+		return err
+	}
+	env.Notice(append([]byte("created contract - "), contract...))
 	return nil
 }
 
@@ -42,7 +45,11 @@ func (h *ContractAdvanceHandlers) UpdateContractHandler(env rollmelette.Env, met
 	if err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("updated contract with symbol: %v and address: %v", res.Symbol, res.Address.Address)))
+	contract, err := json.Marshal(res)
+	if err != nil {
+		return err
+	}
+	env.Notice(append([]byte("updated contract - "), contract...))
 	return nil
 }
 
@@ -56,6 +63,10 @@ func (h *ContractAdvanceHandlers) DeleteContractHandler(env rollmelette.Env, met
 	if err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("deleted contract with symbol: %v", input.Symbol)))
+	contract, err := json.Marshal(input)
+	if err != nil {
+		return err
+	}
+	env.Notice(append([]byte("deleted contract with - "), contract...))
 	return nil
 }

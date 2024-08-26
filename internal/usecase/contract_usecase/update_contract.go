@@ -17,6 +17,7 @@ type UpdateContractOutputDTO struct {
 	Id        uint                `json:"id"`
 	Symbol    string              `json:"symbol"`
 	Address   custom_type.Address `json:"address"`
+	CreatedAt int64               `json:"created_at"`
 	UpdatedAt int64               `json:"updated_at"`
 }
 
@@ -44,6 +45,7 @@ func (s *UpdateContractUseCase) Execute(input *UpdateContractInputDTO, metadata 
 		Id:        contract.Id,
 		Symbol:    contract.Symbol,
 		Address:   contract.Address,
+		CreatedAt: contract.CreatedAt,
 		UpdatedAt: contract.UpdatedAt,
 	}, nil
 }

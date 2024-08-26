@@ -24,7 +24,7 @@ func SetupSQlite() (*gorm.DB, error) {
 		},
 	)
 
-	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{
+	db, err := gorm.Open(sqlite.Open("devolt.db"), &gorm.Config{
 		Logger: logger,
 	})
 	if err != nil {
@@ -42,6 +42,12 @@ func SetupSQlite() (*gorm.DB, error) {
 	db.Create(&entity.User{
 		Role:      "admin",
 		Address:   custom_type.NewAddress(common.HexToAddress("0x0142f501EE21f4446009C3505c51d0043feC5c68")),
+		CreatedAt: 0,
+	})
+
+	db.Create(&entity.User{
+		Role:      "auctioneer",
+		Address:   custom_type.NewAddress(common.HexToAddress("0xf49Fc2E6478982F125c0F38d38f67B32772604B4")),
 		CreatedAt: 0,
 	})
 

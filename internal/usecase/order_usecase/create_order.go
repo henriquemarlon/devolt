@@ -17,7 +17,7 @@ type CreateOrderOutputDTO struct {
 	Buyer          custom_type.Address `json:"buyer"`
 	Credits        custom_type.BigInt  `json:"credits"`
 	StationId      uint                `json:"station_id"`
-	StationOwner   custom_type.Address `json:"station_address"`
+	StationOwner   custom_type.Address `json:"station_owner"`
 	PricePerCredit custom_type.BigInt  `json:"price_per_credit"`
 	CreatedAt      int64               `json:"created_at"`
 }
@@ -68,9 +68,16 @@ func (u *CreateOrderUseCase) Execute(input *CreateOrderInputDTO, deposit rollmel
 
 	consumption := custom_type.NewBigInt(new(big.Int).Add(station.Consumption.Int, orderConsumption))
 	_, err = u.StationRepository.UpdateStation(&entity.Station{
-		Id:          input.StationId,
-		Consumption: consumption,
-		UpdatedAt:   metadata.BlockTimestamp,
+		Id:             input.StationId,
+		Consumption:    consumption,
+		Owner:          station.Owner,
+		State:          station.State,
+		Orders:         station.Orders,
+		Latitude:       station.Latitude,
+		Longitude:      station.Longitude,
+		PricePerCredit: station.PricePerCredit,
+		CreatedAt:      metadata.BlockTimestamp,
+		UpdatedAt:      metadata.BlockTimestamp,
 	})
 	if err != nil {
 		return nil, err
