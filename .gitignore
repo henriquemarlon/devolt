@@ -70,3 +70,5 @@ pnpm-debug.log*
 .DS_Store
 
 bytecode.txt
+
+.air/
