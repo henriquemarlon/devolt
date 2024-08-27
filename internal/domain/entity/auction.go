@@ -28,7 +28,6 @@ const (
 	AuctionOngoing          AuctionState = "ongoing"
 	AuctionFinished         AuctionState = "finished"
 	AuctionCancelled        AuctionState = "cancelled"
-	AuctionPartiallyAwarded AuctionState = "partially_awarded"
 )
 
 type Auction struct {

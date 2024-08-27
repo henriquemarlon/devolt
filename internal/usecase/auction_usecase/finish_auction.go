@@ -2,10 +2,8 @@ package auction_usecase
 
 import (
 	"fmt"
-	"log"
 	"math/big"
 	"sort"
-
 	"github.com/Mugen-Builders/devolt/internal/domain/entity"
 	"github.com/Mugen-Builders/devolt/pkg/custom_type"
 	"github.com/rollmelette/rollmelette"
@@ -50,7 +48,7 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 	}
 
 	if len(bids) == 0 {
-		log.Println("No bids placed for active auction, finishing auction without bids")
+		return nil, fmt.Errorf("no bids placed for this auction")
 	}
 
 	sort.Slice(bids, func(i, j int) bool {
@@ -117,12 +115,7 @@ func (u *FinishAuctionUseCase) Execute(metadata rollmelette.Metadata) (*FinishAu
 		}
 	}
 
-	state := "finished"
-	if requiredCreditsRemaining.Sign() > 0 {
-		state = "partially_awarded"
-	}
-
-	activeAuction.State = entity.AuctionState(state)
+	activeAuction.State = entity.AuctionState("finished")
 	activeAuction.UpdatedAt = metadata.BlockTimestamp
 	res, err := u.AuctionRepository.UpdateAuction(activeAuction)
 	if err != nil {

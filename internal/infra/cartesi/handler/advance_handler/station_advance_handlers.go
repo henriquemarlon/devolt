@@ -3,11 +3,14 @@ package advance_handler
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/Mugen-Builders/devolt/internal/domain/entity"
 	"github.com/Mugen-Builders/devolt/internal/usecase/contract_usecase"
 	"github.com/Mugen-Builders/devolt/internal/usecase/station_usecase"
 	"github.com/Mugen-Builders/devolt/internal/usecase/user_usecase"
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 )
 
@@ -106,10 +109,32 @@ func (h *StationAdvanceHandlers) OffSetStationConsumptionHandler(env rollmelette
 	if err != nil {
 		return err
 	}
-	// TODO: Voucher burning offseted tokens
-	if err := env.ERC20Transfer(volt.Address.Address, auctioneer.Address.Address, metadata.MsgSender, input.CreditsToBeOffSet.Int); err != nil {
+
+	if err := env.ERC20Transfer(volt.Address.Address, auctioneer.Address.Address, common.HexToAddress("0x1"), input.CreditsToBeOffSet.Int); err != nil {
 		return err
 	}
+
+	abiJson := `[{
+		"type":"function",
+		"name":"burn",
+		"outputs":[],
+		"stateMutability":"nonpayable",
+		"inputs":[{
+			"internalType":"uint256",
+			"name":"value",
+			"type": "uint256"
+		}]
+	}]`
+	abiInterface, err := abi.JSON(strings.NewReader(abiJson))
+	if err != nil {
+		return err
+	}
+	payload, err = abiInterface.Pack("burn", input.CreditsToBeOffSet.Int)
+	if err != nil {
+		return err
+	}
+
+	env.Voucher(volt.Address.Address, payload)
 	env.Notice([]byte(fmt.Sprintf("offSet Credits from station: %v by msg_sender: %v", res.Id, metadata.MsgSender)))
 	return nil
 }
