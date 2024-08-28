@@ -82,7 +82,7 @@ jobs:
         run: |
           docker build \
           -t validator:latest \
-          -f ./build/Dockerfile.app . 
+          -f ./build/Dockerfile.validator . 
 
       - name: Push Cartesi Machine image
         run: |
