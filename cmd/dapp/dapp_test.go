@@ -1,17 +1,10 @@
 package main
 
 import (
-	// "encoding/json"
-
-	// "math/big"
-
 	"fmt"
 	"math/big"
 	"testing"
 	"time"
-
-	// "github.com/Mugen-Builders/devolt/pkg/router"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/rollmelette/rollmelette"
 	"github.com/stretchr/testify/suite"
@@ -27,7 +20,7 @@ type AppSuite struct {
 }
 
 func (s *AppSuite) SetupTest() {
-	app := NewAppMemory()
+	app := NewDAppMemory()
 	s.tester = rollmelette.NewTester(app)
 }
 

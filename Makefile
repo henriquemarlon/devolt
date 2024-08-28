@@ -16,7 +16,7 @@ build:
 	$(START_LOG)
 	@docker build \
 		-t machine:latest \
-		-f ./build/Dockerfile.app .
+		-f ./build/Dockerfile.dapp .
 	@cartesi build --from-image machine:latest
 	$(END_LOG)
 	
