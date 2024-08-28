@@ -21,6 +21,8 @@ jobs:
     env:
       NODE_VERSION: 18
       CARTESI_CLI_VERSION: 0.15.0
+      CARTESI_MACHINE_IMAGE_NAME: devolt-machine
+      CARTESI_NODE_IMAGE_NAME: devolt-node
       REGISTRY: ghcr.io/${{ github.repository_owner }}
     steps:
       - name: Check out repository
@@ -69,7 +71,7 @@ jobs:
         run: |
           docker build \
           -t machine:latest \
-          -f ./build/Dockerfile.app .
+          -f ./build/Dockerfile.app . 
     
       - name: Cartesi Build Step
         run: cartesi build --from-image machine:latest
@@ -83,10 +85,10 @@ jobs:
 
       - name: Push Cartesi Machine image
         run: |
-          docker image tag machine:latest "${{ env.REGISTRY }}/machine
-          docker image push --all-tags "${{ env.REGISTRY }}/machine
+          docker image tag machine:latest "${{ env.REGISTRY }}/${{ env.CARTESI_MACHINE_IMAGE_NAME }}"
+          docker image push --all-tags "${{ env.REGISTRY }}/${{ env.CARTESI_MACHINE_IMAGE_NAME }}"
 
       - name: Push Cartesi Node image
         run: |
-          docker image tag validator:latest "${{ env.REGISTRY }}/validator
-          docker image push --all-tags "${{ env.REGISTRY }}/validator
+          docker image tag validator:latest "${{ env.REGISTRY }}/${{ env.CARTESI_NODE_IMAGE_NAME }}"
+          docker image push --all-tags "${{ env.REGISTRY }}/${{ env.CARTESI_NODE_IMAGE_NAME }}"
