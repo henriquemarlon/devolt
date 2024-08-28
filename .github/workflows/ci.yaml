@@ -41,6 +41,11 @@ jobs:
         env:
           BUILDX_BUILDER: ${{ steps.setup_buildx.outputs.name }}
 
+      - name: Run tests
+        run: make test
+        env:
+          BUILDX_BUILDER: ${{ steps.setup_buildx.outputs.name }}
+
       - name: Extract metadata from Git refs and GitHub events
         id: extract_metadata
         uses: docker/metadata-action@v5
@@ -66,7 +71,7 @@ jobs:
         
       - name: Build Cartesi Machine Image
         id: build_machine
-        run: make build
+        run: make machine
 
       - name: Build Cartesi Node Image
         id: build_node
