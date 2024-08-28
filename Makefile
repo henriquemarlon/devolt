@@ -11,12 +11,12 @@ env: ./.env.develop
 	@echo "Environment file created at ./.env.develop"
 	$(END_LOG)
 
-.PHONY: build
-build:
+.PHONY: machine
+machine:
 	$(START_LOG)
 	@docker build \
 		-t machine:latest \
-		-f ./build/Dockerfile.app .
+		-f ./build/Dockerfile.machine .
 	@cartesi build --from-image machine:latest
 	$(END_LOG)
 	

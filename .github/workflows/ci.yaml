@@ -1,6 +1,4 @@
 on:
-  pull_request:
-    branches: [ "main" ]
   push:
     branches:
       - 'main'
@@ -38,7 +36,12 @@ jobs:
       - name: Expose GitHub Runtime
         uses: crazy-max/ghaction-github-runtime@v3
 
-      - name: Test
+      - name: Run tests
+        run: make test
+        env:
+          BUILDX_BUILDER: ${{ steps.setup_buildx.outputs.name }}
+
+      - name: Run tests
         run: make test
         env:
           BUILDX_BUILDER: ${{ steps.setup_buildx.outputs.name }}
@@ -61,22 +64,16 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Setup Node.js
-        uses: actions/setup-node@v4    
+        uses: actions/setup-node@v4
 
       - name: Install Cartesi CLI
         run: npm i -g @cartesi/cli@${{ env.CARTESI_CLI_VERSION }}
         
-      - name: Build Cartesi Machine image
+      - name: Build Cartesi Machine Image
         id: build_machine
-        run: |
-          docker build \
-          -t machine:latest \
-          -f ./build/Dockerfile.app . 
-    
-      - name: Cartesi Build Step
-        run: cartesi build --from-image machine:latest
+        run: make machine
 
-      - name: Build Cartesi Node image
+      - name: Build Cartesi Node Image
         id: build_node
         run: |
           docker build \

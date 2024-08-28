@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func NewApp() *router.Router {
+func NewDApp() *router.Router {
 	//////////////////////// Setup Handlers //////////////////////////
 	ah, err := NewAdvanceHandlers()
 	if err != nil {
@@ -75,7 +75,7 @@ func NewApp() *router.Router {
 	return app
 }
 
-func NewAppMemory() *router.Router {
+func NewDAppMemory() *router.Router {
 	//////////////////////// Setup Handlers //////////////////////////
 	ah, err := NewAdvanceHandlersMemory()
 	if err != nil {
