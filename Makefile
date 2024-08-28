@@ -18,9 +18,6 @@ build:
 		-t machine:latest \
 		-f ./build/Dockerfile.app .
 	@cartesi build --from-image machine:latest
-	@docker build \
-		-t validator:latest \
-		-f ./build/Dockerfile.validator .
 	$(END_LOG)
 	
 .PHONY: bidings

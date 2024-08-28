@@ -8,9 +8,7 @@ import (
 	"github.com/Mugen-Builders/devolt/internal/usecase/auction_usecase"
 	"github.com/Mugen-Builders/devolt/internal/usecase/bid_usecase"
 	"github.com/Mugen-Builders/devolt/internal/usecase/contract_usecase"
-
-	// "github.com/Mugen-Builders/devolt/internal/usecase/bid_usecase"
-	// "github.com/Mugen-Builders/devolt/internal/usecase/contract_usecase"
+	"github.com/Mugen-Builders/devolt/internal/usecase/user_usecase"
 	"github.com/rollmelette/rollmelette"
 )
 
@@ -48,21 +46,11 @@ func (h *AuctionAdvanceHandlers) CreateAuctionHandler(env rollmelette.Env, metad
 	if err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("created auction with id: %v", res.Id)))
-	return nil
-}
-
-func (h *AuctionAdvanceHandlers) UpdateAuctionHandler(env rollmelette.Env, metadata rollmelette.Metadata, deposit rollmelette.Deposit, payload []byte) error {
-	var input *auction_usecase.UpdateAuctionInputDTO
-	if err := json.Unmarshal(payload, &input); err != nil {
-		return err
-	}
-	updateAuction := auction_usecase.NewUpdateAuctionUseCase(h.AuctionRepository)
-	res, err := updateAuction.Execute(input, metadata)
+	auction, err := json.Marshal(res)
 	if err != nil {
 		return err
 	}
-	env.Notice([]byte(fmt.Sprintf("updated auction with id: %v and expiration: %v", res.Id, res.ExpiresAt)))
+	env.Notice(append([]byte("created auction - "), auction...))
 	return nil
 }
 
@@ -78,14 +66,18 @@ func (h *AuctionAdvanceHandlers) FinishAuctionHandler(env rollmelette.Env, metad
 		return fmt.Errorf("no application address defined yet, contact the DeVolt support")
 	}
 
+	findUserByRole := user_usecase.NewFindUserByRoleUseCase(h.UserRepository)
+	auctioneer, err := findUserByRole.Execute(&user_usecase.FindUserByRoleInputDTO{Role: "auctioneer"})
+	if err != nil {
+		return err
+	}
+
 	findContractBySymbol := contract_usecase.NewFindContractBySymbolUseCase(h.ContractRepository)
-	// Find Volt contract address
 	volt, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "VOLT"})
 	if err != nil {
 		return err
 	}
 
-	// Find Stablecoin contract address
 	stablecoin, err := findContractBySymbol.Execute(&contract_usecase.FindContractBySymbolInputDTO{Symbol: "STABLECOIN"})
 	if err != nil {
 		return err
@@ -100,20 +92,20 @@ func (h *AuctionAdvanceHandlers) FinishAuctionHandler(env rollmelette.Env, metad
 		return err
 	}
 	for _, bid := range acceptedBids {
-		if err := env.ERC20Transfer(stablecoin.Address.Address, application, bid.Bidder.Address, bid.PricePerCredit.Int); err != nil {
+		if err := env.ERC20Transfer(stablecoin.Address.Address, auctioneer.Address.Address, bid.Bidder.Address, bid.PricePerCredit.Int); err != nil {
 			env.Report([]byte(err.Error()))
 		}
 	}
 
 	partialAcceptedBids, err := findBidsByState.Execute(&bid_usecase.FindBidsByStateInputDTO{
 		AuctionId: finishedAuction.Id,
-		State:     "partial_accepted",
+		State:     "partially_accepted",
 	})
 	if err != nil {
 		return err
 	}
 	for _, bid := range partialAcceptedBids {
-		if err := env.ERC20Transfer(stablecoin.Address.Address, application, bid.Bidder.Address, bid.PricePerCredit.Int); err != nil {
+		if err := env.ERC20Transfer(stablecoin.Address.Address, auctioneer.Address.Address, bid.Bidder.Address, bid.PricePerCredit.Int); err != nil {
 			env.Report([]byte(err.Error()))
 		}
 	}
@@ -126,18 +118,16 @@ func (h *AuctionAdvanceHandlers) FinishAuctionHandler(env rollmelette.Env, metad
 		return err
 	}
 	for _, bid := range rejectedBids {
-		if err := env.ERC20Transfer(volt.Address.Address, application, bid.Bidder.Address, bid.Credits.Int); err != nil {
+		if err := env.ERC20Transfer(volt.Address.Address, auctioneer.Address.Address, bid.Bidder.Address, bid.Credits.Int); err != nil {
 			env.Report([]byte(err.Error()))
 		}
 	}
 
-	findAuctionById := auction_usecase.NewFindAuctionByIdUseCase(h.AuctionRepository)
-	res, err := findAuctionById.Execute(&auction_usecase.FindAuctionByIdInputDTO{
-		Id: finishedAuction.Id,
-	})
-	if err != nil {
-		return fmt.Errorf("failed to find auction: %w", err)
+	profit := env.ERC20BalanceOf(stablecoin.Address.Address, auctioneer.Address.Address)
+	if err := env.ERC20Transfer(stablecoin.Address.Address, auctioneer.Address.Address, application, profit); err != nil {
+		env.Report([]byte(err.Error()))
 	}
-	env.Notice([]byte(fmt.Sprintf("finished auction with id: %v at: %v", res.Id, metadata.BlockTimestamp)))
+
+	env.Notice([]byte(fmt.Sprintf("finished auction with - id: %v, required credits: %v and price limit per credit: %v", finishedAuction.Id, finishedAuction.RequiredCredits.Int, finishedAuction.PriceLimitPerCredit.Int)))
 	return nil
 }

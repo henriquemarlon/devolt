@@ -18,7 +18,7 @@ type CreateAuctionInputDTO struct {
 
 type CreateAuctionOutputDTO struct {
 	Id                  uint               `json:"id"`
-	Credits             custom_type.BigInt `json:"credits"`
+	RequiredCredits     custom_type.BigInt `json:"required_credits"`
 	PriceLimitPerCredit custom_type.BigInt `json:"price_limit_per_credit"`
 	State               string             `json:"state"`
 	ExpiresAt           int64              `json:"expires_at"`
@@ -65,7 +65,7 @@ func (c *CreateAuctionUseCase) Execute(input *CreateAuctionInputDTO, metadata ro
 	}
 	return &CreateAuctionOutputDTO{
 		Id:                  res.Id,
-		Credits:             res.Credits,
+		RequiredCredits:     res.RequiredCredits,
 		PriceLimitPerCredit: res.PriceLimitPerCredit,
 		State:               string(res.State),
 		ExpiresAt:           res.ExpiresAt,

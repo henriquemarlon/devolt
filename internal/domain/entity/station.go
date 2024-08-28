@@ -2,7 +2,6 @@ package entity
 
 import (
 	"errors"
-	"math/big"
 
 	"github.com/Mugen-Builders/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
@@ -41,10 +40,10 @@ type Station struct {
 	UpdatedAt      int64               `json:"updated_at,omitempty" gorm:"default:0"`
 }
 
-func NewStation(owner custom_type.Address, pricePerCredit custom_type.BigInt, latitude float64, longitude float64, createdAt int64) (*Station, error) {
+func NewStation(owner custom_type.Address, consumption custom_type.BigInt, pricePerCredit custom_type.BigInt, latitude float64, longitude float64, createdAt int64) (*Station, error) {
 	station := &Station{
-		Consumption:    custom_type.NewBigInt(big.NewInt(0)),
 		Owner:          owner,
+		Consumption:    consumption,
 		PricePerCredit: pricePerCredit,
 		State:          StationStateActive,
 		Latitude:       latitude,
@@ -58,7 +57,7 @@ func NewStation(owner custom_type.Address, pricePerCredit custom_type.BigInt, la
 }
 
 func (s *Station) Validate() error {
-	if s.Owner.Address == (common.Address{}) || s.PricePerCredit.Int == nil || s.Latitude == 0 || s.Longitude == 0 || s.CreatedAt == 0 {
+	if s.Owner.Address == (common.Address{}) || s.Consumption.Int == nil || s.PricePerCredit.Int == nil || s.Latitude == 0 || s.Longitude == 0 || s.CreatedAt == 0 {
 		return ErrInvalidStation
 	}
 	return nil

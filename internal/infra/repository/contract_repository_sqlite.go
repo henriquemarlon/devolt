@@ -29,7 +29,7 @@ func (r *ContractRepositorySqlite) FindAllContracts() ([]*entity.Contract, error
 	var contracts []*entity.Contract
 	err := r.Db.Find(&contracts).Error
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch contracts: %w", err)
+		return nil, err
 	}
 	return contracts, nil
 }
@@ -38,20 +38,29 @@ func (r *ContractRepositorySqlite) FindContractBySymbol(symbol string) (*entity.
 	var contract entity.Contract
 	err := r.Db.Where("symbol = ?", symbol).First(&contract).Error
 	if err != nil {
-		return nil, fmt.Errorf("failed to find contract by symbol: %w", err)
+		return nil, err
 	}
 	return &contract, nil
 }
 
-func (r *ContractRepositorySqlite) UpdateContract(contract *entity.Contract) (*entity.Contract, error) {
-	res := r.Db.Model(&entity.Contract{}).Where("symbol = ?", contract.Symbol).Omit("created_at").Updates(contract)
+func (r *ContractRepositorySqlite) UpdateContract(input *entity.Contract) (*entity.Contract, error) {
+	var contract entity.Contract
+	err := r.Db.Where("symbol = ?", input.Symbol).First(&contract).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, entity.ErrContractNotFound
+		}
+		return nil, err
+	}
+
+	contract.Address = input.Address
+	contract.UpdatedAt = input.UpdatedAt
+
+	res := r.Db.Save(&contract)
 	if res.Error != nil {
 		return nil, fmt.Errorf("failed to update contract: %w", res.Error)
 	}
-	if res.RowsAffected == 0 {
-		return nil, entity.ErrContractNotFound
-	}
-	return contract, nil
+	return &contract, nil
 }
 
 func (r *ContractRepositorySqlite) DeleteContract(symbol string) error {

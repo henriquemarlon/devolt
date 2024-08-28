@@ -1,8 +1,6 @@
 package db
 
 import (
-	"fmt"
-
 	"github.com/Mugen-Builders/devolt/internal/domain/entity"
 	"gorm.io/gorm"
 )
@@ -56,17 +54,25 @@ func (r *AuctionRepositorySqlite) FindAllAuctions() ([]*entity.Auction, error) {
 }
 
 func (r *AuctionRepositorySqlite) UpdateAuction(input *entity.Auction) (*entity.Auction, error) {
-	res := r.Db.Model(&entity.Auction{}).Where("id = ?", input.Id).Omit("created_at").Updates(input)
-	if res.Error != nil {
-		if res.Error == gorm.ErrRecordNotFound {
+	var auction entity.Auction
+	err := r.Db.First(&auction, "id = ?", input.Id).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
 			return nil, entity.ErrAuctionNotFound
 		}
-		return nil, fmt.Errorf("failed to update auction: %w", res.Error)
+		return nil, err
 	}
-	if res.RowsAffected == 0 {
-		return nil, entity.ErrAuctionNotFound
+
+	auction.PriceLimitPerCredit = input.PriceLimitPerCredit
+	auction.State = input.State
+	auction.ExpiresAt = input.ExpiresAt
+	auction.UpdatedAt = input.UpdatedAt
+
+	res := r.Db.Save(auction)
+	if res.Error != nil {
+		return nil, res.Error
 	}
-	return input, nil
+	return &auction, nil
 }
 
 func (r *AuctionRepositorySqlite) DeleteAuction(id uint) error {

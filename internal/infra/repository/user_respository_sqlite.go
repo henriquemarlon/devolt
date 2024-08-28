@@ -2,7 +2,6 @@ package db
 
 import (
 	"fmt"
-
 	"github.com/Mugen-Builders/devolt/internal/domain/entity"
 	"github.com/Mugen-Builders/devolt/pkg/custom_type"
 	"gorm.io/gorm"
@@ -54,14 +53,26 @@ func (r *UserRepositorySqlite) FindAllUsers() ([]*entity.User, error) {
 }
 
 func (r *UserRepositorySqlite) UpdateUser(input *entity.User) (*entity.User, error) {
-	res := r.Db.Model(&entity.User{}).Where("address = ?", input.Address).Omit("created_at").Updates(input)
+	var user entity.User
+	err := r.Db.Where("address = ?", input.Address).First(&user).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, entity.ErrUserNotFound
+		}
+		return nil, err
+	}
+
+	user.Role = input.Role
+	user.UpdatedAt = input.UpdatedAt
+
+	res := r.Db.Save(&user)
 	if res.Error != nil {
 		return nil, fmt.Errorf("failed to update user: %w", res.Error)
 	}
 	if res.RowsAffected == 0 {
 		return nil, entity.ErrUserNotFound
 	}
-	return input, nil
+	return &user, nil
 }
 
 func (r *UserRepositorySqlite) DeleteUserByAddress(address custom_type.Address) error {

@@ -11,7 +11,7 @@ import (
 
 type OffSetStationConsumptionInputDTO struct {
 	Id                uint               `json:"id"`
-	CreditsToBeOffSet custom_type.BigInt `json:"credits_to_be_offSet"`
+	CreditsToBeOffSet custom_type.BigInt `json:"credits_to_be_offset"`
 }
 
 type OffSetStationConsumptionOutputDTO struct {
@@ -50,9 +50,16 @@ func (u *OffSetStationConsumptionUseCase) Execute(input *OffSetStationConsumptio
 	}
 
 	res, err := u.StationRepository.UpdateStation(&entity.Station{
-		Id:          input.Id,
-		Consumption: consumption,
-		UpdatedAt:   metadata.BlockTimestamp,
+		Id:             input.Id,
+		Consumption:    consumption,
+		Owner:          station.Owner,
+		State:          station.State,
+		Orders:         station.Orders,
+		PricePerCredit: station.PricePerCredit,
+		Latitude:       station.Latitude,
+		Longitude:      station.Longitude,
+		CreatedAt:      station.CreatedAt,
+		UpdatedAt:      metadata.BlockTimestamp,
 	})
 	if err != nil {
 		return nil, err

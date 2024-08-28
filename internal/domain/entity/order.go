@@ -19,7 +19,6 @@ type OrderRepository interface {
 	FindOrdersByUser(buyer custom_type.Address) ([]*Order, error)
 	FindAllOrders() ([]*Order, error)
 	FindOrdersByTimeRange(from int64, to int64) ([]*Order, error)
-	UpdateOrder(order *Order) (*Order, error)
 	DeleteOrder(id uint) error
 }
 

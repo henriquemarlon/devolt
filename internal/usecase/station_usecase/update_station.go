@@ -27,6 +27,7 @@ type UpdateStationOutputDTO struct {
 	State          string              `json:"state"`
 	Latitude       float64             `json:"latitude"`
 	Longitude      float64             `json:"longitude"`
+	CreatedAt      int64               `json:"created_at"`
 	UpdatedAt      int64               `json:"updated_at"`
 }
 
@@ -62,6 +63,7 @@ func (u *UpdateStationUseCase) Execute(input *UpdateStationInputDTO, metadata ro
 		State:          string(res.State),
 		Latitude:       res.Latitude,
 		Longitude:      res.Longitude,
+		CreatedAt:      res.CreatedAt,
 		UpdatedAt:      res.UpdatedAt,
 	}, nil
 }

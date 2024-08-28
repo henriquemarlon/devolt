@@ -11,12 +11,13 @@ import (
 
 func TestNewStation(t *testing.T) {
 	owner := custom_type.NewAddress(common.HexToAddress("0x123"))
+	consumption := custom_type.NewBigInt(big.NewInt(100))
 	pricePerCredit := custom_type.NewBigInt(big.NewInt(50))
 	latitude := 40.7128
 	longitude := -74.0060
 	createdAt := time.Now().Unix()
 
-	station, err := NewStation(owner, pricePerCredit, latitude, longitude, createdAt)
+	station, err := NewStation(owner, consumption, pricePerCredit, latitude, longitude, createdAt)
 	assert.Nil(t, err)
 	assert.NotNil(t, station)
 	assert.Equal(t, owner, station.Owner)
@@ -75,8 +76,15 @@ func TestStation_Validate(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.Equal(t, ErrInvalidStation, err)
 
-	// Valid station
+	// Invalid Consumption
 	station.CreatedAt = createdAt
+	station.Consumption.Int = nil
+	err = station.Validate()
+	assert.NotNil(t, err)
+	assert.Equal(t, ErrInvalidStation, err)
+
+	// Valid station
+	station.Consumption = custom_type.NewBigInt(big.NewInt(100))
 	err = station.Validate()
 	assert.Nil(t, err)
 }
