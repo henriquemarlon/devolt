@@ -12,7 +12,7 @@ env: ./.env.develop
 	$(END_LOG)
 
 .PHONY: machine
-build:
+machine:
 	$(START_LOG)
 	@docker build \
 		-t machine:latest \
