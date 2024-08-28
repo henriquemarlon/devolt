@@ -84,7 +84,7 @@ jobs:
         env:
           IMAGE_ID: ${{ steps.build_machine.outputs.imageid }}
         run: |
-          pnpm exec cartesi build --from-image "$IMAGE_ID"
+          cartesi build --from-image "$IMAGE_ID"
         
       - name: Cartesi hash
         id: cartesi_hash
