@@ -1,19 +1,12 @@
-
 on:
-  pull_request:
-    branches:
-      - 'main'
-    paths-ignore:
-      - 'docs/**'
-      - 'website/**'
-      - 'contracts/**'
   push:
     branches:
       - 'main'
     paths-ignore:
       - 'docs/**'
       - 'website/**'
-      - 'contracts/**'
+      - 'contracts/**'  
+  workflow_dispatch:
 
 jobs:
   build:
@@ -22,8 +15,8 @@ jobs:
       packages: write
       contents: read
     env:
-      NODE_VERSION: 20.10.0
-      CARTESI_CLI_VERSION: 0.16.0
+      NODE_VERSION: 18
+      CARTESI_CLI_VERSION: 0.15.0
       CARTESI_MACHINE_IMAGE_NAME: devolt-machine
       CARTESI_NODE_IMAGE_NAME: devolt-node
       REGISTRY: ghcr.io/${{ github.repository_owner }}
@@ -43,6 +36,8 @@ jobs:
 
       - name: Run tests
         run: make test
+        env:
+          BUILDX_BUILDER: ${{ steps.setup_buildx.outputs.name }}
 
       - name: Extract metadata from Git refs and GitHub events
         id: extract_metadata
@@ -60,36 +55,30 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build machine image
-        id: build_machine
-        uses: docker/build-push-action@v6
-        with:
-          file: ./build/Dockerfile.machine
-          load: true
-          builder: ${{ steps.setup_buildx.outputs.name }}
-          tags: ${{ steps.extract_metadata.outputs.tags }}
-          labels: ${{ steps.extract_metadata.outputs.labels }}
-          annotations: ${{ steps.extract_metadata.outputs.annotations }}
-          cache-from: type=gha,scope=cartesi-machine-image
-          cache-to: type=gha,mode=max,scope=cartesi-machine-image
-
+          
       - name: Setup Node.js
         uses: actions/setup-node@v4
 
       - name: Install Cartesi CLI
         run: npm i -g @cartesi/cli@${{ env.CARTESI_CLI_VERSION }}
-
-      - name: Build Cartesi Machine image
-        env:
-          IMAGE_ID: ${{ steps.build_machine.outputs.imageid }}
-        run: |
-          cartesi build --from-image "$IMAGE_ID"
         
-      - name: Cartesi hash
-        id: cartesi_hash
-        run: cartesi hash
+      - name: Build Cartesi Machine Image
+        id: build_machine
+        run: make machine
+
+      - name: Build Cartesi Node Image
+        id: build_node
+        run: |
+          docker build \
+          -t validator:latest \
+          -f ./build/Dockerfile.validator . 
 
       - name: Push Cartesi Machine image
         run: |
+          docker image tag machine:latest "${{ env.REGISTRY }}/${{ env.CARTESI_MACHINE_IMAGE_NAME }}"
           docker image push --all-tags "${{ env.REGISTRY }}/${{ env.CARTESI_MACHINE_IMAGE_NAME }}"
+
+      - name: Push Cartesi Node image
+        run: |
+          docker image tag validator:latest "${{ env.REGISTRY }}/${{ env.CARTESI_NODE_IMAGE_NAME }}"
+          docker image push --all-tags "${{ env.REGISTRY }}/${{ env.CARTESI_NODE_IMAGE_NAME }}"
