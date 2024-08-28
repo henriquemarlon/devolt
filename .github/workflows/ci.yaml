@@ -90,26 +90,6 @@ jobs:
         id: cartesi_hash
         run: cartesi hash
 
-      - name: Build Cartesi Node image
-        id: build_node
-        run: |
-          cartesi deploy build --json | \
-            jq -r '"image=\(.image)"' >> "$GITHUB_OUTPUT"
-
-      - name: Create tags for Cartesi Node image
-        env:
-          METADATA_JSON: ${{ steps.extract_metadata.outputs.json }}
-          CARTESI_NODE_IMAGE: ${{ steps.build_node.outputs.image }}
-        run: |
-          echo "$METADATA_JSON" | \
-            jq -r '.tags[]' | \
-            sed "s/${{ env.CARTESI_MACHINE_IMAGE_NAME }}/${{ env.CARTESI_NODE_IMAGE_NAME }}/" | \
-            xargs -d '\n' -n1 docker image tag "$CARTESI_NODE_IMAGE"
-
       - name: Push Cartesi Machine image
         run: |
           docker image push --all-tags "${{ env.REGISTRY }}/${{ env.CARTESI_MACHINE_IMAGE_NAME }}"
-
-      - name: Push Cartesi Node image
-        run: |
-          docker image push --all-tags "${{ env.REGISTRY }}/${{ env.CARTESI_NODE_IMAGE_NAME }}"
