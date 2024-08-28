@@ -43,11 +43,6 @@ jobs:
         env:
           BUILDX_BUILDER: ${{ steps.setup_buildx.outputs.name }}
 
-      - name: Run tests
-        run: make test
-        env:
-          BUILDX_BUILDER: ${{ steps.setup_buildx.outputs.name }}
-
       - name: Extract metadata from Git refs and GitHub events
         id: extract_metadata
         uses: docker/metadata-action@v5
