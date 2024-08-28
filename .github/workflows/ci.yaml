@@ -70,7 +70,7 @@ jobs:
 
       - name: Cartesi hash
         id: cartesi_hash
-        run: cartesi hash >> $GITHUB_OUTPUT
+        run: cartesi hash
 
       - name: Build Cartesi Node Image
         id: build_node
