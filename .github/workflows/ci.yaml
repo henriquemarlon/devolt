@@ -5,7 +5,9 @@ on:
     paths-ignore:
       - 'docs/**'
       - 'website/**'
-      - 'contracts/**'  
+      - 'contracts/**'
+    tags:
+      - 'v*'   
   workflow_dispatch:
 
 jobs:
@@ -64,7 +66,7 @@ jobs:
         
       - name: Build Cartesi Machine Image
         id: build_machine
-        run: make machine
+        run: make build
 
       - name: Build Cartesi Node Image
         id: build_node
