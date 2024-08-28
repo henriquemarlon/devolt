@@ -71,7 +71,12 @@ jobs:
         uses: pnpm/action-setup@v3
         with:
           version: ${{ env.PNPM_VERSION }}
-      
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+    
       - name: Cartesi Build Step
         run: pnpm exec cartesi build --from-image machine:latest
 
