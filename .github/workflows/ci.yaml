@@ -71,7 +71,7 @@ jobs:
         
       - name: Build Cartesi Machine Image
         id: build_machine
-        run: make build
+        run: make machine
 
       - name: Cartesi hash
         id: cartesi_hash
