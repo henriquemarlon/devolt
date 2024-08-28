@@ -68,6 +68,10 @@ jobs:
         id: build_machine
         run: make build
 
+      - name: Cartesi hash
+        id: cartesi_hash
+        run: cartesi hash >> $GITHUB_OUTPUT
+
       - name: Build Cartesi Node Image
         id: build_node
         run: |
