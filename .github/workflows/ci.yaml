@@ -1,4 +1,11 @@
 on:
+  pull_request:
+    branches:
+      - 'main'
+    paths-ignore:
+      - 'docs/**'
+      - 'website/**'
+      - 'contracts/**'
   push:
     branches:
       - 'main'
@@ -17,7 +24,7 @@ jobs:
       packages: write
       contents: read
     env:
-      NODE_VERSION: 18
+      NODE_VERSION: 20.10.0
       CARTESI_CLI_VERSION: 0.15.0
       CARTESI_MACHINE_IMAGE_NAME: devolt-machine
       CARTESI_NODE_IMAGE_NAME: devolt-node
@@ -38,8 +45,6 @@ jobs:
 
       - name: Run tests
         run: make test
-        env:
-          BUILDX_BUILDER: ${{ steps.setup_buildx.outputs.name }}
 
       - name: Extract metadata from Git refs and GitHub events
         id: extract_metadata
