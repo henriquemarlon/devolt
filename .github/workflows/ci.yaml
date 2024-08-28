@@ -21,6 +21,7 @@ jobs:
     env:
       PNPM_VERSION: 9
       NODE_VERSION: 18
+      CARTESI_CLI_VERSION: 0.15.0
       CARTESI_MACHINE_IMAGE_NAME: devolt-machine
       CARTESI_NODE_IMAGE_NAME: devolt-node
       REGISTRY: ghcr.io/${{ github.repository_owner }}
@@ -59,6 +60,18 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install Cartesi CLI
+        run: pnpm add -g @cartesi/cli@${{ env.CARTESI_CLI_VERSION }}
+    
+      - name: Cartesi Build Step
+        run: pnpm exec cartesi build --from-image machine:latest
 
       - name: Build Cartesi Machine image
         id: build_machine
@@ -67,18 +80,10 @@ jobs:
           -t machine:latest \
           -f ./build/Dockerfile.app . 
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-    
-      - name: Cartesi Build Step
-        run: pnpm exec cartesi build --from-image machine:latest
+          - name: Setup pnpm
+          uses: pnpm/action-setup@v3
+          with:
+            version: ${{ env.PNPM_VERSION }}
 
       - name: Build Cartesi Node image
         id: build_node
