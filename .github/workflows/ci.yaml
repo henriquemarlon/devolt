@@ -61,35 +61,21 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: ${{ env.PNPM_VERSION }}
-          
       - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-      
+        uses: actions/setup-node@v4    
 
       - name: Install Cartesi CLI
-        run: pnpm add -g @cartesi/cli@${{ env.CARTESI_CLI_VERSION }}
-    
-      - name: Cartesi Build Step
-        run: pnpm exec cartesi build --from-image machine:latest
-
+        run: npm i -g @cartesi/cli@${{ env.CARTESI_CLI_VERSION }}
+        
       - name: Build Cartesi Machine image
         id: build_machine
         run: |
           docker build \
           -t machine:latest \
           -f ./build/Dockerfile.app . 
-
-          - name: Setup pnpm
-          uses: pnpm/action-setup@v3
-          with:
-            version: ${{ env.PNPM_VERSION }}
+    
+      - name: Cartesi Build Step
+        run: cartesi build --from-image machine:latest
 
       - name: Build Cartesi Node image
         id: build_node
