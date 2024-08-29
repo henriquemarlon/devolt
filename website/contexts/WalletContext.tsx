@@ -20,7 +20,7 @@ createWeb3Modal({
   enableAnalytics: true,
   tokens: {
     421_614 : {
-      address: "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d"
+      address: "0x33F6539650F7993dB73Ceff9f08040389e6b61D7"
     }
   },
   themeVariables: {

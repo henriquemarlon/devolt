@@ -4,6 +4,7 @@ import { Slider } from "@/components/ui/slider"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, } from "@/components/ui/tooltip"
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { abi } from '@/abi/abi'
+import { useEffect } from "react";
 import { toHex } from "viem";
 
 type BuySectionProps = {
@@ -19,37 +20,46 @@ type BuySectionProps = {
 
 const BuySection: React.FC<BuySectionProps> = ({ address, energyPrice, percentage, carBattery, onBuyEnergy, carCapacity, stationId}) => {
 
-    const { writeContractAsync: writeApproveContract, data: approveTx, isPending: isApprovePending } = useWriteContract();
-    const { writeContractAsync: writeDepositContract } = useWriteContract();
+    const { writeContractAsync: writeApproveContract, isSuccess: isApproveSuccess, data: approveTxHash } = useWriteContract();
+    const { writeContractAsync: writeDepositContract, isSuccess: isDepositSuccess, data: depositTxHash } = useWriteContract();
 
     const totalTokens = (((percentage * carCapacity) / 100) * Number(energyPrice)).toFixed(2);
+    const { isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+        hash: approveTxHash,
+        confirmations: 1,
+    });
+
+    useEffect(() => {
+        const handleDeposit = async () => {
+            if (isConfirmed) {
+                await writeDepositContract({
+                    abi,
+                    address: '0x9C21AEb2093C32DDbC53eEF24B873BDCd1aDa1DB',
+                    functionName: 'depositERC20Tokens',
+                    args: [
+                        '0x33F6539650F7993dB73Ceff9f08040389e6b61D7',
+                        '0x5b253d029Aef2Aa5c497661d1415A4766AEBc655',
+                        BigInt((Number(totalTokens) * 1000000).toString()),
+                        toHex(`{"path":"createOrder","payload":{"station_id":${stationId}}}`)
+                    ]
+                });
+            }
+        };
+
+        handleDeposit();
+    }, [isConfirmed, writeDepositContract, totalTokens, stationId]);
 
     const handleBuyEnergy = async () => {
-
         await writeApproveContract({
             abi,
-            address: '0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d',
+            address: '0x33F6539650F7993dB73Ceff9f08040389e6b61D7',
             functionName: 'approve',
             args: [
                 '0x9C21AEb2093C32DDbC53eEF24B873BDCd1aDa1DB', 
-                BigInt((Number(totalTokens) * 1000000).toString())], 
+                BigInt((Number(totalTokens) * 1000000).toString())
+            ], 
         });
-
-        await writeDepositContract({
-            abi,
-            address: '0x9C21AEb2093C32DDbC53eEF24B873BDCd1aDa1DB',
-            functionName: 'depositERC20Tokens',
-            args: [
-                '0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d',
-                '0x5b253d029Aef2Aa5c497661d1415A4766AEBc655',
-                BigInt((Number(totalTokens) * 1000000).toString()),
-                toHex(`{"path":"createOrder","payload":{"station_id":${stationId}}}`)
-            ]
-        });
-        
     };
-
-
         
     return (
         <div className="mt-12">
