@@ -81,7 +81,7 @@ export default function HeroSection() {
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 3 }}
             className="flex flex-wrap justify-center mb-20 md:mb-0 mx-4 gap-10">
-            <Button onClick={() => router.push("https://mugen-builders.github.io/devolt/")}>
+            <Button onClick={() => router.push("https://devolt.github.io/devolt/")}>
               Whitepaper 
               <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
