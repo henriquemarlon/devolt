@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import type { NextPage } from "next";
 import "../globals.css";
-import LateralBar from "@/components/LateralBart/LateralBar";
+import SideBar from "@/components/SideBar/SideBar";
 import TeslaCar from "@/public/tesla-car.svg";
 import Car from "@/types/car";
 import cars from "@/data/cars";
@@ -24,7 +24,7 @@ const Dashboard: NextPage = () => {
     return (
         <div className="flex justify-center">
             <div className="flex w-[1800px] h-screen overflow-hidden">
-                <LateralBar selectedCar={selectedCar} onSelectCar={setSelectedCar} cars={cars} dashboradPage={dashboradPage} setDashboardPage={setDashboardPage} />
+                <SideBar selectedCar={selectedCar} onSelectCar={setSelectedCar} cars={cars} dashboradPage={dashboradPage} setDashboardPage={setDashboardPage} />
                 {dashboradPage === "stations" && (
                     <DashboardStation selectedCar={selectedCar}/> 
                 )}

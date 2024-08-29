@@ -5,7 +5,7 @@ import { MapPin, UserRound } from "lucide-react";
 import Logo from "@/public/logo.svg";
 import Car from "@/types/car";
   
-type LateralBarProps = {
+type SideBarProps = {
     selectedCar: Car | null;
     onSelectCar: (car: Car) => void;
     cars: Car[];
@@ -13,7 +13,7 @@ type LateralBarProps = {
     setDashboardPage: (page: string) => void;
 }; 
 
-export default function LateralBar({cars, selectedCar, onSelectCar, dashboradPage, setDashboardPage }: LateralBarProps) {
+export default function SideBar({cars, selectedCar, onSelectCar, dashboradPage, setDashboardPage }: SideBarProps) {
     return (
         <div className="h-full bg-[#131413] text-white w-[15%] py-2">
             <div className="divide-y w-full">
