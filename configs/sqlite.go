@@ -41,7 +41,7 @@ func SetupSQlite() (*gorm.DB, error) {
 
 	db.Create(&entity.User{
 		Role:      "admin",
-		Address:   custom_type.NewAddress(common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")),
+		Address:   custom_type.NewAddress(common.HexToAddress("0x0142f501EE21f4446009C3505c51d0043feC5c68")),
 		CreatedAt: 0,
 	})
 
@@ -84,7 +84,7 @@ func SetupSQliteMemory() (*gorm.DB, error) {
 
 	db.Create(&entity.User{
 		Role:      "admin",
-		Address:   custom_type.NewAddress(common.HexToAddress("0x0142f501EE21f4446009C3505c51d0043feC5c68")),
+		Address:   custom_type.NewAddress(common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")),
 		CreatedAt: 0,
 	})
 
