@@ -5,7 +5,6 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet/dist/leaflet.css";
 import { AttributionControl, MapContainer, MapContainerProps, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { CheckCircle } from "lucide-react";
-import useCalDistance from "@/hooks/useCalDistance";
 import MapProps from "@/types/map";
 import Station from "@/types/station";
 
@@ -20,8 +19,6 @@ const iAmHereIcon = L.icon({
 const stationIcon = L.icon({
   iconUrl: "/mapIcon2.svg",
   iconRetinaUrl: "/mapIcon2.svg",
-  shadowUrl: "/shadow.svg",
-  shadowRetinaUrl: "/shadow.svg",
   shadowSize: [80, 80],
   shadowAnchor: [30, 45],
   iconSize: [50, 50],
