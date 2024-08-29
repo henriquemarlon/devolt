@@ -79,6 +79,8 @@ export default function DashboardStation({ selectedCar: car }: DashboardStationP
                         carBattery={car.battery}
                         address={selectedStation?.address || "Select a station"}
                         onBuyEnergy={(i) => setPercentage(i)}
+                        carCapacity={car.capacity}
+                        stationId={selectedStation?.id ?? 0}
                     />
                 </div>
             </div>
