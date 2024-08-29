@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React from "react";
-import { Button } from "../ui/button";
-import { MapPin, UserRound } from "lucide-react";
+import Link from "next/link";
+import { MapPin } from "lucide-react";
 import Logo from "@/public/logo.svg";
 import Car from "@/types/car";
   
@@ -17,8 +17,10 @@ export default function SideBar({cars, selectedCar, onSelectCar, dashboradPage, 
     return (
         <div className="h-full bg-[#131413] text-white w-[15%] py-2">
             <div className="divide-y w-full">
-                <div className=" flex flex-col items-center py-8">
+                <div className=" flex flex-col items-center py-8" >
+                    <Link href="/">
                     <Image width={95} src={Logo} alt="logo" />
+                    </Link>
                 </div>
                 <div className="py-8 px-6 flex flex-col items-start gap-y-6">
                     <button onClick={() => setDashboardPage("stations")}>
