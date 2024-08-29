@@ -25,7 +25,7 @@ export default function Topbar() {
     if (windowSize.width < 768) {
       alert("Please use a desktop device to try out the valization");
     } else {
-      router.push("http://localhost:3000/dashboard")
+      router.push("/dashboard")
     }
   }
 
