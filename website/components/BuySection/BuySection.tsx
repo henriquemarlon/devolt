@@ -21,11 +21,8 @@ const BuySection: React.FC<BuySectionProps> = ({ address, energyPrice, percentag
 
     const { writeContractAsync: writeApproveContract, data: approveTx, isPending: isApprovePending } = useWriteContract();
     const { writeContractAsync: writeDepositContract } = useWriteContract();
-    // const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
-    //     hash: approveTx,
-    // });
 
-    const totalTokens = (((percentage * 80) / 100) * Number(energyPrice)).toFixed(2);
+    const totalTokens = (((percentage * carCapacity) / 100) * Number(energyPrice)).toFixed(2);
 
     const handleBuyEnergy = async () => {
 
@@ -35,7 +32,7 @@ const BuySection: React.FC<BuySectionProps> = ({ address, energyPrice, percentag
             functionName: 'approve',
             args: [
                 '0x9C21AEb2093C32DDbC53eEF24B873BDCd1aDa1DB', 
-                BigInt('100')], 
+                BigInt((Number(totalTokens) * 1000000).toString())], 
         });
 
         await writeDepositContract({
@@ -45,8 +42,8 @@ const BuySection: React.FC<BuySectionProps> = ({ address, energyPrice, percentag
             args: [
                 '0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d',
                 '0x5b253d029Aef2Aa5c497661d1415A4766AEBc655',
-                BigInt('1'),
-                toHex('{"path":"createOrder","payload":{"station_id":1}}')
+                BigInt((Number(totalTokens) * 1000000).toString()),
+                toHex(`{"path":"createOrder","payload":{"station_id":${stationId}}}`)
             ]
         });
         
