@@ -1,8 +1,8 @@
 package entity
 
 import (
-	"math/big"
 	"testing"
+	"math/big"
 	"time"
 
 	"github.com/Mugen-Builders/devolt/pkg/custom_type"
@@ -10,62 +10,56 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewOrder(t *testing.T) {
-	buyer := common.HexToAddress("0x123")
-	credits := big.NewInt(1000)
+func TestNewOrder_Success(t *testing.T) {
+	buyer := custom_type.Address{Address: common.HexToAddress("0x123")}
+	credits := custom_type.BigInt{Int: big.NewInt(100)}
 	stationId := uint(1)
 	pricePerCredit := big.NewInt(50)
 	createdAt := time.Now().Unix()
 
-	order, err := NewOrder(custom_type.NewAddress(buyer), custom_type.NewBigInt(credits), stationId, pricePerCredit, createdAt)
-	assert.Nil(t, err)
+	order, err := NewOrder(buyer, credits, stationId, pricePerCredit, createdAt)
+	assert.NoError(t, err)
 	assert.NotNil(t, order)
-	assert.Equal(t, buyer, order.Buyer.Address)
-	assert.Equal(t, credits, order.Credits.Int)
+	assert.Equal(t, buyer, order.Buyer)
+	assert.Equal(t, credits, order.Credits)
 	assert.Equal(t, stationId, order.StationId)
-	assert.Equal(t, pricePerCredit, order.PricePerCredit.Int)
-	assert.NotZero(t, order.CreatedAt)
+	assert.Equal(t, custom_type.NewBigInt(pricePerCredit), order.PricePerCredit)
+	assert.Equal(t, createdAt, order.CreatedAt)
 }
 
-func TestOrder_Validate(t *testing.T) {
-	buyer := common.HexToAddress("0x123")
+func TestNewOrder_Fail_InvalidOrder(t *testing.T) {
+	buyer := custom_type.Address{Address: common.HexToAddress("0x0")}
+	credits := custom_type.BigInt{Int: big.NewInt(100)}
+	stationId := uint(1)
+	pricePerCredit := big.NewInt(50)
 	createdAt := time.Now().Unix()
 
-	// Invalid credits
-	order := &Order{
-		Buyer:          custom_type.NewAddress(buyer),
-		Credits:        custom_type.NewBigInt(big.NewInt(-1)),
-		StationId:      2,
-		PricePerCredit: custom_type.NewBigInt(big.NewInt(50)),
-		CreatedAt:      createdAt,
-	}
-	err := order.Validate()
-	assert.NotNil(t, err)
+	order, err := NewOrder(buyer, credits, stationId, pricePerCredit, createdAt)
+	assert.Error(t, err)
+	assert.Nil(t, order)
 	assert.Equal(t, ErrInvalidOrder, err)
 
-	// Invalid price per credit
-	order.Credits = custom_type.NewBigInt(big.NewInt(1000))
-	order.PricePerCredit = custom_type.NewBigInt(big.NewInt(-1))
-	err = order.Validate()
-	assert.NotNil(t, err)
+	buyer = custom_type.Address{Address: common.HexToAddress("0x123")}
+	credits = custom_type.BigInt{Int: big.NewInt(0)}
+
+	order, err = NewOrder(buyer, credits, stationId, pricePerCredit, createdAt)
+	assert.Error(t, err)
+	assert.Nil(t, order)
 	assert.Equal(t, ErrInvalidOrder, err)
 
-	// Invalid buyer
-	order.PricePerCredit = custom_type.NewBigInt(big.NewInt(50))
-	order.Buyer = custom_type.NewAddress(common.Address{})
-	err = order.Validate()
-	assert.NotNil(t, err)
+	credits = custom_type.BigInt{Int: big.NewInt(100)}
+	stationId = uint(0)
+
+	order, err = NewOrder(buyer, credits, stationId, pricePerCredit, createdAt)
+	assert.Error(t, err)
+	assert.Nil(t, order)
 	assert.Equal(t, ErrInvalidOrder, err)
 
-	// Invalid station id
-	order.Buyer = custom_type.NewAddress(common.HexToAddress("0x123"))
-	order.StationId = 0
-	err = order.Validate()
-	assert.NotNil(t, err)
-	assert.Equal(t, ErrInvalidOrder, err)
+	stationId = uint(1)
+	pricePerCredit = big.NewInt(0)
 
-	// Valid order
-	order.StationId = 1
-	err = order.Validate()
-	assert.Nil(t, err)
+	order, err = NewOrder(buyer, credits, stationId, pricePerCredit, createdAt)
+	assert.Error(t, err)
+	assert.Nil(t, order)
+	assert.Equal(t, ErrInvalidOrder, err)
 }

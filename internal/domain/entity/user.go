@@ -16,7 +16,6 @@ type UserRepository interface {
 	CreateUser(User *User) (*User, error)
 	FindUserByRole(role string) (*User, error)
 	FindUserByAddress(address custom_type.Address) (*User, error)
-	UpdateUser(User *User) (*User, error)
 	FindAllUsers() ([]*User, error)
 	DeleteUserByAddress(address custom_type.Address) error
 }

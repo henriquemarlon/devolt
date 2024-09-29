@@ -40,24 +40,6 @@ func (h *UserAdvanceHandlers) CreateUserHandler(env rollmelette.Env, metadata ro
 	return nil
 }
 
-func (h *UserAdvanceHandlers) UpdateUserHandler(env rollmelette.Env, metadata rollmelette.Metadata, deposit rollmelette.Deposit, payload []byte) error {
-	var input user_usecase.UpdateUserInputDTO
-	if err := json.Unmarshal(payload, &input); err != nil {
-		return fmt.Errorf("failed to unmarshal input: %w", err)
-	}
-	updateUser := user_usecase.NewUpdateUserUseCase(h.UserRepository)
-	res, err := updateUser.Execute(&input, metadata)
-	if err != nil {
-		return err
-	}
-	user, err := json.Marshal(res)
-	if err != nil {
-		return err
-	}
-	env.Notice(append([]byte("updated user - "), user...))
-	return nil
-}
-
 func (h *UserAdvanceHandlers) DeleteUserByAddressHandler(env rollmelette.Env, metadata rollmelette.Metadata, deposit rollmelette.Deposit, payload []byte) error {
 	var input user_usecase.DeleteUserByAddressInputDTO
 	if err := json.Unmarshal(payload, &input); err != nil {

@@ -57,7 +57,7 @@ func NewStation(owner custom_type.Address, consumption custom_type.BigInt, price
 }
 
 func (s *Station) Validate() error {
-	if s.Owner.Address == (common.Address{}) || s.Consumption.Int == nil || s.PricePerCredit.Int == nil || s.Latitude == 0 || s.Longitude == 0 || s.CreatedAt == 0 {
+	if s.Owner.Address == (common.Address{}) || s.Consumption.Int.Sign() == 0 || s.PricePerCredit.Int.Sign() == 0 || s.Latitude == 0 || s.Longitude == 0 || s.CreatedAt == 0 {
 		return ErrInvalidStation
 	}
 	return nil

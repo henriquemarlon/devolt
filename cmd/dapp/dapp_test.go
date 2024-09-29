@@ -51,46 +51,6 @@ func (s *AppSuite) TestItCreateUserWithInvalidData() {
 	s.ErrorContains(result.Err, expectedOutput)
 }
 
-func (s *AppSuite) TestItUpdateUser() {
-	admin := common.HexToAddress("0x0142f501EE21f4446009C3505c51d0043feC5c68")
-
-	createUserInput := []byte(`{"path":"createUser","payload":{"address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","role":"admin"}}`)
-	expectedOutput := fmt.Sprintf(`created user - {"id":3,"role":"admin","address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","created_at":%d}`, time.Now().Unix())
-	result := s.tester.Advance(admin, createUserInput)
-	s.Len(result.Notices, 1)
-	s.Equal(expectedOutput, string(result.Notices[0].Payload))
-
-	updateUserInput := []byte(`{"path":"updateUser","payload":{"address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","role":"admin"}}`)
-	expectedOutput = fmt.Sprintf(`updated user - {"id":3,"role":"admin","address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","created_at":%d,"update_at":%d}`, time.Now().Unix(), time.Now().Unix())
-	result = s.tester.Advance(admin, updateUserInput)
-	s.Len(result.Notices, 1)
-	s.Equal(expectedOutput, string(result.Notices[0].Payload))
-}
-
-func (s *AppSuite) TestItUpdateUserWithoutPermissions() {
-	admin := common.HexToAddress("0x0142f501EE21f4446009C3505c51d0043feC5c68")
-
-	createUserInput := []byte(`{"path":"createUser","payload":{"address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","role":"admin"}}`)
-	expectedOutput := fmt.Sprintf(`created user - {"id":3,"role":"admin","address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","created_at":%d}`, time.Now().Unix())
-	result := s.tester.Advance(admin, createUserInput)
-	s.Len(result.Notices, 1)
-	s.Equal(expectedOutput, string(result.Notices[0].Payload))
-
-	sender := common.HexToAddress("0x1234567890abcdef1234567890abcdef12345678")
-	updateUserInput := []byte(`{"path":"updateUser","payload":{"address":"0x70997970C51812dc3A010C7d01b50e0d17dc79C8","role":"admin"}}`)
-	expectedOutput = `failed to find user by address 0x1234567890AbcdEF1234567890aBcdef12345678: record not found`
-	result = s.tester.Advance(sender, updateUserInput)
-	s.ErrorContains(result.Err, expectedOutput)
-}
-
-func (s *AppSuite) TestItUpdateNonExistentUser() {
-	admin := common.HexToAddress("0x0142f501EE21f4446009C3505c51d0043feC5c68")
-	input := []byte(`{"path":"updateUser","payload":{"address":"0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65","role":"admin"}}`)
-	expectedOutput := `user not found`
-	result := s.tester.Advance(admin, input)
-	s.ErrorContains(result.Err, expectedOutput)
-}
-
 func (s *AppSuite) TestItDeleteUser() {
 	admin := common.HexToAddress("0x0142f501EE21f4446009C3505c51d0043feC5c68")
 

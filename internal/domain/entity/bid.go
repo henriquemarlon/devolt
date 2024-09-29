@@ -2,7 +2,6 @@ package entity
 
 import (
 	"errors"
-	"math/big"
 
 	"github.com/Mugen-Builders/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
@@ -59,7 +58,7 @@ func NewBid(auctionId uint, bidder custom_type.Address, credits custom_type.BigI
 }
 
 func (b *Bid) Validate() error {
-	if b.AuctionId == 0 || b.Bidder.Address == (common.Address{}) || b.Credits.Cmp(big.NewInt(0)) <= 0 || b.PricePerCredit.Cmp(big.NewInt(0)) <= 0 {
+	if b.AuctionId == 0 || b.Bidder.Address == (common.Address{}) || b.Credits.Int.Sign() == 0 || b.PricePerCredit.Int.Sign() == 0 {
 		return ErrInvalidBid
 	}
 	return nil

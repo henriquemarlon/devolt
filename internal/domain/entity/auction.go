@@ -2,7 +2,6 @@ package entity
 
 import (
 	"errors"
-	"math/big"
 
 	"github.com/Mugen-Builders/devolt/pkg/custom_type"
 )
@@ -25,9 +24,9 @@ type AuctionRepository interface {
 type AuctionState string
 
 const (
-	AuctionOngoing          AuctionState = "ongoing"
-	AuctionFinished         AuctionState = "finished"
-	AuctionCancelled        AuctionState = "cancelled"
+	AuctionOngoing   AuctionState = "ongoing"
+	AuctionFinished  AuctionState = "finished"
+	AuctionCancelled AuctionState = "cancelled"
 )
 
 type Auction struct {
@@ -56,7 +55,7 @@ func NewAuction(requiredCredits custom_type.BigInt, priceLimitPerCredit custom_t
 }
 
 func (a *Auction) Validate() error {
-	if a.RequiredCredits.Cmp(big.NewInt(0)) <= 0 || a.PriceLimitPerCredit.Cmp(big.NewInt(0)) <= 0 || a.ExpiresAt == 0 || a.CreatedAt == 0 || a.CreatedAt >= a.ExpiresAt {
+	if a.RequiredCredits.Int.Sign() == 0 || a.PriceLimitPerCredit.Int.Sign() == 0 || a.ExpiresAt == 0 || a.CreatedAt == 0 || a.CreatedAt >= a.ExpiresAt {
 		return ErrInvalidAuction
 	}
 	return nil

@@ -1,86 +1,55 @@
 package entity
 
 import (
-	"math/big"
 	"testing"
 	"time"
+	"math/big"
 
 	"github.com/Mugen-Builders/devolt/pkg/custom_type"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewAuction(t *testing.T) {
-	credits := custom_type.NewBigInt(big.NewInt(1000))
-	priceLimitPerCredit := custom_type.NewBigInt(big.NewInt(500))
-	expiresAt := time.Now().Add(24 * time.Hour).Unix()
+	requiredCredits := custom_type.BigInt{Int: big.NewInt(100)}
+	priceLimitPerCredit := custom_type.BigInt{Int: big.NewInt(50)}
 	createdAt := time.Now().Unix()
+	expiresAt := createdAt + 3600
 
-	auction, err := NewAuction(credits, priceLimitPerCredit, expiresAt, createdAt)
-	assert.Nil(t, err)
+	auction, err := NewAuction(requiredCredits, priceLimitPerCredit, expiresAt, createdAt)
+	assert.NoError(t, err)
 	assert.NotNil(t, auction)
-	assert.Equal(t, credits, auction.RequiredCredits)
+	assert.Equal(t, requiredCredits, auction.RequiredCredits)
 	assert.Equal(t, priceLimitPerCredit, auction.PriceLimitPerCredit)
 	assert.Equal(t, AuctionOngoing, auction.State)
-	assert.NotZero(t, auction.ExpiresAt)
-	assert.NotZero(t, auction.CreatedAt)
+	assert.Equal(t, expiresAt, auction.ExpiresAt)
+	assert.Equal(t, createdAt, auction.CreatedAt)
 }
 
-func TestAuction_Validate(t *testing.T) {
+func TestNewAuction_Fail_InvalidAuction(t *testing.T) {
+	requiredCredits := custom_type.BigInt{Int: big.NewInt(0)}
+	priceLimitPerCredit := custom_type.BigInt{Int: big.NewInt(50)}
 	createdAt := time.Now().Unix()
-	expiresAt := time.Now().Add(-24 * time.Hour).Unix() // Past time
-	auction := &Auction{
-		RequiredCredits:     custom_type.NewBigInt(big.NewInt(1000)),
-		PriceLimitPerCredit: custom_type.NewBigInt(big.NewInt(0)), // Invalid price limit
-		ExpiresAt:           expiresAt,
-		CreatedAt:           createdAt,
-	}
+	expiresAt := createdAt + 3600
 
-	err := auction.Validate()
-	assert.NotNil(t, err)
+	auction, err := NewAuction(requiredCredits, priceLimitPerCredit, expiresAt, createdAt)
+	assert.Error(t, err)
+	assert.Nil(t, auction)
 	assert.Equal(t, ErrInvalidAuction, err)
 
-	// Correct the validation errors
-	auction.PriceLimitPerCredit = custom_type.NewBigInt(big.NewInt(500))
-	auction.ExpiresAt = time.Now().Add(24 * time.Hour).Unix()
-	err = auction.Validate()
-	assert.Nil(t, err)
-}
+	requiredCredits = custom_type.BigInt{Int: big.NewInt(100)}
+	priceLimitPerCredit = custom_type.BigInt{Int: big.NewInt(0)}
 
-func TestAuctionStateTransition(t *testing.T) {
-	createdAt := time.Now().Unix()
-	expiresAt := time.Now().Add(24 * time.Hour).Unix()
+	auction, err = NewAuction(requiredCredits, priceLimitPerCredit, expiresAt, createdAt)
+	assert.Error(t, err)
+	assert.Nil(t, auction)
+	assert.Equal(t, ErrInvalidAuction, err)
 
-	auction, _ := NewAuction(custom_type.NewBigInt(big.NewInt(1000)), custom_type.NewBigInt(big.NewInt(500)), expiresAt, createdAt)
-	assert.Equal(t, AuctionOngoing, auction.State)
+	requiredCredits = custom_type.BigInt{Int: big.NewInt(100)}
+	priceLimitPerCredit = custom_type.BigInt{Int: big.NewInt(50)}
+	expiresAt = createdAt
 
-	// Transition to finished
-	auction.State = AuctionFinished
-	assert.Equal(t, AuctionFinished, auction.State)
-
-	// Transition to cancelled
-	auction.State = AuctionCancelled
-	assert.Equal(t, AuctionCancelled, auction.State)
-}
-
-func TestAuctionExpiration(t *testing.T) {
-	createdAt := time.Now().Unix()
-	expiresAt := createdAt + 3600 // 1 hour later
-
-	auction := &Auction{
-		Id:                  1,
-		RequiredCredits:     custom_type.NewBigInt(big.NewInt(1000)),
-		PriceLimitPerCredit: custom_type.NewBigInt(big.NewInt(500)),
-		State:               AuctionOngoing,
-		ExpiresAt:           expiresAt,
-		CreatedAt:           createdAt,
-		UpdatedAt:           createdAt,
-	}
-
-	err := auction.Validate()
-	assert.Nil(t, err)
-
-	auction.ExpiresAt = createdAt - 3600 // 1 hour before creation time
-	err = auction.Validate()
-	assert.NotNil(t, err)
+	auction, err = NewAuction(requiredCredits, priceLimitPerCredit, expiresAt, createdAt)
+	assert.Error(t, err)
+	assert.Nil(t, auction)
 	assert.Equal(t, ErrInvalidAuction, err)
 }

@@ -47,7 +47,7 @@ func NewOrder(buyer custom_type.Address, credits custom_type.BigInt, stationId u
 }
 
 func (o *Order) Validate() error {
-	if o.Buyer.Address == (common.Address{}) || o.Credits.Cmp(big.NewInt(0)) <= 0 || o.PricePerCredit.Cmp(big.NewInt(0)) <= 0 || o.StationId == 0 {
+	if o.Buyer.Address == (common.Address{}) || o.Credits.Int.Sign() == 0 || o.PricePerCredit.Int.Sign() == 0 || o.StationId == 0 {
 		return ErrInvalidOrder
 	}
 	return nil

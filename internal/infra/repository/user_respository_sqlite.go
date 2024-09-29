@@ -52,29 +52,6 @@ func (r *UserRepositorySqlite) FindAllUsers() ([]*entity.User, error) {
 	return users, nil
 }
 
-func (r *UserRepositorySqlite) UpdateUser(input *entity.User) (*entity.User, error) {
-	var user entity.User
-	err := r.Db.Where("address = ?", input.Address).First(&user).Error
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, entity.ErrUserNotFound
-		}
-		return nil, err
-	}
-
-	user.Role = input.Role
-	user.UpdatedAt = input.UpdatedAt
-
-	res := r.Db.Save(&user)
-	if res.Error != nil {
-		return nil, fmt.Errorf("failed to update user: %w", res.Error)
-	}
-	if res.RowsAffected == 0 {
-		return nil, entity.ErrUserNotFound
-	}
-	return &user, nil
-}
-
 func (r *UserRepositorySqlite) DeleteUserByAddress(address custom_type.Address) error {
 	res := r.Db.Delete(&entity.User{}, "address = ?", address)
 	if res.Error != nil {

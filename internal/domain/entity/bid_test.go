@@ -1,8 +1,8 @@
 package entity
 
 import (
-	"math/big"
 	"testing"
+	"math/big"
 	"time"
 
 	"github.com/Mugen-Builders/devolt/pkg/custom_type"
@@ -10,58 +10,57 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewBid(t *testing.T) {
+func TestNewBid_Success(t *testing.T) {
 	auctionId := uint(1)
-	bidder := custom_type.NewAddress(common.HexToAddress("0x123"))
-	credits := custom_type.NewBigInt(big.NewInt(1000))
-	price := custom_type.NewBigInt(big.NewInt(500))
+	bidder := custom_type.Address{Address: common.HexToAddress("0x123")}
+	credits := custom_type.BigInt{Int: big.NewInt(100)}
+	pricePerCredit := custom_type.BigInt{Int: big.NewInt(50)}
 	createdAt := time.Now().Unix()
 
-	bid, err := NewBid(auctionId, bidder, credits, price, createdAt)
-	assert.Nil(t, err)
+	bid, err := NewBid(auctionId, bidder, credits, pricePerCredit, createdAt)
+	assert.NoError(t, err)
 	assert.NotNil(t, bid)
 	assert.Equal(t, auctionId, bid.AuctionId)
 	assert.Equal(t, bidder, bid.Bidder)
 	assert.Equal(t, credits, bid.Credits)
-	assert.Equal(t, price, bid.PricePerCredit)
+	assert.Equal(t, pricePerCredit, bid.PricePerCredit)
 	assert.Equal(t, BidStatePending, bid.State)
-	assert.NotZero(t, bid.CreatedAt)
+	assert.Equal(t, createdAt, bid.CreatedAt)
 }
 
-func TestBid_Validate(t *testing.T) {
-	auctionId := uint(1)
-	bidder := common.HexToAddress("0x123")
+func TestNewBid_Fail_InvalidBid(t *testing.T) {
+	auctionId := uint(0)
+	bidder := custom_type.Address{Address: common.HexToAddress("0x123")}
+	credits := custom_type.BigInt{Int: big.NewInt(100)}
+	pricePerCredit := custom_type.BigInt{Int: big.NewInt(50)}
 	createdAt := time.Now().Unix()
 
-	// Invalid credits
-	bid := &Bid{
-		AuctionId:      auctionId,
-		Bidder:         custom_type.NewAddress(bidder),
-		Credits:        custom_type.NewBigInt(big.NewInt(-1)),
-		PricePerCredit: custom_type.NewBigInt(big.NewInt(500)),
-		State:          BidStatePending,
-		CreatedAt:      createdAt,
-	}
-	err := bid.Validate()
-	assert.NotNil(t, err)
+	bid, err := NewBid(auctionId, bidder, credits, pricePerCredit, createdAt)
+	assert.Error(t, err)
+	assert.Nil(t, bid)
 	assert.Equal(t, ErrInvalidBid, err)
 
-	// Invalid price
-	bid.Credits = custom_type.NewBigInt(big.NewInt(1000))
-	bid.PricePerCredit = custom_type.NewBigInt(big.NewInt(-1))
-	err = bid.Validate()
-	assert.NotNil(t, err)
+	auctionId = uint(1)
+	bidder = custom_type.Address{Address: common.Address{}}
+
+	bid, err = NewBid(auctionId, bidder, credits, pricePerCredit, createdAt)
+	assert.Error(t, err)
+	assert.Nil(t, bid)
 	assert.Equal(t, ErrInvalidBid, err)
 
-	// Invalid bidder
-	bid.PricePerCredit = custom_type.NewBigInt(big.NewInt(500))
-	bid.Bidder = custom_type.NewAddress(common.Address{})
-	err = bid.Validate()
-	assert.NotNil(t, err)
+	bidder = custom_type.Address{Address: common.HexToAddress("0x123")}
+	credits = custom_type.BigInt{Int: big.NewInt(0)}
+
+	bid, err = NewBid(auctionId, bidder, credits, pricePerCredit, createdAt)
+	assert.Error(t, err)
+	assert.Nil(t, bid)
 	assert.Equal(t, ErrInvalidBid, err)
 
-	// Valid bid
-	bid.Bidder = custom_type.NewAddress(common.HexToAddress("0x123"))
-	err = bid.Validate()
-	assert.Nil(t, err)
+	credits = custom_type.BigInt{Int: big.NewInt(100)}
+	pricePerCredit = custom_type.BigInt{Int: big.NewInt(0)}
+
+	bid, err = NewBid(auctionId, bidder, credits, pricePerCredit, createdAt)
+	assert.Error(t, err)
+	assert.Nil(t, bid)
+	assert.Equal(t, ErrInvalidBid, err)
 }
