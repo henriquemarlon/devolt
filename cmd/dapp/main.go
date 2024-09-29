@@ -2,20 +2,22 @@ package main
 
 import (
 	"context"
-	"github.com/rollmelette/rollmelette"
 	"log/slog"
+	"os"
+
+	"github.com/rollmelette/rollmelette"
 )
 
 func main() {
 	//////////////////////// Setup DApp /////////////////////////
 	app := NewDApp()
 
-	///////////////////////// Rollmelette //////////////////////////
 	ctx := context.Background()
 	opts := rollmelette.NewRunOpts()
-	opts.RollupURL = "http://127.0.0.1:5004"
-	err := rollmelette.Run(ctx, opts, app)
-	if err != nil {
+	if rollupUrl, isSet := os.LookupEnv("ROLLUP_HTTP_SERVER_URL"); isSet {
+		opts.RollupURL = rollupUrl
+	}
+	if err := rollmelette.Run(ctx, opts, app); err != nil {
 		slog.Error("application error", "error", err)
 	}
 }
