@@ -19,6 +19,14 @@ machine:
 		-f ./build/Dockerfile.machine .
 	@cartesi build --from-image machine:latest
 	$(END_LOG)
+
+.PHONY: local
+local:
+	$(START_LOG)
+	@nonodo -- cartesi-machine --network \
+		--flash-drive=label:root,filename:.cartesi/image.ext2 \
+		--env=ROLLUP_HTTP_SERVER_URL=http://10.0.2.2:5004 \
+		-- /var/opt/cartesi-app/app
 	
 .PHONY: bidings
 bidings:
