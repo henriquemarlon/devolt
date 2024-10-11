@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 	"time"
-
 	"github.com/Mugen-Builders/devolt/internal/domain/entity"
 	"github.com/Mugen-Builders/devolt/pkg/custom_type"
 	"github.com/ethereum/go-ethereum/common"
@@ -14,7 +14,19 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+var setupDbOnce = sync.OnceValues(setupSQlite)
+
 func SetupSQlite() (*gorm.DB, error) {
+	return setupDbOnce()
+}
+
+var setupOnceMemory = sync.OnceValues(setupSQliteMemory)
+
+func SetupSQliteMemory() (*gorm.DB, error) {
+	return setupOnceMemory()
+}
+
+func setupSQlite() (*gorm.DB, error) {
 	logger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
@@ -41,7 +53,7 @@ func SetupSQlite() (*gorm.DB, error) {
 
 	db.Create(&entity.User{
 		Role:      "admin",
-		Address:   custom_type.NewAddress(common.HexToAddress("0x0142f501EE21f4446009C3505c51d0043feC5c68")),
+		Address:   custom_type.NewAddress(common.HexToAddress("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")),
 		CreatedAt: 0,
 	})
 
@@ -57,7 +69,7 @@ func SetupSQlite() (*gorm.DB, error) {
 	return db, nil
 }
 
-func SetupSQliteMemory() (*gorm.DB, error) {
+func setupSQliteMemory() (*gorm.DB, error) {
 	logger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
