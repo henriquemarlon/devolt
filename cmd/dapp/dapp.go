@@ -1,23 +1,31 @@
 package main
 
 import (
-	"github.com/Mugen-Builders/devolt/pkg/router"
 	"log"
+
+	"github.com/Mugen-Builders/devolt/configs"
+	"github.com/Mugen-Builders/devolt/pkg/router"
 )
 
 func NewDApp() *router.Router {
+	//////////////////////// Setup Database //////////////////////////
+	db, err := configs.SetupSQlite()
+	if err != nil {
+		log.Fatalf("Failed to setup sqlite database: %v", err)
+	}
+
 	//////////////////////// Setup Handlers //////////////////////////
-	ah, err := NewAdvanceHandlers()
+	ah, err := NewAdvanceHandlers(db)
 	if err != nil {
 		log.Fatalf("Failed to initialize advance handlers from wire: %v", err)
 	}
 
-	ih, err := NewInspectHandlers()
+	ih, err := NewInspectHandlers(db)
 	if err != nil {
 		log.Fatalf("Failed to initialize inspect handlers from wire: %v", err)
 	}
 
-	ms, err := NewMiddlewares()
+	ms, err := NewMiddlewares(db)
 	if err != nil {
 		log.Fatalf("Failed to initialize middlewares from wire: %v", err)
 	}
@@ -45,7 +53,7 @@ func NewDApp() *router.Router {
 	app.HandleAdvance("withdrawApp", ms.RBAC.Middleware(ah.UserAdvanceHandlers.WithdrawStablecoinHandler, "admin"))
 	app.HandleAdvance("withdrawVolt", ah.UserAdvanceHandlers.WithdrawVoltHandler)
 	app.HandleAdvance("withdrawStablecoin", ah.UserAdvanceHandlers.WithdrawStablecoinHandler)
-	
+
 	app.HandleAdvance("createUser", ms.RBAC.Middleware(ah.UserAdvanceHandlers.CreateUserHandler, "admin"))
 	app.HandleAdvance("deleteUser", ms.RBAC.Middleware(ah.UserAdvanceHandlers.DeleteUserByAddressHandler, "admin"))
 
@@ -76,18 +84,24 @@ func NewDApp() *router.Router {
 }
 
 func NewDAppMemory() *router.Router {
+	//////////////////////// Setup Database //////////////////////////
+	db, err := configs.SetupSQliteMemory()
+	if err != nil {
+		log.Fatalf("Failed to setup sqlite database: %v", err)
+	}
+
 	//////////////////////// Setup Handlers //////////////////////////
-	ah, err := NewAdvanceHandlersMemory()
+	ah, err := NewAdvanceHandlersMemory(db)
 	if err != nil {
 		log.Fatalf("Failed to initialize advance handlers from wire: %v", err)
 	}
 
-	ih, err := NewInspectHandlersMemory()
+	ih, err := NewInspectHandlersMemory(db)
 	if err != nil {
 		log.Fatalf("Failed to initialize inspect handlers from wire: %v", err)
 	}
 
-	ms, err := NewMiddlewaresMemory()
+	ms, err := NewMiddlewaresMemory(db)
 	if err != nil {
 		log.Fatalf("Failed to initialize middlewares from wire: %v", err)
 	}

@@ -4,13 +4,13 @@
 package main
 
 import (
-	"github.com/Mugen-Builders/devolt/configs"
 	"github.com/Mugen-Builders/devolt/internal/domain/entity"
 	"github.com/Mugen-Builders/devolt/internal/infra/cartesi/handler/advance_handler"
 	"github.com/Mugen-Builders/devolt/internal/infra/cartesi/handler/inspect_handler"
 	"github.com/Mugen-Builders/devolt/internal/infra/cartesi/middleware"
 	"github.com/Mugen-Builders/devolt/internal/infra/repository"
 	"github.com/google/wire"
+	"gorm.io/gorm"
 )
 
 var setBidRepositoryDependency = wire.NewSet(
@@ -65,9 +65,8 @@ var setMiddleware = wire.NewSet(
 	middleware.NewRBACMiddleware,
 )
 
-func NewMiddlewares() (*Middlewares, error) {
+func NewMiddlewares(gormDB *gorm.DB) (*Middlewares, error) {
 	wire.Build(
-		configs.SetupSQlite,
 		setUserRepositoryDependency,
 		setMiddleware,
 		wire.Struct(new(Middlewares), "*"),
@@ -75,9 +74,8 @@ func NewMiddlewares() (*Middlewares, error) {
 	return nil, nil
 }
 
-func NewMiddlewaresMemory() (*Middlewares, error) {
+func NewMiddlewaresMemory(gormDB *gorm.DB) (*Middlewares, error) {
 	wire.Build(
-		configs.SetupSQliteMemory,
 		setUserRepositoryDependency,
 		setMiddleware,
 		wire.Struct(new(Middlewares), "*"),
@@ -85,9 +83,8 @@ func NewMiddlewaresMemory() (*Middlewares, error) {
 	return nil, nil
 }
 
-func NewAdvanceHandlers() (*AdvanceHandlers, error) {
+func NewAdvanceHandlers(gormDB *gorm.DB) (*AdvanceHandlers, error) {
 	wire.Build(
-		configs.SetupSQlite,
 		setBidRepositoryDependency,
 		setUserRepositoryDependency,
 		setOrderRepositoryDependency,
@@ -100,9 +97,8 @@ func NewAdvanceHandlers() (*AdvanceHandlers, error) {
 	return nil, nil
 }
 
-func NewAdvanceHandlersMemory() (*AdvanceHandlers, error) {
+func NewAdvanceHandlersMemory(gormDB *gorm.DB) (*AdvanceHandlers, error) {
 	wire.Build(
-		configs.SetupSQliteMemory,
 		setBidRepositoryDependency,
 		setUserRepositoryDependency,
 		setOrderRepositoryDependency,
@@ -115,9 +111,8 @@ func NewAdvanceHandlersMemory() (*AdvanceHandlers, error) {
 	return nil, nil
 }
 
-func NewInspectHandlers() (*InspectHandlers, error) {
+func NewInspectHandlers(gormDB *gorm.DB) (*InspectHandlers, error) {
 	wire.Build(
-		configs.SetupSQlite,
 		setBidRepositoryDependency,
 		setUserRepositoryDependency,
 		setOrderRepositoryDependency,
@@ -130,9 +125,8 @@ func NewInspectHandlers() (*InspectHandlers, error) {
 	return nil, nil
 }
 
-func NewInspectHandlersMemory() (*InspectHandlers, error) {
+func NewInspectHandlersMemory(gormDB *gorm.DB) (*InspectHandlers, error) {
 	wire.Build(
-		configs.SetupSQliteMemory,
 		setBidRepositoryDependency,
 		setUserRepositoryDependency,
 		setOrderRepositoryDependency,

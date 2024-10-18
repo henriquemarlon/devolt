@@ -7,22 +7,18 @@
 package main
 
 import (
-	"github.com/Mugen-Builders/devolt/configs"
 	"github.com/Mugen-Builders/devolt/internal/domain/entity"
 	"github.com/Mugen-Builders/devolt/internal/infra/cartesi/handler/advance_handler"
 	"github.com/Mugen-Builders/devolt/internal/infra/cartesi/handler/inspect_handler"
 	"github.com/Mugen-Builders/devolt/internal/infra/cartesi/middleware"
 	"github.com/Mugen-Builders/devolt/internal/infra/repository"
 	"github.com/google/wire"
+	"gorm.io/gorm"
 )
 
 // Injectors from wire.go:
 
-func NewMiddlewares() (*Middlewares, error) {
-	gormDB, err := configs.SetupSQlite()
-	if err != nil {
-		return nil, err
-	}
+func NewMiddlewares(gormDB *gorm.DB) (*Middlewares, error) {
 	userRepositorySqlite := db.NewUserRepositorySqlite(gormDB)
 	rbacMiddleware := middleware.NewRBACMiddleware(userRepositorySqlite)
 	middlewares := &Middlewares{
@@ -31,11 +27,7 @@ func NewMiddlewares() (*Middlewares, error) {
 	return middlewares, nil
 }
 
-func NewMiddlewaresMemory() (*Middlewares, error) {
-	gormDB, err := configs.SetupSQliteMemory()
-	if err != nil {
-		return nil, err
-	}
+func NewMiddlewaresMemory(gormDB *gorm.DB) (*Middlewares, error) {
 	userRepositorySqlite := db.NewUserRepositorySqlite(gormDB)
 	rbacMiddleware := middleware.NewRBACMiddleware(userRepositorySqlite)
 	middlewares := &Middlewares{
@@ -44,11 +36,7 @@ func NewMiddlewaresMemory() (*Middlewares, error) {
 	return middlewares, nil
 }
 
-func NewAdvanceHandlers() (*AdvanceHandlers, error) {
-	gormDB, err := configs.SetupSQlite()
-	if err != nil {
-		return nil, err
-	}
+func NewAdvanceHandlers(gormDB *gorm.DB) (*AdvanceHandlers, error) {
 	bidRepositorySqlite := db.NewBidRepositorySqlite(gormDB)
 	userRepositorySqlite := db.NewUserRepositorySqlite(gormDB)
 	contractRepositorySqlite := db.NewContractRepositorySqlite(gormDB)
@@ -72,11 +60,7 @@ func NewAdvanceHandlers() (*AdvanceHandlers, error) {
 	return advanceHandlers, nil
 }
 
-func NewAdvanceHandlersMemory() (*AdvanceHandlers, error) {
-	gormDB, err := configs.SetupSQliteMemory()
-	if err != nil {
-		return nil, err
-	}
+func NewAdvanceHandlersMemory(gormDB *gorm.DB) (*AdvanceHandlers, error) {
 	bidRepositorySqlite := db.NewBidRepositorySqlite(gormDB)
 	userRepositorySqlite := db.NewUserRepositorySqlite(gormDB)
 	contractRepositorySqlite := db.NewContractRepositorySqlite(gormDB)
@@ -100,11 +84,7 @@ func NewAdvanceHandlersMemory() (*AdvanceHandlers, error) {
 	return advanceHandlers, nil
 }
 
-func NewInspectHandlers() (*InspectHandlers, error) {
-	gormDB, err := configs.SetupSQlite()
-	if err != nil {
-		return nil, err
-	}
+func NewInspectHandlers(gormDB *gorm.DB) (*InspectHandlers, error) {
 	bidRepositorySqlite := db.NewBidRepositorySqlite(gormDB)
 	bidInspectHandlers := inspect_handler.NewBidInspectHandlers(bidRepositorySqlite)
 	userRepositorySqlite := db.NewUserRepositorySqlite(gormDB)
@@ -128,11 +108,7 @@ func NewInspectHandlers() (*InspectHandlers, error) {
 	return inspectHandlers, nil
 }
 
-func NewInspectHandlersMemory() (*InspectHandlers, error) {
-	gormDB, err := configs.SetupSQliteMemory()
-	if err != nil {
-		return nil, err
-	}
+func NewInspectHandlersMemory(gormDB *gorm.DB) (*InspectHandlers, error) {
 	bidRepositorySqlite := db.NewBidRepositorySqlite(gormDB)
 	bidInspectHandlers := inspect_handler.NewBidInspectHandlers(bidRepositorySqlite)
 	userRepositorySqlite := db.NewUserRepositorySqlite(gormDB)

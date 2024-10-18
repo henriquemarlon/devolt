@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"sync"
 	"time"
 	"github.com/Mugen-Builders/devolt/internal/domain/entity"
 	"github.com/Mugen-Builders/devolt/pkg/custom_type"
@@ -14,19 +13,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-var setupDbOnce = sync.OnceValues(setupSQlite)
-
 func SetupSQlite() (*gorm.DB, error) {
-	return setupDbOnce()
-}
-
-var setupOnceMemory = sync.OnceValues(setupSQliteMemory)
-
-func SetupSQliteMemory() (*gorm.DB, error) {
-	return setupOnceMemory()
-}
-
-func setupSQlite() (*gorm.DB, error) {
 	logger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
@@ -69,7 +56,7 @@ func setupSQlite() (*gorm.DB, error) {
 	return db, nil
 }
 
-func setupSQliteMemory() (*gorm.DB, error) {
+func SetupSQliteMemory() (*gorm.DB, error) {
 	logger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
